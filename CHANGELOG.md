@@ -2,6 +2,18 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.14] — 2026-10-25
+
+Larger, clearer arrival estimates
+
+### Improved
+
+- Larger, high-contrast ETA and remaining journey time during navigation.
+- Arrival estimates on route cards are easier to read.
+- Navigation actions sit below the journey information on a compact card so they do not squeeze the ETA.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.13] — 2026-10-25
 
 One consistent Lapan icon
