@@ -1,5 +1,18 @@
 [
   {
+    "version": "1.0.13",
+    "date": "2026-10-25",
+    "title": "One consistent Lapan icon",
+    "changes": {
+      "Improved": [
+        "The main app, changelog and browser tab use the same green Lapan icon with its white infinity symbol.",
+        "Shared vector artwork keeps the logo consistent across fonts, devices and screen sizes."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
     "version": "1.0.12",
     "date": "2026-10-25",
     "title": "A separate toll calculator",

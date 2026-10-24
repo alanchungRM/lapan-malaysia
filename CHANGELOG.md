@@ -2,6 +2,17 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.13] — 2026-10-25
+
+One consistent Lapan icon
+
+### Improved
+
+- The main app, changelog and browser tab use the same green Lapan icon with its white infinity symbol.
+- Shared vector artwork keeps the logo consistent across fonts, devices and screen sizes.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.12] — 2026-10-25
 
 A separate toll calculator
