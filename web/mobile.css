@@ -53,3 +53,5 @@ details.toll{padding:0 16px;margin-top:12px}details.toll>summary{display:flex;li
 #awakeWarning{display:none}body.guiding #awakeWarning:not([hidden]){display:block;position:absolute;z-index:820;top:calc(114px + env(safe-area-inset-top));left:14px;right:14px;max-width:420px;border:1px solid #aa8146;border-radius:12px;background:#503b18f5;color:#fff3cf;padding:10px 12px;font:600 12px/1.4 sans-serif;text-align:left;min-height:44px}body.details-open #awakeWarning{display:none!important}
 
 .app-version{font-size:10px;font-weight:500;letter-spacing:0;color:#b6c8c0;white-space:nowrap;margin-left:2px}.version-info{color:#a7e7bf;font-weight:600}
+
+#navRepeat{width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:white;font-size:20px;font-weight:700}
