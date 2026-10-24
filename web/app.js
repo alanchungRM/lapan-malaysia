@@ -59,3 +59,8 @@ $('closeDetails').onclick=()=>toggleNavDetails(false);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('details-open'))toggleNavDetails(false)});
 
 window.addEventListener('lapan-place',e=>{chosen.destination=e.detail.slice();$('destination').value=chosen.destination[0];document.querySelector('.search-panel').open=true;status('Recent destination selected. Tap Find my route.');});
+
+window.LapanStopsContext={
+async location(){try{const p=await new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(Error());navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:30000})});const {latitude:lat,longitude:lon}=p.coords;if(lat<.8||lat>7.6||lon<99||lon>120)throw Error();return {lat,lon,label:'your location'}}catch{if(chosen.origin)return {lat:chosen.origin[1],lon:chosen.origin[2],label:chosen.origin[0]==='My location'?'your last known location':'your starting point'};throw Error('Allow location access, or choose a starting point first.')}},
+async route(item,origin){const resume=document.body.classList.contains('guiding');stop();chosen.origin=['My location',origin.lat,origin.lon];$('origin').value='My location';chosen.destination=[item.name,item.lat,item.lon];$('destination').value=item.name;window.LapanHistory?.remember(chosen.destination,'selected');const ok=await $('plan').onclick();if(ok&&resume)$('start').onclick();return !!ok}
+};
