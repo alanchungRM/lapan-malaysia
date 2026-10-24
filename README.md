@@ -78,3 +78,9 @@ Third-party data and services retain their respective licenses and terms. Public
 Issues and suggested improvements are welcome. Do not submit API keys, location history, personal travel logs or other sensitive information.
 
 No license grant for the original Lapan source is specified in this repository yet. Public visibility alone does not grant a general license to reuse or redistribute it. Third-party components retain their own licenses. The project owner may choose an explicit source license later.
+
+## Release history
+
+Read [What’s new in Lapan](https://lapan-malaysia.com/changelog) or [CHANGELOG.md](CHANGELOG.md) for feature updates, fixes, limitations and public commit references.
+
+Before a new release, add reviewed notes for the next patch version to `web/changelog.json`, then run `npm run release` once. It increments the version, generates `CHANGELOG.md` and builds the site. Use `npm run build` for rebuilds or deployment retries. Release notes must not contain credentials, keys, private configuration or personal journey data.
