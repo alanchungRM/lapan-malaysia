@@ -2,6 +2,20 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.12] — 2026-10-25
+
+A separate toll calculator
+
+### Improved
+
+- Moved the PLUS toll calculator out of route planning into its own Toll calculator option.
+- Choose entry and exit plazas without planning a route. Fare estimates are independent of navigation and do not change your journey.
+- Removed toll estimates and automatic plaza suggestions from route cards and route selection.
+
+> PLUS fares cover the chosen plazas for a Class 1 car. Other highways are not included; optional manual costs remain in the calculator.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.11] — 2026-10-25
 
 A public home for release notes
