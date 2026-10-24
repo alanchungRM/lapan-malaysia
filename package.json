@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node tests/navigation.cjs && node tests/fares.mjs && node tests/drive.cjs && node tests/preferences.cjs",
+    "test": "node tests/navigation.cjs && node tests/fares.mjs && node tests/drive.cjs && node tests/preferences.cjs && node tests/awake.cjs",
     "dev": "node scripts/dev.mjs"
   },
   "description": "Mobile-friendly Malaysia road navigation and PLUS toll planning",
