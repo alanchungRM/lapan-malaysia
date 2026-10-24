@@ -9,5 +9,6 @@
   "description": "Mobile-friendly Malaysia road navigation and PLUS toll planning",
   "engines": {
     "node": ">=22"
-  }
+  },
+  "version": "1.0.8"
 }
