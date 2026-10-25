@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),{format}=require('../web/directions.js');
+assert.equal(format({maneuver:{type:'off ramp',modifier:'left'},exits:'106',destinations:'Damansara',ref:'E1'}),'Take exit 106 left · E1 toward Damansara');
+assert.equal(format({maneuver:{type:'off ramp',modifier:'left'},name:'Damansara'}),'Take the exit left · Damansara');
+assert.equal(format({maneuver:{type:'turn',modifier:'right'},name:'Jalan Ampang',ref:'B31'}),'Turn right · B31 · Jalan Ampang');
+assert.equal(format({maneuver:{type:'roundabout',exit:2},ref:'B11',exits:'106'}),'At the roundabout, take the 2nd exit · B11');
+assert.equal(format({maneuver:{type:'roundabout'}}),'Enter the roundabout');
+assert.equal(format({maneuver:{type:'fork',modifier:'slight right'},ref:'E1;E1; E35',destinations:'Ipoh;Kuantan'}),'Keep slight right · E1 / E35 toward Ipoh / Kuantan');
+assert.equal(format({maneuver:{type:'arrive'},name:'Ramp',exits:'106'}),'Arrive at your destination');
+assert.equal(format({maneuver:{type:'on_ramp',modifier:'left'},ref:'E1'}),'Take the ramp left · E1');
+assert.equal(format({maneuver:{type:'turn',modifier:'uturn'}}),'Make a U-turn');
+assert.equal(format({maneuver:{type:'turn',modifier:'left'}}),'Turn left');
+assert.equal(format({maneuver:{type:'depart'},ref:'E1',name:'E1'}),'Head onto · E1');
+console.log('PASS: signed exits, road refs, destinations, missing data, roundabout counts, forks, ramps, U-turns and arrival');

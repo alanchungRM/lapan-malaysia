@@ -2,6 +2,20 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.17] — 2026-10-25
+
+Road numbers and exit signs in directions
+
+### Improved
+
+- Turn instructions include road references, signed exit numbers and signposted destinations when supplied by the routing data.
+- The same information appears in navigation, the directions list and spoken guidance.
+- Clearer instructions for motorway exits, entry ramps and forks; roundabout exit counts remain separate from signed highway exit numbers.
+
+> Coverage depends on the routing map. Missing exit references are not guessed; an example exit number is not treated as verified road data.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.16] — 2026-10-25
 
 Add Lapan to your Home Screen
