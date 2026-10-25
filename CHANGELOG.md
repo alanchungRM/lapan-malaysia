@@ -2,6 +2,25 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.15] — 2026-10-25
+
+Voice guidance your way
+
+### Added
+
+- Voice & sound settings with Normal, Less chatty, Alerts only and Off modes.
+- Open settings before a trip or from the speaker button during navigation.
+- Voice mode and navigator voice are saved only in your own browser and restored on your next visit.
+
+### Improved
+
+- Less chatty skips distant turn reminders and speaks within 200 metres. Alerts only announces route updates and arrival.
+- Manual repeat remains available in enabled modes; Off cancels automatic speech.
+
+> Alerts only does not provide live road-hazard alerts. Device voice availability varies, and browser storage must be available to remember preferences.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.14] — 2026-10-25
 
 Larger, clearer arrival estimates
