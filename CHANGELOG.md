@@ -2,6 +2,20 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.16] — 2026-10-25
+
+Add Lapan to your Home Screen
+
+### Added
+
+- An English illustrated guide for adding Lapan to an iPhone or Android Home Screen.
+- iPhone Safari steps, Android Chrome install instructions, and a Create shortcut fallback.
+- Branded Home Screen icons and a web app manifest for supported browsers.
+
+> A shortcut may open in the browser. Internet access is still required for navigation services; there is no offline map download.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.15] — 2026-10-25
 
 Voice guidance your way

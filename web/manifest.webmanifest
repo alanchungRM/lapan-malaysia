@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Lapan \u2014 Malaysia, your way",
+  "short_name": "Lapan",
+  "description": "Malaysian road navigation with open maps.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#121b29",
+  "theme_color": "#121b29",
+  "icons": [
+    {
+      "src": "/lapan-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lapan-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
