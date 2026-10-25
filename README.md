@@ -6,7 +6,7 @@ Live app: https://lapan-malaysia.com
 
 ## Features
 
-- OpenStreetMap-based driving routes and alternative routes through OSRM.
+- TomTom live route planning and alternative routes using current traffic and reported closures. Basic OSRM routing is available only as an explicit fallback when the live service is unavailable.
 - Place search using Photon, recent places saved in the browser, and GPS guidance.
 - Full-screen navigation, a tilted MapLibre driving view, directional vehicle marker, smooth position transitions, and 2D fallback.
 - Device speech synthesis with a female voice preference, voice selection, test and mute controls.
@@ -50,12 +50,12 @@ The current hosted application is JavaScript, HTML and CSS. It does not contain 
 
 This is an early navigation application. Road-test it carefully before relying on it.
 
-- Routing durations exclude live traffic. OSRM and Photon public services can be unavailable or rate limited; there is no uptime guarantee.
+- Live route planning requires the server-only `TOMTOM_API_KEY`. Traffic and closure coverage depend on the provider. Closures are checked at planning/replanning time, not continuously. Newly blocked or unreported roads may be missing. OSRM basic fallback does not check closures.
 - Toll amounts cover the selected PLUS Class 1 plaza pair only. They are not a complete total for routes using other operators. Check suggested plazas and current official fares before departure.
 - 3D requires WebGL and accessible map tiles. Building detail varies by location. A 2D fallback is available.
 - Female voices depend on voices installed on the user's device. Browser background audio, GPS and in-app browser restrictions can affect guidance.
 - Recent places and voice preferences are stored in browser localStorage. They are not shared between users or synced between devices. No continuous GPS trail is stored.
-- Search text is sent to Photon; route coordinates, including when replanning, are sent to OSRM. Map providers receive tile requests. PLUS receives only entry and exit plaza codes through the server endpoint.
+- Search text is sent to Photon. Starting/current and destination coordinates go to TomTom for live planning and replanning. Selected route coordinates go to TomTom for ETA refreshes. OSRM receives route coordinates only after explicit basic-routing fallback. Map providers receive tile requests. PLUS receives only plaza codes. Keys are never sent to client assets.
 - Location history on the original app address does not automatically transfer to a different custom domain because browser storage is origin-specific.
 
 ## External services and third-party notices
@@ -90,3 +90,7 @@ Before a new release, add reviewed notes for the next patch version to `web/chan
 `/statistics` shows aggregate navigation-page views, active browser tabs and broad device/browser categories. It does not identify people. Tracking starts with v1.0.18 and respects browser privacy signals and a local opt-out.
 
 Hosting requires a Cloudflare D1 binding named `DB`. Apply the schema in `drizzle/0000_visitor_statistics.sql` before serving analytics requests. On Sites, declare `"d1": "DB"` in the private hosting manifest; Sites applies packaged migrations at deploy time. No database or hosting credential belongs in the public repository.
+
+## Live route planning
+
+Set `TOMTOM_API_KEY` as a runtime secret with Routing API access. `/api/route` requests a fresh fastest car route with `traffic=true`, `departAt=now` and matching English turn instructions. It does not reconstruct an OSRM path. No usable live route means no silent fallback. Service unavailability offers an explicit basic-route choice marked closures NOT checked. Routes containing returned ROAD_CLOSURE sections are rejected.

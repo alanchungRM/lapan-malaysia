@@ -2,6 +2,26 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.19] — 2026-10-26
+
+Live route planning with reported closures
+
+### Improved
+
+- TomTom now chooses the road path using current traffic and reported closures, rather than only estimating the arrival time on an OSRM route.
+- Off-route automatic replanning also uses live routing and matching turn instructions.
+- Route labels show the provider and when closures were checked at planning time.
+
+### Added
+
+- Explicit basic-routing fallback when the live service is unavailable, labelled road closures NOT checked.
+
+> Coverage depends on the provider. Newly blocked or unreported roads may be missing. Closures are checked when planning or replanning; this release does not add continuous closure monitoring or a manual road-block avoidance button.
+>
+> A route rejected by live routing is not silently replaced with a basic route. API keys remain server-side.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.18] — 2026-10-25
 
 Anonymous visitor statistics
