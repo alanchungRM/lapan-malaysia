@@ -84,3 +84,9 @@ No license grant for the original Lapan source is specified in this repository y
 Read [What’s new in Lapan](https://lapan-malaysia.com/changelog) or [CHANGELOG.md](CHANGELOG.md) for feature updates, fixes, limitations and public commit references.
 
 Before a new release, add reviewed notes for the next patch version to `web/changelog.json`, then run `npm run release` once. It increments the version, generates `CHANGELOG.md` and builds the site. Use `npm run build` for rebuilds or deployment retries. Release notes must not contain credentials, keys, private configuration or personal journey data.
+
+## Anonymous visitor statistics
+
+`/statistics` shows aggregate navigation-page views, active browser tabs and broad device/browser categories. It does not identify people. Tracking starts with v1.0.18 and respects browser privacy signals and a local opt-out.
+
+Hosting requires a Cloudflare D1 binding named `DB`. Apply the schema in `drizzle/0000_visitor_statistics.sql` before serving analytics requests. On Sites, declare `"d1": "DB"` in the private hosting manifest; Sites applies packaged migrations at deploy time. No database or hosting credential belongs in the public repository.

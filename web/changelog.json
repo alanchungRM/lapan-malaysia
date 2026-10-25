@@ -1,5 +1,20 @@
 [
   {
+    "version": "1.0.18",
+    "date": "2026-10-25",
+    "title": "Anonymous visitor statistics",
+    "changes": {
+      "Added": [
+        "A public Lapan in numbers page showing map-page visits, estimated active tabs, recent daily counts, and broad device/browser totals.",
+        "A browser-local tracking opt-out and support for Do Not Track / Global Privacy Control."
+      ]
+    },
+    "notes": [
+      "Counts start with this release and are approximate page visits, not unique people. No names, IP addresses, GPS coordinates, destinations or routes are stored by the visitor counter."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.17",
     "date": "2026-10-25",
     "title": "Road numbers and exit signs in directions",

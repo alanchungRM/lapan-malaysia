@@ -2,6 +2,19 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.18] — 2026-10-25
+
+Anonymous visitor statistics
+
+### Added
+
+- A public Lapan in numbers page showing map-page visits, estimated active tabs, recent daily counts, and broad device/browser totals.
+- A browser-local tracking opt-out and support for Do Not Track / Global Privacy Control.
+
+> Counts start with this release and are approximate page visits, not unique people. No names, IP addresses, GPS coordinates, destinations or routes are stored by the visitor counter.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.17] — 2026-10-25
 
 Road numbers and exit signs in directions
