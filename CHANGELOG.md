@@ -2,6 +2,17 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.21] — 2026-10-26
+
+Uncluttered map credits in landscape
+
+### Improved
+
+- Map credits collapse to a small information control when the driving map loads or the phone rotates.
+- The credit control sits away from the speed and navigation buttons, with provider links still available on tap.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.20] — 2026-10-26
 
 Clear speed display and navigation controls

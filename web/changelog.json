@@ -1,5 +1,18 @@
 [
   {
+    "version": "1.0.21",
+    "date": "2026-10-26",
+    "title": "Uncluttered map credits in landscape",
+    "changes": {
+      "Improved": [
+        "Map credits collapse to a small information control when the driving map loads or the phone rotates.",
+        "The credit control sits away from the speed and navigation buttons, with provider links still available on tap."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
     "version": "1.0.20",
     "date": "2026-10-26",
     "title": "Clear speed display and navigation controls",
