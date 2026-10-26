@@ -2,6 +2,21 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.20] — 2026-10-26
+
+Clear speed display and navigation controls
+
+### Fixed
+
+- Speed and recenter controls now share one layout, preventing them from overlapping.
+- Control spacing follows the actual height of the ETA panel, including wrapped text and phone safe areas.
+
+### Improved
+
+- The speed readout appears first in the control stack. A compact grid keeps controls accessible in short landscape views.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.19] — 2026-10-26
 
 Live route planning with reported closures

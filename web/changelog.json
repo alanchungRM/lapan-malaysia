@@ -1,5 +1,21 @@
 [
   {
+    "version": "1.0.20",
+    "date": "2026-10-26",
+    "title": "Clear speed display and navigation controls",
+    "changes": {
+      "Fixed": [
+        "Speed and recenter controls now share one layout, preventing them from overlapping.",
+        "Control spacing follows the actual height of the ETA panel, including wrapped text and phone safe areas."
+      ],
+      "Improved": [
+        "The speed readout appears first in the control stack. A compact grid keeps controls accessible in short landscape views."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
     "version": "1.0.19",
     "date": "2026-10-26",
     "title": "Live route planning with reported closures",
