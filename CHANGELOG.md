@@ -2,6 +2,24 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.22] — 2026-10-27
+
+Find typed places and choose locations on the map
+
+### Improved
+
+- Find my route now resolves typed starting points and destinations instead of requiring a suggestion to be selected first.
+- Matching places show fuller address details, with a confirmation list when several locations match.
+- Search distinguishes no matches from service failures and ignores outdated responses after edits.
+
+### Added
+
+- Choose a starting point or destination by tapping the map or dragging a pin, then confirm the location.
+
+> Place coverage still depends on the search data. Map pins may route to a nearby accessible road; check the entrance before starting.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.21] — 2026-10-26
 
 Uncluttered map credits in landscape

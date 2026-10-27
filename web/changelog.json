@@ -1,5 +1,24 @@
 [
   {
+    "version": "1.0.22",
+    "date": "2026-10-27",
+    "title": "Find typed places and choose locations on the map",
+    "changes": {
+      "Improved": [
+        "Find my route now resolves typed starting points and destinations instead of requiring a suggestion to be selected first.",
+        "Matching places show fuller address details, with a confirmation list when several locations match.",
+        "Search distinguishes no matches from service failures and ignores outdated responses after edits."
+      ],
+      "Added": [
+        "Choose a starting point or destination by tapping the map or dragging a pin, then confirm the location."
+      ]
+    },
+    "notes": [
+      "Place coverage still depends on the search data. Map pins may route to a nearby accessible road; check the entrance before starting."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.21",
     "date": "2026-10-26",
     "title": "Uncluttered map credits in landscape",
@@ -165,7 +184,7 @@
     "changes": {
       "Added": [
         "A mobile-friendly changelog with version numbers, release dates and links to the public GitHub history.",
-        "Open What’s new from the app header, version badge or About & privacy."
+        "Open What\u2019s new from the app header, version badge or About & privacy."
       ],
       "Improved": [
         "Every new release now requires a changelog entry alongside its version update."
