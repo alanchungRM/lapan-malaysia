@@ -2,6 +2,18 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.23] — 2026-10-27
+
+Reliable end navigation
+
+### Fixed
+
+- End navigation closes the driving screen before releasing browser services, so a map, speech or screen-awake cleanup error cannot leave guidance stuck open.
+- Ending guidance cancels pending rerouting and ignores late location or route callbacks.
+- Arrival invalidates queued GPS callbacks so finished guidance is not restarted by an old location update.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.22] — 2026-10-27
 
 Find typed places and choose locations on the map
