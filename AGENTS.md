@@ -1,12 +1,10 @@
 # Lapan release policy
 
-The owner requires a higher visible website version for every new production release.
+Only publish a new public release log and increase the visible application version when Alan explicitly requests a version/log release. Routine improvements may be deployed with the existing visible version. Do not run `npm run release` or modify `web/changelog.json` for those changes.
 
-- `package.json` is the single source of the application version. The build replaces `{{APP_VERSION}}` in the HTML using this value.
-- After completing changes and before packaging a new production release, run `npm run release` exactly once. It increments the patch version and builds the release (for example, 1.0.9 → 1.0.10).
-- A normal build, QA build, archive rebuild, or retry of the same release must use `npm run build`; do not increment again for a failed or retried deployment.
-- Commit/push the incremented package version with the changes. Deploy the matching built archive and update the public GitHub source.
-- Report the application version to the owner when announcing a release. Sites' internal saved-version sequence is separate from the application's version.
+Record all routine changes in `UNRELEASED.md` until the owner authorizes a release. At that time, curate those records into the public changelog, run `npm run release` exactly once, and clear only the records included in that release. Ordinary builds and deployment retries use `npm run build`.
+
+`package.json` remains the single source of the visible application version. Sites internal deployment version numbers are separate.
 
 ## Public changelog
 
