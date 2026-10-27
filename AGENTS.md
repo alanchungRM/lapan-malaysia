@@ -12,3 +12,7 @@ Record all routine changes in `UNRELEASED.md` until the owner authorizes a relea
 - Link historical entries only to verified public GitHub commits. Do not invent older release numbers; group unversioned history as early development.
 - Changelog entries must never contain API keys, tokens, passwords, credential values, runtime environment dumps, private account details, personal routes, raw diffs or private deployment metadata. Use curated feature summaries and public commit references only.
 - Keep `/changelog` accessible through What’s new, the version badge and About & privacy. Do not add runtime secret access to the changelog renderer.
+
+## Location additions and release privacy
+
+Keep individual requested POI names and the owner’s search examples out of public changelogs and pending release notes. Describe place coverage and matching improvements generically. Public business listings may remain in the searchable place directory as required for the feature.

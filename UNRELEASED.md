@@ -15,4 +15,5 @@ Owner policy (27 October 2026): deploy routine fixes without changing the visibl
 
 - Add a server-side TomTom business/address search fallback when Photon returns no matches or the user explicitly selects Search more places. Restrict it to Malaysia, require confirmation of secondary results, display provider credit, keep the key server-side, and handle unavailable/quota-limited service without guessing a location. No secondary requests are made on every keystroke. Existing TomTom service access and usage allowances apply.
 
-- Add HPMT Industries to a small reviewed missing-place directory, using its official contact page address and published map pin (checked 27 October 2026). HPMT name/address searches work without an additional provider key. The live secondary-service check returned SEARCH_ACCESS_DENIED for the current credentials; general TomTom search coverage remains unavailable until access is enabled.
+
+- Improve reviewed place coverage and match common spelling, ligature and punctuation variants. Individual place names are intentionally omitted from release notes. The secondary search service currently requires Search API access for the existing credentials.
