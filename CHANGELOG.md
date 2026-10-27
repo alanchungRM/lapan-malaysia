@@ -2,6 +2,21 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.24] — 2026-10-27
+
+Delete individual recent places
+
+### Added
+
+- Swipe left on a recent location to reveal Delete, then tap to remove only that place from this browser.
+- A row actions button and keyboard controls provide the same delete option without swiping.
+
+### Improved
+
+- Swiping reveals an action without selecting the destination or deleting automatically. Only one row action stays open at a time.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.23] — 2026-10-27
 
 Reliable end navigation

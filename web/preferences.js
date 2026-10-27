@@ -5,10 +5,32 @@ function chooseVoice(voices,uri){const english=voices.filter(v=>/^en/i.test(v.la
 const voiceModes={normal:{label:'Normal',icon:'🔊'},less:{label:'Less chatty',icon:'🔉'},alerts:{label:'Alerts only',icon:'🔔'},off:{label:'Off',icon:'🔇'}};
 function normalizeVoice(value={}){const mode=Object.hasOwn(voiceModes,value.mode)?value.mode:value.enabled===false?'off':'normal';return {mode,enabled:mode!=='off',voiceURI:typeof value.voiceURI==='string'?value.voiceURI:''}}
 function allowsVoice(mode,kind='alert',stage=0){if(mode==='off')return false;if(kind==='manual')return true;if(kind==='instruction')return mode==='normal'||(mode==='less'&&stage>=2);if(kind==='startup')return mode==='normal';return true}
-if(typeof module==='object')module.exports={recentList,valid,chooseVoice,normalizeVoice,allowsVoice};if(!root.document)return;
+// Reveal only: a swipe never deletes a saved place without a Delete click.
+function bindRecentSwipe({row,face,select,action,toggle,onSelect,onDelete,onOpen}){
+let opened=false,gesture=null,suppress=false;const width=84;
+function reveal(open){opened=open;row.classList.toggle('recent-open',open);face.style.transform=open?'translateX(-84px)':'';action.hidden=!open;action.tabIndex=open?0:-1;toggle.setAttribute('aria-expanded',String(open));if(open)onOpen(()=>reveal(false))}
+action.hidden=true;action.tabIndex=-1;toggle.setAttribute('aria-expanded','false');
+face.onpointerdown=e=>{if(e.isPrimary===false||e.button>0)return;suppress=false;gesture={id:e.pointerId,x:e.clientX,y:e.clientY,base:opened?-width:0,axis:null,offset:opened?-width:0}};
+face.onpointermove=e=>{if(!gesture||e.pointerId!==gesture.id)return;const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;if(!gesture.axis){if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;gesture.axis=Math.abs(dx)>Math.abs(dy)*1.25?'x':'y';if(gesture.axis==='x'){face.setPointerCapture?.(e.pointerId);row.classList.add('recent-dragging')}}if(gesture.axis!=='x')return;e.preventDefault();suppress=true;gesture.offset=Math.max(-width,Math.min(0,gesture.base+dx));action.hidden=false;face.style.transform='translateX('+gesture.offset+'px)'};
+function finish(e,cancelled){if(!gesture||e.pointerId!==gesture.id)return;const g=gesture;gesture=null;row.classList.remove('recent-dragging');if(g.axis==='x'){suppress=true;reveal(cancelled?g.base<0:g.offset<-30)}if(face.hasPointerCapture?.(e.pointerId))face.releasePointerCapture(e.pointerId)}
+face.onpointerup=e=>finish(e,false);face.onpointercancel=e=>finish(e,true);
+select.onclick=e=>{if(suppress){e.preventDefault();suppress=false;return}if(opened){reveal(false);return}onSelect()};
+select.onkeydown=e=>{suppress=false;if(e.key==='ArrowLeft'){e.preventDefault();reveal(true);action.focus?.()}else if(e.key==='Escape'||e.key==='ArrowRight'){e.preventDefault();reveal(false)}};
+toggle.onpointerdown=e=>e.stopPropagation();toggle.onclick=e=>{e.stopPropagation();suppress=false;reveal(!opened)};
+action.onclick=e=>{e.stopPropagation();onDelete()};row.onkeydown=e=>{if(e.key==='Escape'){reveal(false);toggle.focus?.()}};
+return {close:()=>reveal(false)};
+}
+
+if(typeof module==='object')module.exports={recentList,valid,chooseVoice,normalizeVoice,allowsVoice,bindRecentSwipe};if(!root.document)return;
 const $=id=>document.getElementById(id);let history=[],settings=normalizeVoice();try{history=JSON.parse(localStorage.getItem('lapan-recent')||'[]');if(!Array.isArray(history))history=[];history=history.filter(x=>valid(x.place)).slice(0,20);settings=normalizeVoice(JSON.parse(localStorage.getItem('lapan-voice')||'{}')||{})}catch{}
 const save=()=>{try{localStorage.setItem('lapan-recent',JSON.stringify(history));localStorage.setItem('lapan-voice',JSON.stringify(settings))}catch{$('recentHint').textContent='Storage is unavailable; history lasts only for this visit.';$('voiceStorage').textContent='Browser storage is unavailable. Voice preferences last only for this visit.'}};
-function render(){const list=$('recentList');list.replaceChildren();$('recentCount').textContent=history.length?String(history.length):'';history.forEach(item=>{const b=document.createElement('button');b.type='button';b.className='recent-place';const name=document.createElement('strong');name.textContent=item.place[0];const meta=document.createElement('small');meta.textContent=(item.kind==='visited'?'Visited':'Recent')+' · '+new Date(item.at).toLocaleDateString('en-MY');b.append(name,meta);b.onclick=()=>root.dispatchEvent(new CustomEvent('lapan-place',{detail:item.place}));list.append(b)});if(!history.length){const p=document.createElement('p');p.textContent='Your selected and visited places will appear here.';list.append(p)}}
+function render(){const list=$('recentList');list.replaceChildren();$('recentCount').textContent=history.length?String(history.length):'';let closeOpen=null;
+history.forEach(item=>{const row=document.createElement('div');row.className='recent-row';const face=document.createElement('div');face.className='recent-face';const b=document.createElement('button');b.type='button';b.className='recent-place';const name=document.createElement('strong');name.textContent=item.place[0];const meta=document.createElement('small');meta.textContent=(item.kind==='visited'?'Visited':'Recent')+' · '+new Date(item.at).toLocaleDateString('en-MY');b.append(name,meta);
+const toggle=document.createElement('button');toggle.type='button';toggle.className='recent-options';toggle.textContent='⋯';toggle.setAttribute('aria-label','Actions for '+item.place[0]);
+const del=document.createElement('button');del.type='button';del.className='recent-delete';del.textContent='Delete';del.setAttribute('aria-label','Delete '+item.place[0]+' from recent locations');
+face.append(b,toggle);row.append(del,face);bindRecentSwipe({row,face,select:b,action:del,toggle,onSelect:()=>root.dispatchEvent(new CustomEvent('lapan-place',{detail:item.place})),onDelete:()=>{const index=history.indexOf(item);if(index<0)return;history.splice(index,1);$('recentHint').textContent='Location removed from this browser. Swipe left or tap ⋯ for more actions.';save();render();const next=list.querySelectorAll?.('.recent-options');(next?.[Math.min(index,history.length-1)]||$('clearRecent')).focus?.()},onOpen:close=>{if(closeOpen?.row!==row)closeOpen?.close();closeOpen={row,close}}});list.append(row)});
+if(!history.length){const p=document.createElement('p');p.textContent='Your selected and visited places will appear here.';list.append(p)}}
+
 root.LapanHistory={places:()=>history.map(x=>x.place),last:()=>history[0]?.place||null,remember(p,kind){history=recentList(history,p,kind);save();render()}};
 $('clearRecent').onclick=()=>{history=[];save();render()};render();
 let voices=[],current=null;
