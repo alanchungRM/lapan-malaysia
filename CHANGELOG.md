@@ -2,6 +2,23 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.25] — 2026-10-27
+
+Accurate map pin restoration and GPS selection
+
+### Fixed
+
+- Reopening the location picker restores the exact saved pin coordinates instead of an intermediate animated map centre.
+- The displayed pin can be confirmed without first tapping or dragging it.
+
+### Added
+
+- Use my current location in the map picker requests a fresh GPS fix, shows reported accuracy and lets you confirm it for either starting point or destination.
+
+> GPS accuracy depends on the device and signal. Permission errors leave the existing pin unchanged; late GPS responses cannot replace a manually adjusted pin.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.24] — 2026-10-27
 
 Delete individual recent places
