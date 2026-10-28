@@ -2,6 +2,35 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.26] — 2026-10-28
+
+Automatic toll estimates and navigation improvements
+
+### Added
+
+- Collapsed automatic Class 1 route toll estimates combine matched PLUS, LDP and KESAS charges, with an itemised breakdown and official fare sources. The standalone PLUS calculator remains available separately.
+- Optional mapped fixed speed-camera alerts provide on-screen and voice reminders within 600 metres along the selected route. Slow-down prompts use a numeric mapped speed limit when available.
+- Search more places provides an additional Malaysian business/address search option when the secondary search service is available.
+
+### Improved
+
+- Automatic rerouting detects deviations sooner and silences outdated directions while a replacement route is being planned. Late route responses cannot replace a newer navigation session.
+- Reviewed place coverage and matching now handle more spelling, ligature and punctuation variations.
+- Statistics opens in a reusable panel. Back to map preserves the existing map, chosen route and navigation instead of opening another map.
+
+### Fixed
+
+- Missing PLUS charges are included when an entry–exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.
+- Toll matching accounts for access-ramp boundaries, distinguishes similarly named plazas and checks actual crossings. An unresolved PLUS portion is explicitly marked unavailable rather than silently omitted.
+
+> Automatic toll amounts are partial known subtotals for Class 1 cars, not guaranteed nationwide journey totals. Unsupported or ambiguous charges remain unavailable; missing fares never mean toll-free. Standard fares exclude temporary discounts.
+>
+> Speed-camera locations come from OpenStreetMap and can be incomplete or outdated. These are not live police reports or a verified enforcement registry.
+>
+> The additional search service depends on provider access and usage limits. It is currently unavailable for general searches until Search API access is enabled; existing search, reviewed places and Choose on map remain available.
+
+[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/067d9ac2e15f1d77d808e9e50ebbea53af649970) · [GitHub change 2](https://github.com/alanchungRM/lapan-malaysia/commit/93f6d778b3ac27197fdabbfe5a5b7efc70d2a2cb)
+
 ## [1.0.25] — 2026-10-27
 
 Accurate map pin restoration and GPS selection

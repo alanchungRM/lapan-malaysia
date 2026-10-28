@@ -1,5 +1,35 @@
 [
   {
+    "version": "1.0.26",
+    "date": "2026-10-28",
+    "title": "Automatic toll estimates and navigation improvements",
+    "changes": {
+      "Added": [
+        "Collapsed automatic Class 1 route toll estimates combine matched PLUS, LDP and KESAS charges, with an itemised breakdown and official fare sources. The standalone PLUS calculator remains available separately.",
+        "Optional mapped fixed speed-camera alerts provide on-screen and voice reminders within 600 metres along the selected route. Slow-down prompts use a numeric mapped speed limit when available.",
+        "Search more places provides an additional Malaysian business/address search option when the secondary search service is available."
+      ],
+      "Improved": [
+        "Automatic rerouting detects deviations sooner and silences outdated directions while a replacement route is being planned. Late route responses cannot replace a newer navigation session.",
+        "Reviewed place coverage and matching now handle more spelling, ligature and punctuation variations.",
+        "Statistics opens in a reusable panel. Back to map preserves the existing map, chosen route and navigation instead of opening another map."
+      ],
+      "Fixed": [
+        "Missing PLUS charges are included when an entry–exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.",
+        "Toll matching accounts for access-ramp boundaries, distinguishes similarly named plazas and checks actual crossings. An unresolved PLUS portion is explicitly marked unavailable rather than silently omitted."
+      ]
+    },
+    "notes": [
+      "Automatic toll amounts are partial known subtotals for Class 1 cars, not guaranteed nationwide journey totals. Unsupported or ambiguous charges remain unavailable; missing fares never mean toll-free. Standard fares exclude temporary discounts.",
+      "Speed-camera locations come from OpenStreetMap and can be incomplete or outdated. These are not live police reports or a verified enforcement registry.",
+      "The additional search service depends on provider access and usage limits. It is currently unavailable for general searches until Search API access is enabled; existing search, reviewed places and Choose on map remain available."
+    ],
+    "commits": [
+      "067d9ac2e15f1d77d808e9e50ebbea53af649970",
+      "93f6d778b3ac27197fdabbfe5a5b7efc70d2a2cb"
+    ]
+  },
+  {
     "version": "1.0.25",
     "date": "2026-10-27",
     "title": "Accurate map pin restoration and GPS selection",
@@ -232,7 +262,7 @@
     "changes": {
       "Added": [
         "A mobile-friendly changelog with version numbers, release dates and links to the public GitHub history.",
-        "Open What\u2019s new from the app header, version badge or About & privacy."
+        "Open What’s new from the app header, version badge or About & privacy."
       ],
       "Improved": [
         "Every new release now requires a changelog entry alongside its version update."
