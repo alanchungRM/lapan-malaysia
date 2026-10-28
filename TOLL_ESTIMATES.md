@@ -6,7 +6,7 @@ Class 1 passenger cars only. Every amount is a **partial known subtotal**, never
 
 - LDP: RM 2.10 per matched plaza at Penchala, Petaling Jaya, Puchong Barat and Puchong Selatan.
 - KESAS: RM 2.00 per matched charging plaza at Kemuning, Sunway and the direction-specific Awan Besar plazas.
-- Selected PLUS mapping: Jalan Duta, Sungai Besi, Ayer Keroh, Kajang, Bangi, UPM, Ipoh Selatan, Rawang, Rawang Selatan, Damansara, Kota Damansara, Subang and Shah Alam. Retrieve a fare only for one unambiguous ordered entry–exit pair at opposite boundaries of the same reported toll section. Multiple or ambiguous pairs are omitted.
+- Curated PLUS mapping covers 63 plazas in the North–South, NKVE and ELITE network; the exact list is in `worker/toll-data.json`. This includes Seafield, USJ, Bandar Saujana Putra, Putra Heights and the Ebor plazas. Retrieve a fare only for one unambiguous ordered entry–exit pair within 1.5 km of opposite boundaries of the same reported toll section. Provider toll-section boundaries may be on access ramps, more than 1 km from the actual booths; an actual crossing within 35 m of the mapped PLUS booth is still required. Multiple or ambiguous pairs are omitted.
 
 Fixed standard fares checked against official operator pages on 28 October 2026. Temporary discounts/exemptions are not applied. PLUS uses the existing official fare service with a shared 30-minute cache and a 6-second automatic lookup deadline. Failure leaves the fare unavailable and does not block navigation. No new paid toll service or API secret was added.
 
@@ -14,7 +14,7 @@ Fixed standard fares checked against official operator pages on 28 October 2026.
 
 TomTom requests `sectionType=toll` alongside traffic. Matching requires a narrow actual polyline crossing, reported toll section, compatible highway identity for fixed fares, and known one-way charging direction. Reject coarse geometry and routes starting/ending at a plaza. Match selected PLUS pairs to the same section boundaries, not the nearest plaza to a user's endpoints. Repeated passes of a plaza are not fully supported.
 
-Collapsed details show the selected route's itemised known subtotal and sources. Planning and automatic replanning replace the estimate; a replanned estimate concerns the remaining route and excludes tolls already paid. The standalone PLUS calculator remains independent. Unknown, unsupported or ambiguous routes show unavailable, never RM 0. This is not nationwide coverage.
+Collapsed details show the selected route's itemised known subtotal and sources. Planning and automatic replanning replace the estimate; a replanned estimate concerns the remaining route and excludes tolls already paid. The standalone PLUS calculator remains independent. Unknown, unsupported or ambiguous routes show unavailable, never RM 0. If PLUS use is detected but cannot be priced, the breakdown and summary explicitly show the missing PLUS component. This is not nationwide coverage.
 
 ## Sources and maintenance
 
