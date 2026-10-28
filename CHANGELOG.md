@@ -2,6 +2,26 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.27] — 2026-10-29
+
+Clearer visitor statistics
+
+### Added
+
+- Separate visit and daily unique-browser counts alongside page views, with active browsers deduplicated across updated tabs.
+- Recent daily visits retain seven days of page views and add visits and unique browsers. Device and browser type breakdowns remain available.
+
+### Improved
+
+- Page-load totals are clearly labelled as page views. Historical totals are retained; new metrics start with this release.
+- Privacy information explains rotating daily browser identifiers, 30-minute visit inactivity, storage limitations and opt-out controls.
+
+> Unique browsers are estimates, not unique people. Different browsers, private browsing or cleared storage can count separately. Visits restart after 30 minutes of inactivity or at the next Malaysia day.
+>
+> No names, IP addresses, GPS coordinates, destinations or routes are stored by the visitor counter. Browser privacy signals and opt-out are respected. Older unique counts cannot be reconstructed.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.26] — 2026-10-28
 
 Automatic toll estimates and navigation improvements
