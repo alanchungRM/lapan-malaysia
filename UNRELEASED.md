@@ -17,3 +17,5 @@ Owner policy (27 October 2026): deploy routine fixes without changing the visibl
 
 
 - Improve reviewed place coverage and match common spelling, ligature and punctuation variants. Individual place names are intentionally omitted from release notes. The secondary search service currently requires Search API access for the existing credentials.
+
+- Add collapsed automatic Class 1 route toll estimates for matched LDP/KESAS plazas and unambiguous selected PLUS pairs. Match actual route geometry, toll sections, highway identity and known one-way toll directions; retrieve PLUS fares server-side with a bounded deadline. Always label this initial coverage as partial, never show an unknown route as RM 0, and retain source/check dates. Recalculate on planning/rerouting and preserve the independent PLUS calculator. No new paid service or runtime secret is required. Standard fares exclude temporary discounts; road matching and data coverage remain limited.

@@ -1,0 +1,346 @@
+{
+  "checkedOn": "2026-10-28",
+  "coordinateSource": "https://gis02.llm.gov.my/llmsmpt/rest/services/GIS_LLM/PLAZA_TOL/MapServer",
+  "fareSources": {
+    "LDP": "https://litrak.com.my/our-highways/litrak/toll-fares/",
+    "KESAS": "https://kesas.com.my/toll-lane/1000/",
+    "PLUS": "https://www.plus.com.my/"
+  },
+  "plazas": [
+    {
+      "id": "LDP-Penchala",
+      "operator": "LDP",
+      "name": "Penchala",
+      "points": [
+        [
+          101.618868,
+          3.177753
+        ],
+        [
+          101.619678,
+          3.1777
+        ]
+      ],
+      "amount": 2.1,
+      "bearing": null
+    },
+    {
+      "id": "LDP-Petaling Jaya",
+      "operator": "LDP",
+      "name": "Petaling Jaya",
+      "points": [
+        [
+          101.61321,
+          3.060329
+        ],
+        [
+          101.614024,
+          3.060324
+        ]
+      ],
+      "amount": 2.1,
+      "bearing": null
+    },
+    {
+      "id": "LDP-Puchong Barat",
+      "operator": "LDP",
+      "name": "Puchong Barat",
+      "points": [
+        [
+          101.602141,
+          3.020497
+        ],
+        [
+          101.601958,
+          3.021341
+        ]
+      ],
+      "amount": 2.1,
+      "bearing": null
+    },
+    {
+      "id": "LDP-Puchong Selatan",
+      "operator": "LDP",
+      "name": "Puchong Selatan",
+      "points": [
+        [
+          101.636543,
+          2.981708
+        ]
+      ],
+      "amount": 2.1,
+      "bearing": null
+    },
+    {
+      "id": "KESAS-Kemuning",
+      "operator": "KESAS",
+      "name": "Kemuning",
+      "points": [
+        [
+          101.522285,
+          2.997311
+        ],
+        [
+          101.521921,
+          2.997598
+        ]
+      ],
+      "amount": 2,
+      "bearing": null
+    },
+    {
+      "id": "KESAS-Sunway",
+      "operator": "KESAS",
+      "name": "Sunway",
+      "points": [
+        [
+          101.608392,
+          3.059126
+        ],
+        [
+          101.608064,
+          3.058283
+        ]
+      ],
+      "amount": 2,
+      "bearing": null
+    },
+    {
+      "id": "KESAS-Awan Besar Barat",
+      "operator": "KESAS",
+      "name": "Awan Besar Barat",
+      "points": [
+        [
+          101.679189,
+          3.063471
+        ]
+      ],
+      "amount": 2,
+      "bearing": 90
+    },
+    {
+      "id": "KESAS-Awan Besar Timur",
+      "operator": "KESAS",
+      "name": "Awan Besar Timur",
+      "points": [
+        [
+          101.664795,
+          3.06661
+        ]
+      ],
+      "amount": 2,
+      "bearing": 270
+    },
+    {
+      "id": "JLD",
+      "operator": "PLUS",
+      "name": "Jalan Duta",
+      "points": [
+        [
+          101.655794,
+          3.175596
+        ],
+        [
+          101.655726,
+          3.175942
+        ]
+      ]
+    },
+    {
+      "id": "SBI",
+      "operator": "PLUS",
+      "name": "Sungai Besi",
+      "points": [
+        [
+          101.705987,
+          3.039432
+        ],
+        [
+          101.705563,
+          3.039404
+        ]
+      ]
+    },
+    {
+      "id": "AKH",
+      "operator": "PLUS",
+      "name": "Ayer Keroh",
+      "points": [
+        [
+          102.310181,
+          2.300164
+        ],
+        [
+          102.310577,
+          2.300037
+        ]
+      ]
+    },
+    {
+      "id": "KJG",
+      "operator": "PLUS",
+      "name": "Kajang",
+      "points": [
+        [
+          101.744046,
+          2.985312
+        ],
+        [
+          101.744047,
+          2.985665
+        ],
+        [
+          101.826302,
+          2.957201
+        ],
+        [
+          101.825539,
+          2.957851
+        ]
+      ]
+    },
+    {
+      "id": "BGS",
+      "operator": "PLUS",
+      "name": "Bangi",
+      "points": [
+        [
+          101.760052,
+          2.932809
+        ],
+        [
+          101.760049,
+          2.933107
+        ]
+      ]
+    },
+    {
+      "id": "UPM",
+      "operator": "PLUS",
+      "name": "UPM",
+      "points": [
+        [
+          101.728082,
+          3.000676
+        ],
+        [
+          101.727455,
+          3.00054
+        ]
+      ]
+    },
+    {
+      "id": "IPS",
+      "operator": "PLUS",
+      "name": "Ipoh Selatan",
+      "points": [
+        [
+          101.14353,
+          4.583263
+        ],
+        [
+          101.144027,
+          4.583188
+        ]
+      ]
+    },
+    {
+      "id": "RAW",
+      "operator": "PLUS",
+      "name": "Rawang",
+      "points": [
+        [
+          101.548722,
+          3.30424
+        ],
+        [
+          101.548425,
+          3.304321
+        ],
+        [
+          101.549205,
+          3.274629
+        ],
+        [
+          101.549506,
+          3.274398
+        ]
+      ]
+    },
+    {
+      "id": "RWS",
+      "operator": "PLUS",
+      "name": "Rawang Selatan",
+      "points": [
+        [
+          101.549205,
+          3.274629
+        ],
+        [
+          101.549506,
+          3.274398
+        ]
+      ]
+    },
+    {
+      "id": "DMR",
+      "operator": "PLUS",
+      "name": "Damansara",
+      "points": [
+        [
+          101.604173,
+          3.133863
+        ],
+        [
+          101.60422,
+          3.134255
+        ]
+      ]
+    },
+    {
+      "id": "KDR",
+      "operator": "PLUS",
+      "name": "Kota Damansara",
+      "points": [
+        [
+          101.589063,
+          3.155444
+        ],
+        [
+          101.58895,
+          3.155897
+        ]
+      ]
+    },
+    {
+      "id": "SBG",
+      "operator": "PLUS",
+      "name": "Subang",
+      "points": [
+        [
+          101.590174,
+          3.103038
+        ],
+        [
+          101.59083,
+          3.102898
+        ]
+      ]
+    },
+    {
+      "id": "SHA",
+      "operator": "PLUS",
+      "name": "Shah Alam",
+      "points": [
+        [
+          101.544902,
+          3.097714
+        ],
+        [
+          101.545271,
+          3.097989
+        ]
+      ]
+    }
+  ]
+}

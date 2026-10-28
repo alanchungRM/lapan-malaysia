@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node tests/navigation.cjs && node tests/fares.mjs && node tests/drive.cjs && node tests/preferences.cjs && node tests/awake.cjs && node tests/stops.mjs && node tests/voice.cjs && node tests/eta.cjs && node tests/traffic.mjs && node tests/traffic-client.cjs && node tests/changelog.mjs && node tests/voice-modes.cjs && node tests/directions.cjs && node tests/analytics.mjs && node tests/routing.mjs && node tests/routing-client.cjs && node tests/search.cjs && node tests/recent.cjs && node tests/place-search.mjs",
+    "test": "node tests/navigation.cjs && node tests/fares.mjs && node tests/drive.cjs && node tests/preferences.cjs && node tests/awake.cjs && node tests/stops.mjs && node tests/voice.cjs && node tests/eta.cjs && node tests/traffic.mjs && node tests/traffic-client.cjs && node tests/changelog.mjs && node tests/voice-modes.cjs && node tests/directions.cjs && node tests/analytics.mjs && node tests/routing.mjs && node tests/routing-client.cjs && node tests/search.cjs && node tests/recent.cjs && node tests/place-search.mjs && node tests/route-tolls.mjs && node tests/route-costs.cjs",
     "dev": "node scripts/dev.mjs",
     "release": "node scripts/release.mjs"
   },
