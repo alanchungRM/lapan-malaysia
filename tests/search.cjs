@@ -8,6 +8,7 @@ function harness(){
  return {api,$,chosen,status,buttons,context,mapHandlers,timers,get calls(){return calls},get invalidations(){return invalidations},set response(v){response=v},set fail(v){fail=v},set fetcher(v){fetcher=v}};
 }
 const feature=(name,lat=3.1,lon=101.6,city='Klang')=>({geometry:{coordinates:[lon,lat]},properties:{name,street:'Jalan Test',city,state:'Selangor',country:'Malaysia'}});
+let completed=false;process.on('beforeExit',()=>{if(!completed){console.error('Search tests did not finish');process.exitCode=1}});
 (async()=>{
  let h=harness();h.$('origin').value='  kl sentral ';h.$('destination').value='Genting Highlands';assert.equal(await h.api.resolveAll(),true);assert.equal(h.calls,0);assert.equal(h.chosen.origin[0],'KL Sentral');assert.equal(h.chosen.destination[0],'Genting Highlands');
  h=harness();h.chosen.origin=['Start',3,101];h.$('destination').value='Specific business';h.response={features:[feature('Specific business')]};assert.equal(await h.api.resolveAll(),true);assert.match(h.chosen.destination[0],/Klang.*Selangor/);assert.equal(h.calls,1);
@@ -40,5 +41,18 @@ const feature=(name,lat=3.1,lon=101.6,city='Klang')=>({geometry:{coordinates:[lo
  assert.equal(directory.normalize('ÆON BiG | Bukit Rimau'),'aeon big bukit rimau');
  for(const file of ['UNRELEASED.md','web/changelog.json']){const notes=fs.readFileSync(file,'utf8');assert.ok(!/hpmt|æon|aeon/i.test(notes),'specific requested place names excluded from release notes')}
  const data=h.context.LapanSearch.features({features:[feature('A'),feature('A'),{properties:{name:'broken'}}]});assert.equal(data.length,1);
- console.log('PASS: typed origin/destination, exact local resolution, address results, ambiguity, cancellation, missing places, service errors, stale responses, map confirm/cancel, precise pin restoration, stationary confirmation, GPS selection, denied permission and stale GPS handling');
+
+ // Distinctive business words dominate generic company prefixes.
+ h=harness();const search=h.context.LapanSearch;
+ const wrong=['Syarikat Perniagaan Teik Hong, Alor Setar, Kedah',6.11,100.36],right=['Syarikat Perniagaan Lian Hong, Klang, Selangor',3.1,101.4];
+ assert.equal(search.match('Syarikat Perniagaan Lian Hong',wrong).strong,false);
+ assert.equal(search.match('Syarikat Perniagaan Lian Hong',right).strong,true);
+ assert.equal(search.rank([wrong,right],'Syarikat Perniagaan Lian Hong')[0][0],right[0]);
+ let primary=0,secondary=0;h.fetcher=async u=>{if(String(u)==='/api/place-search'){secondary++;return {ok:true,json:async()=>({items:[right]})}}primary++;return {ok:true,json:async()=>({features:[feature('Syarikat Perniagaan Teik Hong',6.11,100.36,'Alor Setar')]})}};
+ let found=await search.search('Syarikat Perniagaan Lian Hong',[]);assert.equal(found.items[0][0],right[0]);assert.equal(secondary,1,'weak nonempty results trigger fallback');
+ await search.search('Syarikat Perniagaan Lian Hong',[]);assert.equal(primary,1);assert.equal(secondary,1,'reuse recent provider results');
+ h=harness();secondary=0;h.fetcher=async u=>{if(String(u)==='/api/place-search')secondary++;return {ok:true,json:async()=>({features:[feature('Exact Business')]})}};found=await h.context.LapanSearch.search('Exact Business',[]);assert.equal(secondary,0,'strong primary result avoids paid provider');
+ h=harness();h.chosen.origin=['Start',3,101];h.$('destination').value='Missing Business';h.fetcher=async u=>String(u)==='/api/place-search'?{ok:true,json:async()=>({items:[]})}:{ok:true,json:async()=>({features:[feature('Different Business')]})};const weak=h.api.resolveAll();await new Promise(setImmediate);assert.equal(h.chosen.destination,null,'single weak result never selected automatically');assert.equal(h.$('placeDialog').open,true);assert.match(h.$('placeMatches').children[0].children[1].textContent,/Similar name/);h.$('closePlace').click();assert.equal(await weak,false);
+ h=harness();secondary=0;h.fetcher=async u=>{if(String(u)==='/api/place-search'){secondary++;return {ok:false,json:async()=>({code:'SEARCH_ACCESS_DENIED'})}}return {ok:true,json:async()=>({features:[]})}};await h.context.LapanSearch.search('Missing first',[]);await h.context.LapanSearch.search('Missing next',[]);assert.equal(secondary,1,'pause denied provider across queries');
+ completed=true;console.log('PASS: typed origin/destination, exact local resolution, address results, ambiguity, cancellation, missing places, service errors, stale responses, map confirm/cancel, precise pin restoration, stationary confirmation, GPS selection, denied permission and stale GPS handling');
 })().catch(e=>{console.error(e);process.exitCode=1});

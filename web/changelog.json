@@ -1,5 +1,30 @@
 [
   {
+    "version": "1.0.28",
+    "date": "2026-10-29",
+    "title": "More reliable navigation and place matching",
+    "changes": {
+      "Added": [
+        "Automatic OSRM basic routing fallback when live routing is unavailable, with explicit traffic and closure limitations.",
+        "Temporary local avoidance safeguards for reported blocked crossings, applied to route planning, replanning and returned route validation."
+      ],
+      "Improved": [
+        "Place search prioritises distinctive business names, labels weak matches and requires confirmation. Additional search runs only without a convincing primary match; recent results and failure pauses reduce requests.",
+        "Off-route checks use complete route geometry and sustained accurate GPS evidence. Stale and duplicate fixes are ignored, obsolete retries are cancelled after rejoining, and accepted routes redraw immediately."
+      ],
+      "Fixed": [
+        "GPS updates no longer overwrite rerouting and retry status messages. Weak GPS fixes no longer jump the driving camera.",
+        "English interface translation hints and fewer redundant navigation and ETA text replacements reduce browser-translator flicker."
+      ]
+    },
+    "notes": [
+      "OSRM fallback has no live traffic or road-closure checks. Restricted or unusable route decisions are not silently bypassed.",
+      "Reported-junction avoidance is a conservative local workaround, may divert valid nearby traffic, and may return no usable detour. It is not nationwide barrier detection.",
+      "Place coverage still varies by provider. Browser extensions may override translation hints. Navigation changes passed automated checks; real driving validation remains necessary."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.27",
     "date": "2026-10-29",
     "title": "Clearer visitor statistics",
