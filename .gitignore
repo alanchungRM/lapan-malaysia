@@ -1,9 +1,0 @@
-node_modules/
-dist/
-.openai/
-.wrangler/
-.env
-.env.*
-!.env.example
-*.log
-.DS_Store
