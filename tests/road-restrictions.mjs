@@ -9,7 +9,7 @@ assert.equal(live.blocked([[101.4498,2.9748112],[101.452,2.9748112]]),false,'sec
 const source=await readFile('worker/routing.js','utf8'),{planLiveRoute}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const makeRoute=coords=>({summary:{travelTimeInSeconds:60,lengthInMeters:500},legs:[{points:coords.map(([longitude,latitude])=>({longitude,latitude}))}],guidance:{instructions:coords.map(([longitude,latitude],i)=>({point:{longitude,latitude},pointIndex:i,routeOffsetInMeters:i*500,travelTimeInSeconds:i*60,maneuver:i?'ARRIVE':'DEPART'}))}});
 let raw=[makeRoute([[x,y-.001],[x,y+.001]])],expected=false;
-const old=globalThis.fetch;globalThis.fetch=async(url,options)=>{const body=JSON.parse(options.body);assert.equal('avoidAreas' in body,expected,'omit empty avoidAreas from provider request');return Response.json({routes:raw})};
+const old=globalThis.fetch;globalThis.fetch=async(url,options)=>{assert.equal(options.method,expected?'POST':'GET');const body=options.body?JSON.parse(options.body):{};assert.equal('avoidAreas' in body,expected,'omit empty avoidAreas from provider request');return Response.json({routes:raw})};
 const req=n=>new Request('https://test/api/route',{method:'POST',body:JSON.stringify({from:[x-.001-n*.00001,y-.001],to:[x-.001,y+.001],alternatives:true})});
 let response=await planLiveRoute(req(0),{TOMTOM_API_KEY:'test'});assert.equal(response.status,200,'provider-approved route through removed obstacle is accepted');
 // Synthetic future entry verifies that the mechanism remains available without a live restriction.
