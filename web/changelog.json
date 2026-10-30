@@ -1,5 +1,22 @@
 [
   {
+    "version": "1.0.30",
+    "date": "2026-10-30",
+    "title": "Updated planning and location-picker maps",
+    "changes": {
+      "Improved": [
+        "Planning, Choose start on map and Choose destination on map now use OpenFreeMap vector maps, matching the mapping source used by the driving view."
+      ],
+      "Fixed": [
+        "Live route requests work correctly when no manual avoidance areas are configured. Failed planning clears the loading status and restores retry controls."
+      ]
+    },
+    "notes": [
+      "Planning and driving retain separate map views. This update improves map consistency; routing and traffic information still come from their existing providers."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.29",
     "date": "2026-10-30",
     "title": "Clearer and more consistent voice guidance",
@@ -77,7 +94,7 @@
         "Statistics opens in a reusable panel. Back to map preserves the existing map, chosen route and navigation instead of opening another map."
       ],
       "Fixed": [
-        "Missing PLUS charges are included when an entry–exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.",
+        "Missing PLUS charges are included when an entry\u2013exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.",
         "Toll matching accounts for access-ramp boundaries, distinguishes similarly named plazas and checks actual crossings. An unresolved PLUS portion is explicitly marked unavailable rather than silently omitted."
       ]
     },
@@ -324,7 +341,7 @@
     "changes": {
       "Added": [
         "A mobile-friendly changelog with version numbers, release dates and links to the public GitHub history.",
-        "Open What’s new from the app header, version badge or About & privacy."
+        "Open What\u2019s new from the app header, version badge or About & privacy."
       ],
       "Improved": [
         "Every new release now requires a changelog entry alongside its version update."

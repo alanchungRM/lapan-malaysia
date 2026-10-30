@@ -2,6 +2,22 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.30] — 2026-10-30
+
+Updated planning and location-picker maps
+
+### Improved
+
+- Planning, Choose start on map and Choose destination on map now use OpenFreeMap vector maps, matching the mapping source used by the driving view.
+
+### Fixed
+
+- Live route requests work correctly when no manual avoidance areas are configured. Failed planning clears the loading status and restores retry controls.
+
+> Planning and driving retain separate map views. This update improves map consistency; routing and traffic information still come from their existing providers.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.29] — 2026-10-30
 
 Clearer and more consistent voice guidance
