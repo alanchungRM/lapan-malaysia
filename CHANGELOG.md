@@ -2,6 +2,22 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.29] — 2026-10-30
+
+Clearer and more consistent voice guidance
+
+### Improved
+
+- Shorter spoken directions omit long road names and destination sign text while retaining structured road and exit numbers. Full directions remain visible on screen.
+
+### Fixed
+
+- The navigator keeps the selected voice across speech chunks, retries and device voice-list updates. Unavailable voices show a retry warning instead of silently switching to the system default.
+
+> Available voices depend on the device and browser. Lapan waits briefly for device voices to load; select and test your preferred voice in Voice & sound.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.28] — 2026-10-29
 
 More reliable navigation and place matching

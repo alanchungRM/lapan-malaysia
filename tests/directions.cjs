@@ -11,3 +11,12 @@ assert.equal(format({maneuver:{type:'turn',modifier:'uturn'}}),'Make a U-turn');
 assert.equal(format({maneuver:{type:'turn',modifier:'left'}}),'Turn left');
 assert.equal(format({maneuver:{type:'depart'},ref:'E1',name:'E1'}),'Head onto · E1');
 console.log('PASS: signed exits, road refs, destinations, missing data, roundabout counts, forks, ramps, U-turns and arrival');
+
+const {speech}=require('../web/directions.js');
+assert.equal(speech({instruction:'Bear right at a very long road name',maneuver:{type:'fork',modifier:'right'},name:'Jalan Langat',ref:'5'}),'Keep right, route 5');
+assert.equal(speech({maneuver:{type:'turn',modifier:'left'},name:'Jalan Extremely Long Street Name 32/39'}),'Turn left');
+assert.equal(speech({maneuver:{type:'off ramp',modifier:'left'},exits:'106',ref:'E1',destinations:'Damansara'}),'Take exit 106 left, route E1');
+assert.equal(speech({maneuver:{type:'roundabout',exit:3},name:'Very long road'}),'At the roundabout, take the 3rd exit');
+assert.equal(speech({maneuver:{type:'arrive'},ref:'5',name:'Business name'}),'Arrive at your destination');
+assert.equal(speech({maneuver:{type:'turn',modifier:'right'},ref:'Jalan Road Name'}),'Turn right');
+console.log('PASS: concise speech omits street names, preserves structured road/exit numbers, roundabouts and arrival');

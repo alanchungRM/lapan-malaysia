@@ -19,5 +19,7 @@ if(direction&&direction!=='uturn'&&!['roundabout','rotary','exit roundabout','ex
 if(exit&&type!=='off ramp'&&!['roundabout','rotary','roundabout turn','exit roundabout','exit rotary'].includes(type))action+=' · Exit '+exit;
 const road=[ref,name&&name.toLowerCase()!==ref.toLowerCase()?name:''].filter(Boolean).join(' · ');if(road)action+=' · '+road;if(toward&&toward.toLowerCase()!==name.toLowerCase())action+=' toward '+toward;return action;
 }
-root.LapanDirections={format};if(typeof module==='object')module.exports={format};
+// Speech uses structured manoeuvres and signed numbers, never long street names or destinations.
+function speech(step={}){const numbered=value=>clean(value).split(';').map(s=>s.trim()).filter(s=>/^(?:[A-Za-z]{0,3}\s*)?\d+[A-Za-z]?(?:[-/]\d+[A-Za-z]?)?$/.test(s)).slice(0,2).join(';');const ref=numbered(step.ref),exits=numbered(step.exits),short={...step,instruction:'',name:'',destinations:'',ref:'',exits};let text=format(short);if(text==='Head onto')text='Continue';if(ref&&step.maneuver?.type!=='arrive')text+=', route '+signs(ref);return text.replaceAll(' · ', ', ')}
+root.LapanDirections={format,speech};if(typeof module==='object')module.exports={format,speech};
 })(typeof window==='object'?window:globalThis);
