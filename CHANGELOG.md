@@ -2,6 +2,22 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.31] — 2026-10-31
+
+Day and night map appearance
+
+### Added
+
+- Choose Auto, Day or Night map appearance under Screen & navigation. Auto follows the device light/dark setting, and the preference is saved in this browser.
+
+### Improved
+
+- The appearance applies to planning, starting-point and destination map pickers, and 2D/3D driving views while preserving route overlays.
+
+> Changing appearance requires an internet connection to load the selected map style.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.30] — 2026-10-30
 
 Updated planning and location-picker maps
