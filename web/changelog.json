@@ -1,0 +1,482 @@
+[
+  {
+    "version": "1.0.32",
+    "date": "2026-10-31",
+    "title": "Clearer navigation startup and speed display",
+    "changes": {
+      "Added": [
+        "Navigation startup shows Finding GPS and Drawing route progress, clearing when the route source is ready, navigation ends or map fallback occurs."
+      ],
+      "Improved": [
+        "The speed meter uses an opaque navy background, white fixed-width digits and a pale border. A larger display and digits improve readability in portrait and landscape navigation."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.31",
+    "date": "2026-10-31",
+    "title": "Day and night map appearance",
+    "changes": {
+      "Added": [
+        "Choose Auto, Day or Night map appearance under Screen & navigation. Auto follows the device light/dark setting, and the preference is saved in this browser."
+      ],
+      "Improved": [
+        "The appearance applies to planning, starting-point and destination map pickers, and 2D/3D driving views while preserving route overlays."
+      ]
+    },
+    "notes": [
+      "Changing appearance requires an internet connection to load the selected map style."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.30",
+    "date": "2026-10-30",
+    "title": "Updated planning and location-picker maps",
+    "changes": {
+      "Improved": [
+        "Planning, Choose start on map and Choose destination on map now use OpenFreeMap vector maps, matching the mapping source used by the driving view."
+      ],
+      "Fixed": [
+        "Live route requests work correctly when no manual avoidance areas are configured. Failed planning clears the loading status and restores retry controls."
+      ]
+    },
+    "notes": [
+      "Planning and driving retain separate map views. This update improves map consistency; routing and traffic information still come from their existing providers."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.29",
+    "date": "2026-10-30",
+    "title": "Clearer and more consistent voice guidance",
+    "changes": {
+      "Improved": [
+        "Shorter spoken directions omit long road names and destination sign text while retaining structured road and exit numbers. Full directions remain visible on screen."
+      ],
+      "Fixed": [
+        "The navigator keeps the selected voice across speech chunks, retries and device voice-list updates. Unavailable voices show a retry warning instead of silently switching to the system default."
+      ]
+    },
+    "notes": [
+      "Available voices depend on the device and browser. Lapan waits briefly for device voices to load; select and test your preferred voice in Voice & sound."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.28",
+    "date": "2026-10-29",
+    "title": "More reliable navigation and place matching",
+    "changes": {
+      "Added": [
+        "Automatic OSRM basic routing fallback when live routing is unavailable, with explicit traffic and closure limitations.",
+        "Temporary local avoidance safeguards for reported blocked crossings, applied to route planning, replanning and returned route validation."
+      ],
+      "Improved": [
+        "Place search prioritises distinctive business names, labels weak matches and requires confirmation. Additional search runs only without a convincing primary match; recent results and failure pauses reduce requests.",
+        "Off-route checks use complete route geometry and sustained accurate GPS evidence. Stale and duplicate fixes are ignored, obsolete retries are cancelled after rejoining, and accepted routes redraw immediately."
+      ],
+      "Fixed": [
+        "GPS updates no longer overwrite rerouting and retry status messages. Weak GPS fixes no longer jump the driving camera.",
+        "English interface translation hints and fewer redundant navigation and ETA text replacements reduce browser-translator flicker."
+      ]
+    },
+    "notes": [
+      "OSRM fallback has no live traffic or road-closure checks. Restricted or unusable route decisions are not silently bypassed.",
+      "Reported-junction avoidance is a conservative local workaround, may divert valid nearby traffic, and may return no usable detour. It is not nationwide barrier detection.",
+      "Place coverage still varies by provider. Browser extensions may override translation hints. Navigation changes passed automated checks; real driving validation remains necessary."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.27",
+    "date": "2026-10-29",
+    "title": "Clearer visitor statistics",
+    "changes": {
+      "Added": [
+        "Separate visit and daily unique-browser counts alongside page views, with active browsers deduplicated across updated tabs.",
+        "Recent daily visits retain seven days of page views and add visits and unique browsers. Device and browser type breakdowns remain available."
+      ],
+      "Improved": [
+        "Page-load totals are clearly labelled as page views. Historical totals are retained; new metrics start with this release.",
+        "Privacy information explains rotating daily browser identifiers, 30-minute visit inactivity, storage limitations and opt-out controls."
+      ]
+    },
+    "notes": [
+      "Unique browsers are estimates, not unique people. Different browsers, private browsing or cleared storage can count separately. Visits restart after 30 minutes of inactivity or at the next Malaysia day.",
+      "No names, IP addresses, GPS coordinates, destinations or routes are stored by the visitor counter. Browser privacy signals and opt-out are respected. Older unique counts cannot be reconstructed."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.26",
+    "date": "2026-10-28",
+    "title": "Automatic toll estimates and navigation improvements",
+    "changes": {
+      "Added": [
+        "Collapsed automatic Class 1 route toll estimates combine matched PLUS, LDP and KESAS charges, with an itemised breakdown and official fare sources. The standalone PLUS calculator remains available separately.",
+        "Optional mapped fixed speed-camera alerts provide on-screen and voice reminders within 600 metres along the selected route. Slow-down prompts use a numeric mapped speed limit when available.",
+        "Search more places provides an additional Malaysian business/address search option when the secondary search service is available."
+      ],
+      "Improved": [
+        "Automatic rerouting detects deviations sooner and silences outdated directions while a replacement route is being planned. Late route responses cannot replace a newer navigation session.",
+        "Reviewed place coverage and matching now handle more spelling, ligature and punctuation variations.",
+        "Statistics opens in a reusable panel. Back to map preserves the existing map, chosen route and navigation instead of opening another map."
+      ],
+      "Fixed": [
+        "Missing PLUS charges are included when an entry\u2013exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.",
+        "Toll matching accounts for access-ramp boundaries, distinguishes similarly named plazas and checks actual crossings. An unresolved PLUS portion is explicitly marked unavailable rather than silently omitted."
+      ]
+    },
+    "notes": [
+      "Automatic toll amounts are partial known subtotals for Class 1 cars, not guaranteed nationwide journey totals. Unsupported or ambiguous charges remain unavailable; missing fares never mean toll-free. Standard fares exclude temporary discounts.",
+      "Speed-camera locations come from OpenStreetMap and can be incomplete or outdated. These are not live police reports or a verified enforcement registry.",
+      "The additional search service depends on provider access and usage limits. It is currently unavailable for general searches until Search API access is enabled; existing search, reviewed places and Choose on map remain available."
+    ],
+    "commits": [
+      "067d9ac2e15f1d77d808e9e50ebbea53af649970",
+      "93f6d778b3ac27197fdabbfe5a5b7efc70d2a2cb"
+    ]
+  },
+  {
+    "version": "1.0.25",
+    "date": "2026-10-27",
+    "title": "Accurate map pin restoration and GPS selection",
+    "changes": {
+      "Fixed": [
+        "Reopening the location picker restores the exact saved pin coordinates instead of an intermediate animated map centre.",
+        "The displayed pin can be confirmed without first tapping or dragging it."
+      ],
+      "Added": [
+        "Use my current location in the map picker requests a fresh GPS fix, shows reported accuracy and lets you confirm it for either starting point or destination."
+      ]
+    },
+    "notes": [
+      "GPS accuracy depends on the device and signal. Permission errors leave the existing pin unchanged; late GPS responses cannot replace a manually adjusted pin."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.24",
+    "date": "2026-10-27",
+    "title": "Delete individual recent places",
+    "changes": {
+      "Added": [
+        "Swipe left on a recent location to reveal Delete, then tap to remove only that place from this browser.",
+        "A row actions button and keyboard controls provide the same delete option without swiping."
+      ],
+      "Improved": [
+        "Swiping reveals an action without selecting the destination or deleting automatically. Only one row action stays open at a time."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.23",
+    "date": "2026-10-27",
+    "title": "Reliable end navigation",
+    "changes": {
+      "Fixed": [
+        "End navigation closes the driving screen before releasing browser services, so a map, speech or screen-awake cleanup error cannot leave guidance stuck open.",
+        "Ending guidance cancels pending rerouting and ignores late location or route callbacks.",
+        "Arrival invalidates queued GPS callbacks so finished guidance is not restarted by an old location update."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.22",
+    "date": "2026-10-27",
+    "title": "Find typed places and choose locations on the map",
+    "changes": {
+      "Improved": [
+        "Find my route now resolves typed starting points and destinations instead of requiring a suggestion to be selected first.",
+        "Matching places show fuller address details, with a confirmation list when several locations match.",
+        "Search distinguishes no matches from service failures and ignores outdated responses after edits."
+      ],
+      "Added": [
+        "Choose a starting point or destination by tapping the map or dragging a pin, then confirm the location."
+      ]
+    },
+    "notes": [
+      "Place coverage still depends on the search data. Map pins may route to a nearby accessible road; check the entrance before starting."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.21",
+    "date": "2026-10-26",
+    "title": "Uncluttered map credits in landscape",
+    "changes": {
+      "Improved": [
+        "Map credits collapse to a small information control when the driving map loads or the phone rotates.",
+        "The credit control sits away from the speed and navigation buttons, with provider links still available on tap."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.20",
+    "date": "2026-10-26",
+    "title": "Clear speed display and navigation controls",
+    "changes": {
+      "Fixed": [
+        "Speed and recenter controls now share one layout, preventing them from overlapping.",
+        "Control spacing follows the actual height of the ETA panel, including wrapped text and phone safe areas."
+      ],
+      "Improved": [
+        "The speed readout appears first in the control stack. A compact grid keeps controls accessible in short landscape views."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.19",
+    "date": "2026-10-26",
+    "title": "Live route planning with reported closures",
+    "changes": {
+      "Improved": [
+        "TomTom now chooses the road path using current traffic and reported closures, rather than only estimating the arrival time on an OSRM route.",
+        "Off-route automatic replanning also uses live routing and matching turn instructions.",
+        "Route labels show the provider and when closures were checked at planning time."
+      ],
+      "Added": [
+        "Explicit basic-routing fallback when the live service is unavailable, labelled road closures NOT checked."
+      ]
+    },
+    "notes": [
+      "Coverage depends on the provider. Newly blocked or unreported roads may be missing. Closures are checked when planning or replanning; this release does not add continuous closure monitoring or a manual road-block avoidance button.",
+      "A route rejected by live routing is not silently replaced with a basic route. API keys remain server-side."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.18",
+    "date": "2026-10-25",
+    "title": "Anonymous visitor statistics",
+    "changes": {
+      "Added": [
+        "A public Lapan in numbers page showing map-page visits, estimated active tabs, recent daily counts, and broad device/browser totals.",
+        "A browser-local tracking opt-out and support for Do Not Track / Global Privacy Control."
+      ]
+    },
+    "notes": [
+      "Counts start with this release and are approximate page visits, not unique people. No names, IP addresses, GPS coordinates, destinations or routes are stored by the visitor counter."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.17",
+    "date": "2026-10-25",
+    "title": "Road numbers and exit signs in directions",
+    "changes": {
+      "Improved": [
+        "Turn instructions include road references, signed exit numbers and signposted destinations when supplied by the routing data.",
+        "The same information appears in navigation, the directions list and spoken guidance.",
+        "Clearer instructions for motorway exits, entry ramps and forks; roundabout exit counts remain separate from signed highway exit numbers."
+      ]
+    },
+    "notes": [
+      "Coverage depends on the routing map. Missing exit references are not guessed; an example exit number is not treated as verified road data."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.16",
+    "date": "2026-10-25",
+    "title": "Add Lapan to your Home Screen",
+    "changes": {
+      "Added": [
+        "An English illustrated guide for adding Lapan to an iPhone or Android Home Screen.",
+        "iPhone Safari steps, Android Chrome install instructions, and a Create shortcut fallback.",
+        "Branded Home Screen icons and a web app manifest for supported browsers."
+      ]
+    },
+    "notes": [
+      "A shortcut may open in the browser. Internet access is still required for navigation services; there is no offline map download."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.15",
+    "date": "2026-10-25",
+    "title": "Voice guidance your way",
+    "changes": {
+      "Added": [
+        "Voice & sound settings with Normal, Less chatty, Alerts only and Off modes.",
+        "Open settings before a trip or from the speaker button during navigation.",
+        "Voice mode and navigator voice are saved only in your own browser and restored on your next visit."
+      ],
+      "Improved": [
+        "Less chatty skips distant turn reminders and speaks within 200 metres. Alerts only announces route updates and arrival.",
+        "Manual repeat remains available in enabled modes; Off cancels automatic speech."
+      ]
+    },
+    "notes": [
+      "Alerts only does not provide live road-hazard alerts. Device voice availability varies, and browser storage must be available to remember preferences."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.14",
+    "date": "2026-10-25",
+    "title": "Larger, clearer arrival estimates",
+    "changes": {
+      "Improved": [
+        "Larger, high-contrast ETA and remaining journey time during navigation.",
+        "Arrival estimates on route cards are easier to read.",
+        "Navigation actions sit below the journey information on a compact card so they do not squeeze the ETA."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.13",
+    "date": "2026-10-25",
+    "title": "One consistent Lapan icon",
+    "changes": {
+      "Improved": [
+        "The main app, changelog and browser tab use the same green Lapan icon with its white infinity symbol.",
+        "Shared vector artwork keeps the logo consistent across fonts, devices and screen sizes."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
+    "version": "1.0.12",
+    "date": "2026-10-25",
+    "title": "A separate toll calculator",
+    "changes": {
+      "Improved": [
+        "Moved the PLUS toll calculator out of route planning into its own Toll calculator option.",
+        "Choose entry and exit plazas without planning a route. Fare estimates are independent of navigation and do not change your journey.",
+        "Removed toll estimates and automatic plaza suggestions from route cards and route selection."
+      ]
+    },
+    "notes": [
+      "PLUS fares cover the chosen plazas for a Class 1 car. Other highways are not included; optional manual costs remain in the calculator."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.11",
+    "date": "2026-10-25",
+    "title": "A public home for release notes",
+    "changes": {
+      "Added": [
+        "A mobile-friendly changelog with version numbers, release dates and links to the public GitHub history.",
+        "Open What\u2019s new from the app header, version badge or About & privacy."
+      ],
+      "Improved": [
+        "Every new release now requires a changelog entry alongside its version update."
+      ]
+    },
+    "notes": [
+      "Release notes describe user-facing changes. They do not publish private configuration or credentials."
+    ],
+    "commits": []
+  },
+  {
+    "version": "1.0.10",
+    "date": "2026-10-25",
+    "title": "Traffic-aware arrival estimates",
+    "changes": {
+      "Added": [
+        "TomTom traffic-aware ETA for the selected route, including arrival time and remaining journey duration.",
+        "Route matching checks help keep traffic estimates aligned with the road route shown on the map."
+      ],
+      "Improved": [
+        "Traffic is reassessed at most once every two minutes during navigation.",
+        "The selected route card updates its duration and arrival estimate when traffic data is available.",
+        "Clear labels distinguish TomTom traffic from the baseline road estimate."
+      ]
+    },
+    "notes": [
+      "If traffic data is unavailable, a provider limit is reached or the route cannot be matched, Lapan uses the road estimate.",
+      "This release adds traffic-aware ETA; coloured live-congestion map overlays are not enabled."
+    ],
+    "commits": [
+      "2012ae2265b94ffb08f6d3d73415703519f2d908"
+    ]
+  },
+  {
+    "version": "1.0.9",
+    "date": "2026-10-24",
+    "title": "Consistent release numbering",
+    "changes": {
+      "Improved": [
+        "One application version is used across the header and About & privacy.",
+        "New releases increment the patch version. Rebuilds and deployment retries keep the same release number."
+      ]
+    },
+    "notes": [],
+    "commits": [
+      "44da086973f05243fa5355dd6c3c86fcf8cd5225"
+    ]
+  },
+  {
+    "version": "1.0.8",
+    "date": "2026-10-24",
+    "title": "Clearer guidance, voice recovery and map details",
+    "changes": {
+      "Added": [
+        "Mapped traffic-light locations in 2D and 3D views, with a toggle under Map details.",
+        "Arrival clock time, remaining minutes and distance that update with GPS progress.",
+        "A repeat-instruction button and reminders as you approach a turn.",
+        "A visible application version."
+      ],
+      "Fixed": [
+        "Voice announcements can finish before the next one starts; interrupted or stalled speech gets a bounded retry.",
+        "Unmuting voice guidance triggers a fresh instruction."
+      ],
+      "Improved": [
+        "Screen-awake starts automatically during navigation and attempts recovery after interruptions, with a compatibility fallback and visible status."
+      ]
+    },
+    "notes": [
+      "Traffic-light icons indicate mapped locations only, not live red/green signal status. Coverage may be incomplete.",
+      "Screen-awake and voice behaviour depend on browser and phone support. In this release, arrival estimates did not yet use live traffic.",
+      "These updates were published under version 1.0.8 before per-release numbering was introduced."
+    ],
+    "commits": [
+      "e056b502d2a5a84368d3adc5c4a1c04cb7d3a917",
+      "50d9527cc48ebef1ddc48773145038d8cc5fa9ed",
+      "dc6a27debb811e240ca1d791b9e5768d0e8f9e1c",
+      "bdd115c0733f47a491a2ebea13756c517bc26ab0"
+    ]
+  },
+  {
+    "version": null,
+    "date": "2026-10-24",
+    "title": "Early public development",
+    "changes": {
+      "Added": [
+        "Public source code, tests and a deployment guide on GitHub.",
+        "A compact Quick stops picker for nearby petrol stations, R&R stops and shopping centres.",
+        "Recent locations saved in the browser, device voice selection and PLUS Class 1 toll-fare lookup."
+      ],
+      "Improved": [
+        "Heading-following 2D navigation, a tilted 3D map, smooth vehicle movement and compact driving controls.",
+        "Automatic rerouting keeps GPS active and retries when the routing connection fails.",
+        "Toll-plaza choices and secondary options stay collapsed until opened."
+      ]
+    },
+    "notes": [
+      "This section groups the early public commits; it does not assign version numbers retroactively.",
+      "Nearby-stop distances are straight-line distances. Check road access and highway direction. PLUS fares do not include every highway operator."
+    ],
+    "commits": [
+      "2cf6086390019c93cab9a93a4c7fca6fe6d1ab35",
+      "dccda3f5b9b09685fdad08fadd2020296c83bb78",
+      "05c993e4e80729ab1e46baf8fa75686ba99bbb1c"
+    ]
+  }
+]
