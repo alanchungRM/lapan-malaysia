@@ -1,5 +1,23 @@
 [
   {
+    "version": "1.0.33",
+    "date": "2026-10-31",
+    "title": "Expanded regional place search",
+    "changes": {
+      "Added": [
+        "A regional directory of approximately 353,000 public places around Kuala Lumpur and Selangor supplements existing place and address search."
+      ],
+      "Improved": [
+        "Additional search checks the free regional directory before requesting TomTom results. Matching supports normalized spelling, accents, punctuation and address terms.",
+        "Compressed search sections are processed on the server, so phones receive only matching results. Caching and request limits reduce repeated work."
+      ]
+    },
+    "notes": [
+      "Regional coverage is a snapshot and does not cover all Malaysia. Listings may be incomplete or outdated; check the business branch and accessible vehicle entrance before navigating."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.32",
     "date": "2026-10-31",
     "title": "Clearer navigation startup and speed display",
@@ -126,7 +144,7 @@
         "Statistics opens in a reusable panel. Back to map preserves the existing map, chosen route and navigation instead of opening another map."
       ],
       "Fixed": [
-        "Missing PLUS charges are included when an entry\u2013exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.",
+        "Missing PLUS charges are included when an entry–exit pair can be identified. Curated matching now covers 63 PLUS plazas, including NKVE and ELITE access points.",
         "Toll matching accounts for access-ramp boundaries, distinguishes similarly named plazas and checks actual crossings. An unresolved PLUS portion is explicitly marked unavailable rather than silently omitted."
       ]
     },
@@ -373,7 +391,7 @@
     "changes": {
       "Added": [
         "A mobile-friendly changelog with version numbers, release dates and links to the public GitHub history.",
-        "Open What\u2019s new from the app header, version badge or About & privacy."
+        "Open What’s new from the app header, version badge or About & privacy."
       ],
       "Improved": [
         "Every new release now requires a changelog entry alongside its version update."

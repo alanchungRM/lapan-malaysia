@@ -2,6 +2,23 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.33] — 2026-10-31
+
+Expanded regional place search
+
+### Added
+
+- A regional directory of approximately 353,000 public places around Kuala Lumpur and Selangor supplements existing place and address search.
+
+### Improved
+
+- Additional search checks the free regional directory before requesting TomTom results. Matching supports normalized spelling, accents, punctuation and address terms.
+- Compressed search sections are processed on the server, so phones receive only matching results. Caching and request limits reduce repeated work.
+
+> Regional coverage is a snapshot and does not cover all Malaysia. Listings may be incomplete or outdated; check the business branch and accessible vehicle entrance before navigating.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.32] — 2026-10-31
 
 Clearer navigation startup and speed display

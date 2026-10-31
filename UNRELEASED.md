@@ -1,3 +1,3 @@
 # Unreleased changes
 
-No pending public release notes. Reviewed changes included in v1.0.32.
+No pending public release notes. Reviewed place-search improvements included in v1.0.33.
