@@ -2,6 +2,23 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.34] — 2026-11-01
+
+Clearer navigation and easier place search
+
+### Added
+
+- Navigation instructions highlight provider-supplied road references and signed exit numbers in yellow badges.
+
+### Improved
+
+- Night-map planning routes use bright mint with a dark outline, lavender alternatives and a yellow destination marker. Colours follow the selected map appearance.
+- Search more places is a prominent high-contrast button with a helpful prompt above weak or empty results. Expanded search runs only when requested.
+
+> Road and exit badges depend on the references supplied by the routing provider. Distance text, street-address numbers and roundabout exit counts are not highlighted as signed road numbers.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.33] — 2026-10-31
 
 Expanded regional place search

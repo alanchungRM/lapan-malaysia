@@ -1,5 +1,23 @@
 [
   {
+    "version": "1.0.34",
+    "date": "2026-11-01",
+    "title": "Clearer navigation and easier place search",
+    "changes": {
+      "Added": [
+        "Navigation instructions highlight provider-supplied road references and signed exit numbers in yellow badges."
+      ],
+      "Improved": [
+        "Night-map planning routes use bright mint with a dark outline, lavender alternatives and a yellow destination marker. Colours follow the selected map appearance.",
+        "Search more places is a prominent high-contrast button with a helpful prompt above weak or empty results. Expanded search runs only when requested."
+      ]
+    },
+    "notes": [
+      "Road and exit badges depend on the references supplied by the routing provider. Distance text, street-address numbers and roundabout exit counts are not highlighted as signed road numbers."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.33",
     "date": "2026-10-31",
     "title": "Expanded regional place search",
