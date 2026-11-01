@@ -26,7 +26,7 @@ self.addEventListener('fetch',event=>{
   const saved=()=>cache.match(request,{ignoreSearch:request.mode==='navigate'}).then(hit=>hit||(request.mode==='navigate'?cache.match('/'):undefined));
   try{
    const response=await fromNetwork(request);
-   if(response.ok&&(response.type==='basic'))cache.put(request,response.clone()).catch(()=>{});
+   if(response.ok&&(response.type==='basic')&&!/^\/[sl]\//.test(new URL(request.url).pathname))cache.put(request,response.clone()).catch(()=>{});
    // An overloaded server often answers with a 5xx page instead of failing to connect. Prefer the saved copy over that page.
    if(response.status>=500){const hit=await saved();if(hit)return hit}
    return response;

@@ -15,6 +15,13 @@
       "when": 1793232000000,
       "tag": "0001_browser_visits",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794441600000,
+      "tag": "0003_shared_places",
+      "breakpoints": true
     }
   ]
 }

@@ -122,6 +122,17 @@ How it works: the English text in the page is the key. `web/i18n-ms.js` maps eac
 
 In the new look (`?ui=2`) the driving screen follows Malaysian road-sign conventions: guide-sign blue for ordinary roads, green for expressways and ramps (a step on an `E`/`AH` route, a ramp, or with an exit number), yellow warning-sign panels for camera and speed-limit alerts, and the red-ringed speed-limit sign that was already there. White or black text on each colour is checked at 7:1 or better in `tests/drive-ui.cjs`. `web/directions.js` draws the turn arrows (own artwork) and splits the banner into icon, distance and road text without changing its text; `web/drive-ui.js` splits the trip line the same way. The extra driving controls sit in `#driveMore`, a tray opened by the arrow toggle; it closes on the toggle, a tap elsewhere, Escape or after 12 seconds (`web/menu.js`). The classic look keeps its layout; only the tray and its closing behaviour apply to both.
 
+## Share a place or a drive
+
+`web/share.js` and `worker/share.js`. A link opens Lapan with a place ready; it never contains anyone's position.
+
+- **Short links.** `POST /api/share` with a name and a point returns `https://<host>/s/<7 characters>`. The code is derived from the place (SHA-256, 55-letter alphabet without look-alikes), so sharing the same place twice gives the same link, and a clash with a different place picks another code. Rows live in `shared_places` (`drizzle/0003_shared_places.sql`: code, name, lat, lon, created_at, expires_at) for about six months and are renewed when the link is still being opened. Nothing about the sender is stored. Limits: same-origin, 512 bytes, ten links a minute per address per isolate, 200,000 live links; `/api/share` is also covered by the optional `RATE_LIMITER`.
+- **No database needed.** If the service answers 503 or fails, the app builds `/l/<payload>` instead, where the payload is `lat,lon,name` as URL-safe base64. The Worker decodes and validates it the same way. Typical length is under 90 characters.
+- **The shared page.** `GET /s/…` and `/l/…` return the normal app page plus `<base href="/">`, Open Graph tags (title, bilingual description, icon) so chat apps show a preview, and a `lapan-share` meta tag with the place. The name is HTML-escaped and only ever shown as text. Unknown, expired or malformed links open the plain app with a note. Pages are `noindex`, and the service worker does not store them.
+- **Sharing a drive.** The message adds the estimated arrival time from the trip bar. There is no live tracking and no position in the message or the link.
+- **Tap the map.** A card shows the point's name (Photon reverse lookup, 4 second limit, coordinates if it fails) with **Send** and **Routes**.
+- Tests: `tests/share.mjs` (real SQLite behind a D1-shaped wrapper; needs Node 22.5 or newer, otherwise it skips) and `tests/share-client.cjs`.
+
 ## Optional edge rate limiting
 
 Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.

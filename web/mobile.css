@@ -183,3 +183,14 @@ body.guiding #driveControls{overflow:visible!important}
 body.guiding:not(.drive-more) #driveMore,body:not(.guiding) #driveMore{display:none!important}
 body.guiding.drive-more #driveMore{display:grid!important;grid-template-columns:repeat(3,48px);gap:8px;position:absolute;right:calc(100% + 6px);bottom:0;padding:10px;border-radius:18px;background:#142330f5;border:1px solid #536577;box-shadow:0 6px 20px #0006;z-index:830}
 #driveMore>*{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;width:48px;height:48px;min-width:48px;min-height:48px;margin:0;padding:0;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer}
+
+/* Share a place or a drive */
+.share-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;margin-top:10px;border:1px solid #475d6e;border-radius:14px;background:#243546;color:#f5faf9;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.share-note{display:block;margin:6px 2px 0;font-size:12px;line-height:1.4;color:#b1c6cf}
+#placeCard{position:fixed;z-index:1200;left:12px;right:12px;top:calc(70px + env(safe-area-inset-top));max-width:420px;margin:0 auto;padding:14px 16px 14px;border-radius:20px;background:#172738;color:#f4f9f8;border:1px solid #526779;box-shadow:0 8px 28px #0007;display:grid;gap:2px;text-align:center}
+#placeCard.hidden,#shareToast.hidden{display:none}
+#placeCard strong{font-size:20px;line-height:1.25;padding:0 28px;overflow-wrap:anywhere}#placeCard small{font-size:13px;color:#b1c6cf;margin-bottom:8px}
+#placeCardClose{position:absolute;top:6px;right:6px;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:26px;cursor:pointer}
+.place-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.place-card-actions button{min-height:52px;border-radius:14px;border:1px solid #475d6e;background:#243546;color:#f5faf9;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer}.place-card-actions .primary{background:#2bb88f;border-color:#2bb88f;color:#05261c}
+#shareToast{position:fixed;z-index:1300;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-footer-height,0px) + 24px + env(safe-area-inset-bottom));max-width:min(420px,calc(100vw - 24px));padding:12px 18px;border-radius:16px;background:#172738;color:#f4f9f8;border:1px solid #526779;box-shadow:0 6px 20px #0006;font-size:14px;font-weight:600;line-height:1.4;overflow-wrap:anywhere;text-align:center}
+.share-btn:focus-visible,#placeCard button:focus-visible,#navShare:focus-visible{outline:3px solid #daf67a;outline-offset:2px}

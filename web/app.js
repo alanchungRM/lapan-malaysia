@@ -97,6 +97,7 @@ $('navdetails').onclick=()=>toggleNavDetails(!document.body.classList.contains('
 $('closeDetails').onclick=()=>toggleNavDetails(false);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('details-open'))toggleNavDetails(false)});
 
+window.LapanShare?.bind({map,destination:()=>chosen.destination,eta:()=>window.LapanETA?.text(routes[selected])||'',choose:(p,plan)=>{if(document.body.classList.contains('guiding'))return;placeSearch.cancel();invalidatePlan();chosen.destination=[p.name||'Map pin '+p.lat.toFixed(5)+', '+p.lon.toFixed(5),p.lat,p.lon];$('destination').value=chosen.destination[0];document.querySelector('.search-panel').open=true;status('Place selected. Tap Find my route.');if(plan)$('plan').click();else $('plan').focus()}});
 window.addEventListener('lapan-place',e=>{chosen.destination=e.detail.slice();$('destination').value=chosen.destination[0];document.querySelector('.search-panel').open=true;status('Recent destination selected. Tap Find my route.');});
 
 window.LapanStopsContext={
