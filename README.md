@@ -91,6 +91,17 @@ Before a new release, add reviewed notes for the next patch version to `web/chan
 
 Hosting requires a Cloudflare D1 binding named `DB`. Apply the schema in `drizzle/0000_visitor_statistics.sql` before serving analytics requests. On Sites, declare `"d1": "DB"` in the private hosting manifest; Sites applies packaged migrations at deploy time. No database or hosting credential belongs in the public repository.
 
+## Optional edge rate limiting
+
+Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.
+
+```jsonc
+// wrangler.jsonc
+"ratelimits": [{"name": "RATE_LIMITER", "namespace_id": "1001", "simple": {"limit": 30, "period": 60}}]
+```
+
+Response headers (CSP, HSTS and others) are set in `worker/assets.js`. If you add a new third-party host for scripts, styles, images or data requests, add it to the Content-Security-Policy there.
+
 ## Live route planning
 
 Set `TOMTOM_API_KEY` as a runtime secret with Routing API access. `/api/route` requests a fresh fastest car route with `traffic=true`, `departAt=now` and matching English turn instructions. It does not reconstruct an OSRM path. No usable live route means no silent fallback. Service unavailability offers an explicit basic-route choice marked closures NOT checked. Routes containing returned ROAD_CLOSURE sections are rejected.
