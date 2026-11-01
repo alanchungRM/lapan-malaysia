@@ -118,6 +118,10 @@ How it works: the English text in the page is the key. `web/i18n-ms.js` maps eac
 
 **Adding or changing any screen text means adding its Bahasa Malaysia in `web/i18n-ms.js` in the same PR.** `npm test` fails if page text has no Malay entry, if a placeholder like `{n}` or a tag is lost, or if a translation is long enough to overflow a button. For text built in a script, use `LapanI18n.t('English text {n}', {n: 5})`, or keep a whole sentence as one string so it reads naturally. Terms follow everyday Malaysian usage (laluan, had laju, km/j, lebuh raya, Skrin Utama). A native speaker should review new wording. Not translated yet: the public changelog and the visitor statistics page.
 
+## Traffic bar
+
+The route API passes through TomTom's congestion sections as `trafficSections` (start and end point index, magnitude 1 to 3, delay in seconds, at most 300; closures still reject the route and roadworks are left out). `web/traffic-bar.js` turns them into runs along the route, a bar on each route card, a one-line summary and coloured stretches on the map. Routes without live data (basic routing) show nothing rather than guessing. Covered by `tests/traffic-bar.cjs` and `tests/route-traffic.mjs`.
+
 ## Optional edge rate limiting
 
 Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.

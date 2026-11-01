@@ -111,3 +111,9 @@ html[data-ui="2"] .lang-switch{border:1px solid var(--line)!important}
 html[data-ui="2"] .lang-switch button{color:var(--ink)!important;background:transparent!important}
 html[data-ui="2"] .lang-switch button[aria-pressed="true"]{background:var(--brand)!important;color:var(--on-brand)!important}
 html[data-ui="2"] #navLang{color:var(--ink)!important;font-weight:800}
+
+/* Traffic along the route. Colours are paired with a pattern and words, never colour alone. */
+html[data-ui="2"]{--traffic-clear:var(--brand);--traffic-slow:#B87700;--traffic-heavy:#D93025;--traffic-jam:#D93025}
+html[data-ui="2"][data-theme="night"]{--traffic-clear:var(--brand);--traffic-slow:#FFB020;--traffic-heavy:#FF6B5E;--traffic-jam:#FF6B5E}
+html[data-ui="2"] .traffic-bar{background:var(--line)}
+html[data-ui="2"] .traffic-note{color:var(--ink-2)!important}
