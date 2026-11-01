@@ -118,6 +118,10 @@ How it works: the English text in the page is the key. `web/i18n-ms.js` maps eac
 
 **Adding or changing any screen text means adding its Bahasa Malaysia in `web/i18n-ms.js` in the same PR.** `npm test` fails if page text has no Malay entry, if a placeholder like `{n}` or a tag is lost, or if a translation is long enough to overflow a button. For text built in a script, use `LapanI18n.t('English text {n}', {n: 5})`, or keep a whole sentence as one string so it reads naturally. Terms follow everyday Malaysian usage (laluan, had laju, km/j, lebuh raya, Skrin Utama). A native speaker should review new wording. Not translated yet: the public changelog and the visitor statistics page.
 
+## Driving screen (new look)
+
+In the new look (`?ui=2`) the driving screen follows Malaysian road-sign conventions: guide-sign blue for ordinary roads, green for expressways and ramps (a step on an `E`/`AH` route, a ramp, or with an exit number), yellow warning-sign panels for camera and speed-limit alerts, and the red-ringed speed-limit sign that was already there. White or black text on each colour is checked at 7:1 or better in `tests/drive-ui.cjs`. `web/directions.js` draws the turn arrows (own artwork) and splits the banner into icon, distance and road text without changing its text; `web/drive-ui.js` splits the trip line the same way. The extra driving controls sit in `#driveMore`, a tray opened by the arrow toggle; it closes on the toggle, a tap elsewhere, Escape or after 12 seconds (`web/menu.js`). The classic look keeps its layout; only the tray and its closing behaviour apply to both.
+
 ## Optional edge rate limiting
 
 Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.
