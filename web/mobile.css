@@ -156,4 +156,9 @@ body.guiding .menu-launch{display:none}
 .search-panel .recent-settings:has(#recentCount:empty){display:none}
 .more-options details>summary{display:flex;align-items:center;min-height:44px}
 .more-options details{margin:8px 0}
+/* Driving screen: voice, recentre and one More button stay up front. */
+#navMore{width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:white;font-size:22px;line-height:1;font-weight:700}
+#navMore[aria-expanded="true"]{border-color:#39d48d;color:#9deabf}
+body.guiding:not(.drive-more) #driveMode,body.guiding:not(.drive-more) #navRepeat,body.guiding:not(.drive-more) #navAwake,body.guiding:not(.drive-more) #openStops{display:none!important}
+#cameraWarning:not(.hidden)~#limitWarning{display:none}
 
