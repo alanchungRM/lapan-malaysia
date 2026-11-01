@@ -105,3 +105,9 @@ html[data-ui="2"] #navBar #navDestination{color:var(--ink-2)!important;font-size
 html[data-ui="2"] #navBar .traffic-basis{color:var(--ink-2)!important}
 html[data-ui="2"] .leaflet-bottom.leaflet-right{right:auto!important;left:0!important}
 html[data-ui="2"] .compact-credits{background:var(--surface)!important;color:var(--ink)!important}
+
+/* Language switch */
+html[data-ui="2"] .lang-switch{border:1px solid var(--line)!important}
+html[data-ui="2"] .lang-switch button{color:var(--ink)!important;background:transparent!important}
+html[data-ui="2"] .lang-switch button[aria-pressed="true"]{background:var(--brand)!important;color:var(--on-brand)!important}
+html[data-ui="2"] #navLang{color:var(--ink)!important;font-weight:800}

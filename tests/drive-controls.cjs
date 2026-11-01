@@ -3,11 +3,11 @@ const html=fs.readFileSync('web/index.html','utf8'),css=fs.readFileSync('web/mob
 
 // Markup: the More button lives in the controls column next to recentre, and the secondary controls it reveals still exist.
 const controls=html.slice(html.indexOf('id="driveControls"'),html.indexOf('class="maptop"'));
-for(const id of ['navVoice','locate','navMore','driveMode','navRepeat','navAwake','driveLimit','speedChip'])assert.ok(controls.includes('id="'+id+'"'),id+' in driving controls');
+for(const id of ['navVoice','locate','navMore','navLang','driveMode','navRepeat','navAwake','driveLimit','speedChip'])assert.ok(controls.includes('id="'+id+'"'),id+' in driving controls');
 assert.match(controls,/id="navMore"[^>]*aria-expanded="false"[^>]*aria-label="More driving controls"/);
 
 // Styles: four secondary controls hide until the body has drive-more, and a camera alert outranks the limit-drop banner.
-for(const id of ['driveMode','navRepeat','navAwake','openStops'])assert.ok(css.includes('body.guiding:not(.drive-more) #'+id),id+' hidden by default while driving');
+for(const id of ['driveMode','navRepeat','navAwake','openStops','navLang'])assert.ok(css.includes('body.guiding:not(.drive-more) #'+id),id+' hidden by default while driving');
 assert.match(css,/#cameraWarning:not\(\.hidden\)~#limitWarning\{display:none\}/);
 assert.ok(html.indexOf('id="cameraWarning"')<html.indexOf('id="limitWarning"'),'sibling rule needs the camera banner first');
 

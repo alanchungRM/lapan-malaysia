@@ -168,3 +168,12 @@ body.guiding:not(.drive-more) #navSos{display:none!important}
 .more-row.help-row{flex-wrap:wrap}
 .margin-pick{display:block;margin:8px 0;font-size:12px;color:#bed0dd}
 .margin-pick select{display:block;width:100%;margin-top:5px;min-height:44px;border:1px solid #435365;border-radius:9px;background:#253243;color:#edf5f2;padding:8px}
+/* Language switch: always one tap away, in the header. */
+.lang-switch{display:inline-flex;border:1px solid #496457;border-radius:12px;overflow:hidden;margin-right:8px}
+.lang-switch button{min-width:44px;min-height:44px;border:0;background:transparent;color:#b8f2ce;font-size:13px;font-weight:800;letter-spacing:.3px;cursor:pointer}
+.lang-switch button[aria-pressed="true"]{background:#16a856;color:#04210f}
+body.guiding .lang-switch{display:none}
+#navLang{width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:#b8f2ce;font-size:13px;font-weight:800}
+body.guiding:not(.drive-more) #navLang{display:none!important}
+#driveControls #navLang{order:-2}
+

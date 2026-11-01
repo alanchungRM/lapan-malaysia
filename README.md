@@ -110,6 +110,14 @@ Camera alerts use `web/speed-cameras.json`, generated the same way with `python3
 
 Measured on the 2026-10-31 extract, by road length with a mapped limit: motorway 83.5%, trunk 41.9%, primary 27.6%, secondary 14.5%, tertiary 7.3%. Local roads (residential, unclassified, living street) are left out because under 3% of them have a mapped limit. Expect limits on expressways and main roads, and a blank sign space on most other streets.
 
+## Languages: English and Bahasa Malaysia
+
+Every screen is available in English and Bahasa Malaysia, with an **EN | BM** switch in the header (and a button under More while driving, so you can change language mid-trip). The first visit follows the first of your phone's languages that Lapan offers (Malay or English); your own choice is then remembered.
+
+How it works: the English text in the page is the key. `web/i18n-ms.js` maps each English string to its Malay one, and `web/i18n.js` swaps text, labels and tooltips in place (no reload, so a trip is never interrupted). The Malay file is downloaded only by people who use Malay. Turn instructions are built from the structured manoeuvre in either language, so TomTom's English sentence is not used in Malay. Spoken text is translated only when the device has a Malay voice; otherwise Lapan keeps speaking English, so the voice stays understandable.
+
+**Adding or changing any screen text means adding its Bahasa Malaysia in `web/i18n-ms.js` in the same PR.** `npm test` fails if page text has no Malay entry, if a placeholder like `{n}` or a tag is lost, or if a translation is long enough to overflow a button. For text built in a script, use `LapanI18n.t('English text {n}', {n: 5})`, or keep a whole sentence as one string so it reads naturally. Terms follow everyday Malaysian usage (laluan, had laju, km/j, lebuh raya, Skrin Utama). A native speaker should review new wording. Not translated yet: the public changelog and the visitor statistics page.
+
 ## Optional edge rate limiting
 
 Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.
