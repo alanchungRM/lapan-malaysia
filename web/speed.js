@@ -43,13 +43,14 @@ function nextDrop(profile,along,horizon=DROP_AHEAD){
  for(let i=first+1;i<=last;i++){const v=profile.limits[i];if(v&&v<=now-DROP_MIN)return {limit:v,distance:Math.max(0,i*profile.step-along),index:i,from:now}}
  return null;
 }
-// ok: at or under the limit. over: noticeably above it. fast: well above it.
-function classify(speedKmh,limit){if(!limit||!Number.isFinite(speedKmh)||speedKmh<0)return 'unknown';const over=speedKmh-limit;return over>=10?'fast':over>=3?'over':'ok'}
-if(typeof module==='object')module.exports={parseLimit,decode,buildProfile,limitAt,nextDrop,classify,STEP};
+// ok: within the margin. over: at or past the margin. fast: seven km/h beyond that. The default margin leaves room for GPS noise.
+const MARGINS=[3,5,10],DEFAULT_MARGIN=3;
+function classify(speedKmh,limit,margin=DEFAULT_MARGIN){if(!limit||!Number.isFinite(speedKmh)||speedKmh<0)return 'unknown';const over=speedKmh-limit;return over>=margin+7?'fast':over>=margin?'over':'ok'}
+if(typeof module==='object')module.exports={parseLimit,decode,buildProfile,limitAt,nextDrop,classify,STEP,MARGINS,DEFAULT_MARGIN};
 if(!root.document)return;
 const $=id=>document.getElementById(id);
-let index=null,loading=null,loadedAt=0,failedAt=0,route=null,profile=null,enabled=true,state='unknown',since=0,spoke=0,dropSpoken=-1;
-try{enabled=localStorage.getItem('lapan-speed-limits')!=='off'}catch{}
+let index=null,loading=null,loadedAt=0,failedAt=0,route=null,profile=null,enabled=true,margin=DEFAULT_MARGIN,state='unknown',since=0,spoke=0,dropSpoken=-1;
+try{enabled=localStorage.getItem('lapan-speed-limits')!=='off';const saved=Number(localStorage.getItem('lapan-speed-margin'));if(MARGINS.includes(saved))margin=saved}catch{}
 async function load(force){if(index&&Date.now()-loadedAt<86400000)return;if(loading)return loading;if(!force&&failedAt&&Date.now()-failedAt<60000)return;loading=(async()=>{try{const r=await fetch('/speed-limits.json'),d=await r.json();if(!r.ok||!Array.isArray(d.ways))throw Error();index=decode(d);loadedAt=Date.now();failedAt=0;route=null;$('speedLimitInfo').textContent='Mapped speed limits © OpenStreetMap contributors · '+d.ways.length.toLocaleString('en')+' road sections · data '+String(d.dataThrough||'date unavailable').slice(0,10)+'. Many roads have no mapped limit, and mapped limits can be wrong or outdated. Always obey road signs.'}catch{failedAt=Date.now();$('speedLimitInfo').textContent='Speed-limit data could not load. Limits are unavailable; switch this off and on to retry.'}finally{loading=null}})();return loading}
 function paint(limit,next){const sign=$('driveLimit'),chip=$('speedChip');if(!sign||!chip)return;sign.classList.toggle('hidden',!limit);if(limit)sign.firstElementChild.textContent=String(limit);sign.setAttribute('aria-label',limit?'Speed limit '+limit+' kilometres per hour':'Speed limit unknown');chip.classList.toggle('over',state==='over');chip.classList.toggle('fast',state==='fast');const el=$('limitWarning');if(next){el.textContent='Speed limit drops to '+next.limit+' km/h · '+Math.round(next.distance/10)*10+' m';el.classList.remove('hidden')}else el.classList.add('hidden')}
 function stop(){route=null;profile=null;state='unknown';since=0;spoke=0;dropSpoken=-1;paint(0,null)}
@@ -65,7 +66,7 @@ root.LapanSpeed={
   const here=root.LapanCameras.project([fix.coords.longitude,fix.coords.latitude],coords);
   if(here.distance>45)return paint(0,null);
   const along=here.along,limit=limitAt(profile,along),speed=Number.isFinite(fix.coords.speed)?fix.coords.speed*3.6:NaN,next=nextDrop(profile,along),now=Date.now(),before=state;
-  state=classify(speed,limit);
+  state=classify(speed,limit,margin);
   if(state!==before)since=now;
   if(next&&dropSpoken!==next.index){dropSpoken=next.index;root.LapanVoice?.speak('Speed limit drops to '+next.limit+' in '+Math.round(next.distance/50)*50+' metres.')}
   if((state==='over'||state==='fast')&&now-since>=4000&&now-spoke>=45000){spoke=now;root.LapanVoice?.speak('Slow down. Speed limit '+limit+'.')}
@@ -73,7 +74,8 @@ root.LapanSpeed={
  },
  // Called when navigation starts, so the data is only downloaded for people who drive.
  setEnabled(on){enabled=on;try{localStorage.setItem('lapan-speed-limits',on?'on':'off')}catch{}if(!on){stop()}else load(true)},
- preload(){if(enabled)load()}
+ preload(){if(enabled)load()},
+ setMargin(value){const next=Number(value);if(!MARGINS.includes(next))return;margin=next;try{localStorage.setItem('lapan-speed-margin',String(next))}catch{}}
 };
-document.addEventListener('DOMContentLoaded',()=>{const box=$('speedLimits');if(!box)return;box.checked=enabled;box.onchange=()=>root.LapanSpeed.setEnabled(box.checked);});
+document.addEventListener('DOMContentLoaded',()=>{const box=$('speedLimits');if(!box)return;box.checked=enabled;box.onchange=()=>root.LapanSpeed.setEnabled(box.checked);const pick=$('speedMargin');if(pick){pick.value=String(margin);pick.onchange=()=>root.LapanSpeed.setMargin(pick.value)}});
 })(typeof window==='object'?window:globalThis);

@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),{parseLimit,decode,buildProfile,limitAt,nextDrop,classify,STEP}=require('../web/speed.js');
+const assert=require('node:assert/strict'),{parseLimit,decode,buildProfile,limitAt,nextDrop,classify,STEP,MARGINS,DEFAULT_MARGIN}=require('../web/speed.js');
 const SCALE=100000;
 const way=(limit,points)=>{const q=points.map(([x,y])=>[Math.round(x*SCALE),Math.round(y*SCALE)]);const row=[limit,q[0][0],q[0][1]];for(let i=1;i<q.length;i++)row.push(q[i][0]-q[i-1][0],q[i][1]-q[i-1][1]);return row};
 
@@ -41,4 +41,9 @@ assert.equal(limitAt(buildProfile([...route].reverse(),index),100,),60,'reverse 
 // Over-limit states include a GPS-noise margin.
 assert.equal(classify(92,90),'ok');assert.equal(classify(93,90),'over');assert.equal(classify(99,90),'over');assert.equal(classify(100,90),'fast');
 assert.equal(classify(NaN,90),'unknown');assert.equal(classify(80,0),'unknown');assert.equal(classify(-1,90),'unknown');assert.equal(classify(0,90),'ok');
+// A larger margin delays both warnings by the same amount, and only the listed margins are accepted by the setting.
+assert.deepEqual(MARGINS,[3,5,10]);assert.equal(DEFAULT_MARGIN,3);
+assert.equal(classify(94,90,5),'ok');assert.equal(classify(95,90,5),'over');assert.equal(classify(101,90,5),'over');assert.equal(classify(102,90,5),'fast');
+assert.equal(classify(99,90,10),'ok');assert.equal(classify(100,90,10),'over');assert.equal(classify(106,90,10),'over');assert.equal(classify(107,90,10),'fast');
+assert.equal(classify(100,90),classify(100,90,3),'omitting the margin keeps the default behaviour');
 console.log('PASS: limit parsing, delta decoding, route profile snapping, crossing and distant-road rejection, gap filling, reverse travel, limit-drop lookahead and over-limit states');
