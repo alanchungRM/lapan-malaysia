@@ -118,6 +118,16 @@ How it works: the English text in the page is the key. `web/i18n-ms.js` maps eac
 
 **Adding or changing any screen text means adding its Bahasa Malaysia in `web/i18n-ms.js` in the same PR.** `npm test` fails if page text has no Malay entry, if a placeholder like `{n}` or a tag is lost, or if a translation is long enough to overflow a button. For text built in a script, use `LapanI18n.t('English text {n}', {n: 5})`, or keep a whole sentence as one string so it reads naturally. Terms follow everyday Malaysian usage (laluan, had laju, km/j, lebuh raya, Skrin Utama). A native speaker should review new wording. Not translated yet: the public changelog and the visitor statistics page.
 
+## Community reports
+
+Anonymous driver reports of a crash, stopped vehicle, object on the road, flooding or pothole. There is deliberately no police, roadblock or camera reporting, and no free text.
+
+- **Storage.** The existing D1 binding `DB`. Apply `drizzle/0002_community_reports.sql` (one table, `community_reports`: id, kind, lat, lon, created_at, expires_at, confirms, denies). Until it is applied, `/api/reports` answers 503 and the app hides the report button, so merging the code alone changes nothing visible.
+- **Privacy.** The table has no column for a person, device or network address, and the Worker never writes one. A report is the kind, a point rounded to about a metre and a clock. The privacy text in the app says so.
+- **Lifetime.** crash 2 h, stopped vehicle 1 h, object 1 h, flooding 3 h, pothole 3 days. Each "still there" answer extends the report, up to twice its normal lifetime. Two "not there" answers that outnumber the confirmations end it immediately. Expired rows are deleted on a later write (about one write in fifty).
+- **Abuse limits.** Same-origin POST only, 256 bytes, six writes per minute per address per Worker isolate, 20,000 live reports in total, and a same-kind report within 150 m counts as a confirmation of the existing one. `/api/reports` is also covered by the optional `RATE_LIMITER` binding. There is no moderation screen. To remove a report by hand: `DELETE FROM community_reports WHERE id = '...'` in the D1 console. Because nobody signs in, a determined person with many addresses could still post false reports; the short lifetimes and the denial rule limit the damage.
+- **Client.** `web/reports.js` fetches reports within 5 km at most once a minute, or after moving a kilometre, only while navigating. It shows the nearest report on the route within 500 m, pins reports on the map, and asks "Still there?" within 120 m. Tests: `tests/reports.mjs` (real SQLite behind a D1-shaped wrapper, needs Node 22.5 or newer, otherwise it skips) and `tests/reports-client.cjs`.
+
 ## Optional edge rate limiting
 
 Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.

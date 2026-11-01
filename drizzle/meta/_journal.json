@@ -15,6 +15,13 @@
       "when": 1793232000000,
       "tag": "0001_browser_visits",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793836800000,
+      "tag": "0002_community_reports",
+      "breakpoints": true
     }
   ]
 }

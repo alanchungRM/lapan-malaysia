@@ -177,3 +177,17 @@ body.guiding .lang-switch{display:none}
 body.guiding:not(.drive-more) #navLang{display:none!important}
 #driveControls #navLang{order:-2}
 
+
+/* Community reports */
+#navReport{display:flex;align-items:center;justify-content:center;width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:#ffd27a;cursor:pointer}
+#navReport[hidden],body.guiding:not(.drive-more) #navReport{display:none!important}#driveControls #navReport{order:-3}
+#reportWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
+#cameraWarning:not(.hidden)~#reportWarning,#reportWarning:not(.hidden)~#limitWarning{display:none}
+#reportAsk{display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px 10px;border-radius:12px;background:#223143;color:#f4f9f8;font-weight:700}#reportAsk.hidden{display:none}#reportAsk span{flex:1}#reportAsk small{display:block;font-size:12px;font-weight:600;color:#ffd27a}
+#reportAsk button{min-width:64px;min-height:48px;border:0;border-radius:12px;background:#2bb88f;color:#05261c;font-size:16px;font-weight:800;cursor:pointer}#reportAsk #reportNo{background:#3a495a;color:#f4f9f8}
+#reportDialog{padding:0 0 18px;border:1px solid #526779;border-radius:24px 24px 16px 16px;background:#172738;color:#f4f9f8;width:min(440px,calc(100vw - 24px));max-height:88dvh;overflow:auto;box-shadow:0 12px 60px #0007;margin:auto auto max(12px,env(safe-area-inset-bottom))}#reportDialog::backdrop{background:#07131dcc;backdrop-filter:blur(3px)}
+.report-body{padding:4px 18px 0;display:grid;gap:12px}.report-body p{margin:0;font-size:13px;color:#cfdedb}#reportStatus{min-height:20px;font-weight:700;color:#f4f9f8}
+.report-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.report-kind{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:88px;padding:10px;border:1px solid #475d6e;border-radius:16px;background:#243546;color:#f5faf9;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.report-kind svg{color:#ffd27a}
+.report-kind:focus-visible,#navReport:focus-visible,#reportAsk button:focus-visible{outline:3px solid #daf67a;outline-offset:2px}
+.report-pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#fff2cc;color:#493100;border:2px solid #d4941c;box-shadow:0 1px 4px #0006}.report-pin svg{width:18px;height:18px}
+.report-kind:last-child:nth-child(odd){grid-column:1/-1}

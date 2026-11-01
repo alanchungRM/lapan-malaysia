@@ -111,3 +111,12 @@ html[data-ui="2"] .lang-switch{border:1px solid var(--line)!important}
 html[data-ui="2"] .lang-switch button{color:var(--ink)!important;background:transparent!important}
 html[data-ui="2"] .lang-switch button[aria-pressed="true"]{background:var(--brand)!important;color:var(--on-brand)!important}
 html[data-ui="2"] #navLang{color:var(--ink)!important;font-weight:800}
+
+/* Community reports */
+html[data-ui="2"] #navReport{background:var(--surface)!important;color:var(--ink)!important;border:0!important}
+html[data-ui="2"] #reportWarning{background:var(--warn)!important;color:var(--on-warn)!important;border:0!important;border-radius:16px!important;font-weight:700}
+html[data-ui="2"] #reportAsk{background:var(--surface)!important;color:var(--ink)!important}html[data-ui="2"] #reportAsk button{background:var(--brand)!important;color:var(--on-brand)!important}html[data-ui="2"] #reportAsk #reportNo{background:var(--surface-2)!important;color:var(--ink)!important}
+html[data-ui="2"] .report-kind{background:var(--surface-2)!important;color:var(--ink)!important;border:1px solid var(--line)!important}html[data-ui="2"] .report-kind svg{color:var(--ink)}
+html[data-ui="2"] .report-body p{color:var(--ink-2)!important}html[data-ui="2"] #reportStatus{color:var(--ink)!important}
+html[data-ui="2"] .report-pin{background:var(--warn);color:var(--on-warn);border-color:var(--on-warn)}
+html[data-ui="2"] #reportAsk small{color:var(--ink-2)!important}
