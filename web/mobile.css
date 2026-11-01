@@ -119,3 +119,13 @@ body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;fo
 
 /* Make additional search discoverable before weak/no-match suggestions. */
 #suggest .search-more-prompt{margin:8px;padding:12px;border:1px solid #75c99f;border-radius:12px;background:#193c37}#suggest .search-more-prompt strong{color:#e5fff0;font-size:14px;line-height:1.4}#suggest .search-more-help{color:#c1e4d3;font-size:12px;line-height:1.5;margin:5px 0 10px}#suggest .search-more-action{display:block;box-sizing:border-box;width:calc(100% - 16px);margin:8px;min-height:52px;padding:12px 16px;border:2px solid #a7efc7;border-radius:10px;background:#a7efc7;color:#142c3d;font-family:inherit;font-size:16px;font-weight:700;line-height:1.35;text-align:center;cursor:pointer;touch-action:manipulation}#suggest .search-more-prompt .search-more-action{width:100%;margin:0}#suggest .search-more-action:focus-visible{outline:3px solid #fff;outline-offset:2px}#suggest .search-more-action:disabled{opacity:.7;cursor:wait}#suggest .search-map-fallback{color:#b8d6cc;font-size:13px;text-align:center}
+/* Speed limit sign and over-limit speedometer states. */
+.limit-sign{box-sizing:border-box;width:54px;height:54px;border:6px solid #d62828;border-radius:50%;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;line-height:1;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px #0004}
+.limit-sign.hidden{display:none}
+body.guiding #driveControls .limit-sign:not(.hidden){display:flex}
+body.guiding #driveControls .speed-chip.over{background:#a85a00;border-color:#ffd9a0}
+body.guiding #driveControls .speed-chip.fast{background:#b3141f;border-color:#ffb3b8;animation:lapan-pulse 1s ease-in-out infinite}
+#driveControls .limit-sign{order:-1;margin-bottom:2px}
+#limitWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
+@media(prefers-reduced-motion:reduce){body.guiding #driveControls .speed-chip.fast{animation:none}}
+@keyframes lapan-pulse{50%{box-shadow:0 0 0 6px #b3141f55}}
