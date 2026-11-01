@@ -93,7 +93,7 @@ Hosting requires a Cloudflare D1 binding named `DB`. Apply the schema in `drizzl
 
 ## Speed limits and speed-camera alerts
 
-`web/speed.js` shows the mapped speed limit on the driving screen, turns the speedometer amber (3 km/h over) and red (10 km/h over), warns before a limit drop of 10 km/h or more, and gives a spoken warning after about 4 seconds of sustained speeding with a 45 second cooldown. Speed-camera alerts in `web/cameras.js` use the mapped road limit when the camera itself has none. Where OpenStreetMap has no `maxspeed`, Lapan shows no limit and never guesses one.
+`web/speed.js` shows the mapped speed limit on the driving screen, turns the speedometer amber at your chosen margin (3, 5 or 10 km/h over, default 3) and red seven km/h beyond it, warns before a limit drop of 10 km/h or more, and gives a spoken warning after about 4 seconds of sustained speeding with a 45 second cooldown. Speed-camera alerts in `web/cameras.js` use the mapped road limit when the camera itself has none. Where OpenStreetMap has no `maxspeed`, Lapan shows no limit and never guesses one.
 
 The data is `web/speed-limits.json`, generated from the Geofabrik Malaysia, Singapore and Brunei extract and licensed ODbL. It is loaded only when navigation starts. Regenerate it with:
 
