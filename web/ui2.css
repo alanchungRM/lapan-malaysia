@@ -72,7 +72,7 @@ html[data-ui="2"] .navpanel{background:var(--turn)!important;color:var(--on-turn
 html[data-ui="2"] .navpanel b,html[data-ui="2"] .navpanel p{color:var(--on-turn)!important}
 html[data-ui="2"] .navpanel #nextturn{font-size:20px!important;font-weight:700}
 html[data-ui="2"] .navpanel .link{color:#DAF67A!important}
-html[data-ui="2"] #cameraWarning,html[data-ui="2"] #limitWarning{background:var(--warn)!important;color:var(--on-warn)!important;border:0!important;border-radius:16px!important;font-weight:700}
+html[data-ui="2"] #cameraWarning,html[data-ui="2"] #hazardWarning,html[data-ui="2"] #limitWarning{background:var(--warn)!important;color:var(--on-warn)!important;border:0!important;border-radius:16px!important;font-weight:700}
 html[data-ui="2"] #navBar{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:24px!important;box-shadow:var(--shadow)!important}
 html[data-ui="2"] #navBar strong,html[data-ui="2"] #navBar small{color:var(--ink)!important}
 html[data-ui="2"] #navBar small{color:var(--ink-2)!important}

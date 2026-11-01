@@ -22,7 +22,7 @@ const securityHeaders={
  ].join('; ')
 };
 // Versioned third-party bundles and icons change rarely; everything else revalidates through its ETag.
-const longCached=/^\/(maplibre\.(js|css)|leaflet\.(js|css)|signals\.json|speed-cameras\.json|speed-limits\.json|map-night-gray\.json|lapan-icon\.svg|lapan-192\.png|lapan-512\.png|apple-touch-icon\.png)$/;
+const longCached=/^\/(maplibre\.(js|css)|leaflet\.(js|css)|signals\.json|speed-cameras\.json|speed-limits\.json|hazards\.json|map-night-gray\.json|lapan-icon\.svg|lapan-192\.png|lapan-512\.png|apple-touch-icon\.png)$/;
 const decodedBinary=new Map();
 function etagMatches(header,etag){return !!header&&header.split(',').some(v=>{v=v.trim();return v==='*'||v.replace(/^W\//,'')===etag})}
 export function withSecurityHeaders(response){
