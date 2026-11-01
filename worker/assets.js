@@ -8,10 +8,10 @@ const securityHeaders={
  'Permissions-Policy':'screen-wake-lock=(self), geolocation=(self), camera=(), microphone=(), payment=(), usb=()',
  'Content-Security-Policy':[
   "default-src 'self'",
-  "script-src 'self' https://unpkg.com",
-  "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' data: blob: https://unpkg.com https://tiles.openfreemap.org",
+  "img-src 'self' data: blob: https://tiles.openfreemap.org",
   "connect-src 'self' https://tiles.openfreemap.org https://photon.komoot.io https://router.project-osrm.org",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
@@ -22,7 +22,7 @@ const securityHeaders={
  ].join('; ')
 };
 // Versioned third-party bundles and icons change rarely; everything else revalidates through its ETag.
-const longCached=/^\/(maplibre\.(js|css)|signals\.json|speed-limits\.json|map-night-gray\.json|lapan-icon\.svg|lapan-192\.png|lapan-512\.png|apple-touch-icon\.png)$/;
+const longCached=/^\/(maplibre\.(js|css)|leaflet\.(js|css)|signals\.json|speed-limits\.json|map-night-gray\.json|lapan-icon\.svg|lapan-192\.png|lapan-512\.png|apple-touch-icon\.png)$/;
 const decodedBinary=new Map();
 function etagMatches(header,etag){return !!header&&header.split(',').some(v=>{v=v.trim();return v==='*'||v.replace(/^W\//,'')===etag})}
 export function withSecurityHeaders(response){

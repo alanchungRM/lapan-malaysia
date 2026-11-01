@@ -65,7 +65,7 @@ Lapan is independent of the services below; no affiliation is implied.
 - [OpenStreetMap](https://www.openstreetmap.org/copyright): geographic data, ODbL.
 - [OSRM](https://project-osrm.org/): routing engine and public demonstration routing service.
 - [Photon](https://photon.komoot.io/): place search.
-- [Leaflet](https://leafletjs.com/): 2D map library, BSD-2-Clause; loaded from unpkg.
+- [Leaflet](https://leafletjs.com/): 2D map library, BSD-2-Clause; bundled version 1.9.4 (`web/leaflet.js`, `web/leaflet.css`, unmodified from the npm package; licence in `THIRD_PARTY_LICENSES/Leaflet-BSD-2-Clause.txt`).
 - [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js): bundled version 5.6.0, BSD-3-Clause. Preserve its copyright and license notices.
 - [OpenFreeMap](https://openfreemap.org/): driving vector basemap; preserve map attribution.
 - [Esri](https://www.esri.com/): planning raster basemap; preserve map attribution and comply with provider terms.

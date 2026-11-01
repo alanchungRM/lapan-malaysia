@@ -34,8 +34,14 @@ r=await get('/api/route',{method:'POST',body:'{}'},{RATE_LIMITER:limiter(true)})
 r=await get('/api/route',{method:'POST',body:'{}'},{RATE_LIMITER:{limit:async()=>{throw Error('limiter down')}}});assert.equal(r.status,400,'limiter outage fails open');
 r=await get('/api/route',{method:'POST',body:'{}'},{});assert.equal(r.status,400,'no binding is a no-op');
 
-// Page markup: third-party scripts/styles carry integrity hashes and fonts do not block through @import.
+// Page markup: no third-party script or style host except fonts, and the bundled Leaflet files are exactly the audited 1.9.4 release.
 const html=await readFile('web/index.html','utf8');
-for(const tag of html.match(/<(?:script|link)[^>]+unpkg\.com[^>]*>/g))assert.match(tag,/integrity="sha384-[A-Za-z0-9+/]+=*"/),tag.slice(0,90);
+assert.doesNotMatch(html,/unpkg\.com/);
+for(const tag of html.match(/<(?:script|link)[^>]+(?:src|href)="https?:\/\/[^>]*>/g))assert.match(tag,/fonts\.(googleapis|gstatic)\.com/,'unexpected external asset '+tag.slice(0,90));
+assert.ok(!csp.includes('unpkg.com'),'CSP no longer allows the script CDN');
+const {createHash}=await import('node:crypto');
+const sha384=async f=>'sha384-'+createHash('sha384').update(await readFile(f)).digest('base64');
+assert.equal(await sha384('web/leaflet.js'),'sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH','web/leaflet.js differs from the published 1.9.4 release');
+assert.equal(await sha384('web/leaflet.css'),'sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H','web/leaflet.css differs from the published 1.9.4 release');
 assert.ok(!html.includes('@import'),'fonts must use link tags');assert.ok(html.includes('rel="preconnect" href="https://fonts.gstatic.com" crossorigin'));
-console.log('PASS: security headers, CSP strictness, ETag/304 revalidation, cache tiers, binary assets, method handling, optional edge rate limiter and SRI');
+console.log('PASS: security headers, CSP strictness, ETag/304 revalidation, cache tiers, binary assets, method handling, optional edge rate limiter and bundled Leaflet integrity');
