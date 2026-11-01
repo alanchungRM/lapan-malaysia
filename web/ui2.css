@@ -111,3 +111,11 @@ html[data-ui="2"] .lang-switch{border:1px solid var(--line)!important}
 html[data-ui="2"] .lang-switch button{color:var(--ink)!important;background:transparent!important}
 html[data-ui="2"] .lang-switch button[aria-pressed="true"]{background:var(--brand)!important;color:var(--on-brand)!important}
 html[data-ui="2"] #navLang{color:var(--ink)!important;font-weight:800}
+
+/* Home and Work shortcuts */
+html[data-ui="2"] .saved-chip,html[data-ui="2"] .saved-edit,html[data-ui="2"] .saved-action{background:var(--surface-2)!important;color:var(--ink)!important;border:1px solid var(--line)!important}
+html[data-ui="2"] .saved-chip.is-set{border-color:var(--brand)!important}
+html[data-ui="2"] .saved-text small,html[data-ui="2"] .saved-body p,html[data-ui="2"] .saved-action small{color:var(--ink-2)!important}
+html[data-ui="2"] .saved-remove{background:transparent!important;color:var(--bad)!important;border-color:var(--bad)!important}
+html[data-ui="2"] .saved-chip:focus-visible,html[data-ui="2"] .saved-edit:focus-visible,html[data-ui="2"] .saved-action:focus-visible{outline-color:var(--ink)}
+html[data-ui="2"] .saved-icon{color:var(--brand)}
