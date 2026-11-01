@@ -106,6 +106,8 @@ npm run build
 
 The script prints how much of each road class has a mapped limit. Without the file the build still works and no limits are shown.
 
+Camera alerts use `web/speed-cameras.json`, generated the same way with `python3 scripts/extract-speed-cameras.py /path/to/malaysia-singapore-brunei.osm.pbf`. It holds only cameras that OpenStreetMap contributors have mapped. On the 2026-10-31 extract that is 293 (244 speed cameras, 49 red-light cameras, 205 with a mapped limit), which is a small share of real enforcement points. Mobile cameras and police traps are not included. The app says so next to the toggle and never claims full coverage. Re-run the script when you refresh the extract, and the build embeds the result.
+
 Measured on the 2026-10-31 extract, by road length with a mapped limit: motorway 83.5%, trunk 41.9%, primary 27.6%, secondary 14.5%, tertiary 7.3%. Local roads (residential, unclassified, living street) are left out because under 3% of them have a mapped limit. Expect limits on expressways and main roads, and a blank sign space on most other streets.
 
 ## Optional edge rate limiting
