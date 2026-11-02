@@ -38,9 +38,11 @@ for(const [fg,bg] of [['on-sign','sign-green'],['on-sign','sign-blue'],['on-warn
 assert.ok(ratio(tokens['warn-sign'],tokens['sign-blue'])>=4,'the yellow alert stands out on the blue banner');assert.ok(ratio(tokens['warn-sign'],tokens['sign-green'])>=4,'and on the green one');
 
 // Look rules that keep the screen readable and closable.
-assert.match(css,/#nextturn \.turn-dist\{[^}]*font-size:clamp\(34px/,'distance is the biggest text on the banner');assert.match(css,/#nextturn\{[^}]*font-size:clamp\(20px/,'road text is at least 20px');
-assert.match(css,/#navTrip \.eta-time b\{font-size:clamp\(30px/,'arrival time is the biggest trip text');assert.match(css,/#navTrip \.eta-time\{flex:0 0 100%/,'duration and distance sit on their own line');
+assert.match(css,/#nextturn \.turn-dist\{[^}]*font-size:clamp\(26px/,'distance is the biggest text on the banner');assert.match(css,/#nextturn\{[^}]*font-size:clamp\(17px/,'road text is at least 17px');
+assert.match(css,/#navTrip .eta-time b\{font-size:clamp\(24px/,'arrival time is the biggest trip text');assert.match(css,/#navTrip \.eta-time\{flex:0 0 100%/,'duration and distance sit on their own line');
 assert.match(css,/#navMore\{--icon:var\(--i-chev-left\)\}[^\n]*#navMore\{--icon:var\(--i-chev-right\)\}/,'the toggle is an arrow that flips when open');
+// Nothing on the driving screen is allowed to grow past a phone-friendly ceiling.
+for(const [what,re,max] of [['turn distance',/#nextturn \.turn-dist\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,32],['turn road text',/#nextturn\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,24],['arrival time',/#navTrip \.eta-time b\{font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,30],['alert text',/#cameraWarning,[^{]*\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,18]]){const m=css.match(re);assert.ok(m,what);assert.ok(Number(m[1])<=max,what+' ceiling '+m[1]+' > '+max)}
 assert.match(css,/#cameraWarning::before[^{]*\{[^}]*mask:var\(--i-warn\)/,'alerts carry a warning-sign symbol');
 assert.match(css,/#navBar #stop\{background:var\(--bad-fill\)/);assert.match(css,/max-width:340px/,'narrow phones get a tighter trip bar');
 // The tray is closed by default and cannot be stuck open or hidden behind the trip bar.
