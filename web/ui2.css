@@ -176,8 +176,7 @@ html[data-ui="2"] #navTrip .eta-sep{margin:0 6px}
 html[data-ui="2"] #navTrip .eta-dur,html[data-ui="2"] #navTrip .eta-dist{font-size:15px}}
 
 /* Share a place or a drive */
-html[data-ui="2"] .share-btn{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important}
-html[data-ui="2"] .share-note{color:var(--ink-2)!important}
+html[data-ui="2"] .share-icon{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important}
 html[data-ui="2"] #placeCard,html[data-ui="2"] #shareToast{background:var(--surface)!important;color:var(--ink)!important;border:0!important;box-shadow:var(--shadow)!important}
 html[data-ui="2"] #placeCard small{color:var(--ink-2)!important}
 html[data-ui="2"] .place-card-actions button{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important}

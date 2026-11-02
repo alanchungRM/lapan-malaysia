@@ -384,5 +384,6 @@ window.LapanI18n.add({
 "I'm on my way to {name}, arriving about {time}. Open in Lapan: {url}":"Saya dalam perjalanan ke {name}, tiba lebih kurang {time}. Buka dalam Lapan: {url}",
 "Lapan: {name}":"Lapan: {name}",
 "Close":"Tutup",
+"Sharing a place makes a link that keeps only the place and its name for six months. No account, no tracking.":"Perkongsian tempat menghasilkan pautan yang hanya menyimpan tempat dan namanya selama enam bulan. Tiada akaun, tiada penjejakan.",
 "Hello":"Helo"
 });

@@ -40,9 +40,10 @@ if(typeof module==='object')module.exports={encodeStateless,decodeStateless,mess
 if(!root.document)return;
 const $=id=>document.getElementById(id);let ctl=null,card=null,pin=null,lookup=null,toastTimer=0;
 const I=()=>root.LapanI18n&&{t:(k,v)=>root.LapanI18n.t(k,v)};
-const say=text=>{const el=$('shareToast');el.textContent=text;el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),6000);if($('status'))$('status').textContent=text};
+const say=text=>{if(card){$('placeCardSub').textContent=text;return}const el=$('shareToast');el.textContent=text;el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),6000)};
 const tr=(key,vars)=>root.LapanI18n?root.LapanI18n.t(key,vars):key.replace(/\{(\w+)\}/g,(x,n)=>n in(vars||{})?vars[n]:x);
 let busy=false;
+const settle=()=>{if(card)$('placeCardSub').textContent=coords(card)};
 async function share(place,kind){
  if(busy)return;busy=true;
  try{
@@ -50,8 +51,8 @@ async function share(place,kind){
   const {url}=await makeLink(place,(u,o)=>fetch(u,o),location.origin),name=labelOf(place);
   let time='';if(kind==='drive'){const eta=root.LapanDriveUI?.parse(ctl?.eta?.()||'');if(eta)time=eta.time+(eta.meridiem||'')}
   const text=message(kind,name,url,time.replace(/ /g,' ').trim(),I());
-  if(navigator.share){try{await navigator.share({title:tr('Lapan: {name}',{name}),text});$('shareToast').classList.add('hidden');return}catch(e){if(e&&e.name==='AbortError'){$('shareToast').classList.add('hidden');return}}}
-  if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(text);say(tr('Link copied. Paste it in a chat.'));return}catch{}}
+  if(navigator.share){try{await navigator.share({title:tr('Lapan: {name}',{name}),text});$('shareToast').classList.add('hidden');settle();return}catch(e){if(e&&e.name==='AbortError'){$('shareToast').classList.add('hidden');settle();return}}}
+  if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(text);say(tr('Link copied. Paste it in a chat.'));setTimeout(settle,4000);return}catch{}}
   say(tr('Sharing is not available here. Copy this link: {url}',{url}));
  }finally{busy=false}
 }
@@ -79,7 +80,7 @@ root.LapanShare={bind(options){
  if(ctl.map)ctl.map.on('click',e=>{if(e&&e.latlng)showCard(e.latlng.lat,e.latlng.lng)});
  const found=readShared(document);if(found){try{history.replaceState(null,'',location.pathname.match(/^\/[sl]\//)?'/':location.pathname)}catch{}apply(found)}
 }};
-$('sharePlace').onclick=()=>{const d=ctl?.destination();if(!d||!valid(d[1],d[2])||d[0]==='My location'){say(tr('Choose a destination first.'));return}share({name:d[0],lat:d[1],lon:d[2]},'place')};
+for(const b of document.querySelectorAll('[data-share-place]'))b.onclick=()=>{const d=ctl?.destination();if(!d||!valid(d[1],d[2])||d[0]==='My location'){say(tr('Choose a destination first.'));return}share({name:d[0],lat:d[1],lon:d[2]},'place')};
 $('navShare').onclick=()=>{const d=ctl?.destination();if(!d||!valid(d[1],d[2])){say(tr('Choose a destination first.'));return}share({name:d[0],lat:d[1],lon:d[2]},'drive')};
 $('placeCardSend').onclick=()=>{const p=pinned();if(p)share({...p,name:card.name||''},'place')};
 $('placeCardRoutes').onclick=()=>{const p=pinned();if(!p)return;hideCard();ctl.choose(p,true)};
