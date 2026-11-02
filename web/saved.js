@@ -13,12 +13,14 @@ function createStore(storage){
 }
 // A current-location fix has no street name, so it is stored by its coordinates and shows the same in both languages.
 const coordinates=(lat,lon)=>lat.toFixed(4)+', '+lon.toFixed(4);
-if(typeof module==='object')module.exports={clean,createStore,coordinates,KEY,KINDS};
+// A chip is narrow, so coordinates are shown to three decimals (about 100 m).
+const chipLabel=name=>/^-?\d+\.\d{4}, -?\d+\.\d{4}$/.test(name)?name.replace(/(\d\.\d{3})\d/g,'$1'):name;
+if(typeof module==='object')module.exports={clean,createStore,coordinates,chipLabel,KEY,KINDS};
 if(!root.document)return;
 const $=id=>document.getElementById(id),store=createStore(root.localStorage||{getItem:()=>null,setItem(){throw Error('unavailable')}});
 let kind='home',destination=()=>null;
 const chip=k=>document.querySelector('[data-saved="'+k+'"]'),edit=k=>document.querySelector('[data-saved-edit="'+k+'"]');
-function render(){for(const k of KINDS){const place=store.get(k),c=chip(k);if(!c)continue;c.querySelector('.saved-name').textContent=place?place[0]:'';c.querySelector('.saved-name').hidden=!place;c.querySelector('.saved-hint').hidden=!!place;edit(k).hidden=!place;c.classList.toggle('is-set',!!place)}}
+function render(){for(const k of KINDS){const place=store.get(k),c=chip(k);if(!c)continue;c.querySelector('.saved-name').textContent=place?chipLabel(place[0]):'';c.querySelector('.saved-name').hidden=!place;c.querySelector('.saved-hint').hidden=!!place;edit(k).hidden=!place;c.classList.toggle('is-set',!!place)}}
 function dialogState(message=''){const place=store.get(kind),to=destination();$('savedTitle').textContent=(place?'Change ':'Set ')+LABEL[kind];$('savedCurrent').hidden=!place;$('savedName').textContent=place?place[0]:'';$('savedUseTo').disabled=!clean(to);$('savedToName').textContent=clean(to)?to[0]:'';$('savedToName').hidden=!clean(to);$('savedRemove').textContent='Remove '+LABEL[kind];$('savedRemove').hidden=!place;$('savedStatus').textContent=message}
 function open(k){kind=k;dialogState();$('savedDialog').showModal();$('savedUseTo').disabled?$('savedUseHere').focus():$('savedUseTo').focus()}
 function saved(place){if(store.set(kind,place)){render();$('savedDialog').close();$('status').textContent=LABEL[kind]+' saved.'}else dialogState('This browser cannot save places right now.')}

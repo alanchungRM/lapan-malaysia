@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const {clean,createStore,coordinates,KEY,KINDS}=require('../web/saved.js');
+const {clean,createStore,coordinates,chipLabel,KEY,KINDS}=require('../web/saved.js');
 const memory=(seed={})=>{const m=new Map(Object.entries(seed));return {getItem:k=>m.has(k)?m.get(k):null,setItem:(k,v)=>m.set(k,String(v)),m}};
 
 // Only real Malaysian places are accepted.
@@ -43,4 +43,5 @@ needed.push('Tap to set','Saved places','Search for a place in the To box first.
 for(const text of needed)assert.ok(dict[text]&&dict[text]!==text||text==='Home'&&dict[text],'no Bahasa Malaysia for: '+text);
 for(const text of [...js.matchAll(/(?:dialogState|status\)?\.textContent=|status\()\s*['"]([^'"]+)['"]/g)].map(m=>m[1]))assert.ok(dict[text],'untranslated string in saved.js: '+text);
 for(const m of js.matchAll(/'([A-Za-z ]+ )'\+LABEL\[kind\]|LABEL\[kind\]\+'([^']+)'/g))for(const L of Object.values(labels)){const text=m[1]?m[1]+L:L+m[2];assert.ok(dict[text],'untranslated composed string in saved.js: '+text)}
+assert.equal(chipLabel('5.3582, 100.3190'),'5.358, 100.319','coordinates fit on a chip');assert.equal(chipLabel('Menara KL'),'Menara KL');assert.equal(chipLabel('Jalan 3.1234, 101.5678 Utara'),'Jalan 3.1234, 101.5678 Utara','only plain coordinates are shortened');
 console.log('PASS: Home and Work validation, storage, bad data, blocked storage, markup and Bahasa Malaysia coverage');
