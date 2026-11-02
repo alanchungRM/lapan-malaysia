@@ -117,37 +117,38 @@ html[data-ui="2"]{--sign-green:#0A6035;--sign-blue:#0B4F9C;--on-sign:#FFFFFF;--w
 html[data-ui="2"]{--i-chev-left:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");--i-chev-right:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");--i-chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l7-7 7 7'/%3E%3C/svg%3E");--i-close:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");--i-locate:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3.6'/%3E%3Cpath d='M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4'/%3E%3C/svg%3E");--i-vol:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z'/%3E%3Cpath d='M15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11'/%3E%3C/svg%3E");--i-vol-less:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z'/%3E%3Cpath d='M15.5 9a4 4 0 0 1 0 6'/%3E%3C/svg%3E");--i-bell:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 17h12l-1.5-2v-4a4.5 4.5 0 0 0-9 0v4z'/%3E%3Cpath d='M10 20a2 2 0 0 0 4 0'/%3E%3C/svg%3E");--i-vol-off:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z'/%3E%3Cpath d='M16 9.5l5 5M21 9.5l-5 5'/%3E%3C/svg%3E");--i-repeat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20 4v5h-5'/%3E%3C/svg%3E");--i-sun:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8'/%3E%3C/svg%3E");--i-warn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l9.5 9.5-9.5 9.5L2.5 12z'/%3E%3Cpath d='M12 8v5M12 16.2v.2'/%3E%3C/svg%3E")}
 
 /* Turn banner */
-html[data-ui="2"] body.guiding .navpanel{background:var(--sign-blue)!important;color:var(--on-sign)!important;border:0!important;border-radius:20px!important;padding:12px 16px 14px!important;max-height:none!important;overflow:visible!important;box-shadow:0 6px 18px rgba(0,0,0,.35)!important}
+html[data-ui="2"] body.guiding .navpanel{background:var(--sign-blue)!important;color:var(--on-sign)!important;border:0!important;border-radius:16px!important;padding:10px 14px 12px!important;max-height:none!important;overflow:visible!important;box-shadow:0 6px 18px rgba(0,0,0,.35)!important}
 html[data-ui="2"] body.guiding .navpanel[data-road="expressway"]{background:var(--sign-green)!important}
 html[data-ui="2"] body.guiding .navpanel[data-mode="status"]{background:var(--turn)!important;color:var(--on-turn)!important}
-html[data-ui="2"] body.guiding .navpanel #nextturn{position:relative;display:block;min-height:0;padding:0!important;margin:0!important;color:inherit!important;font-size:clamp(20px,6.2vw,26px)!important;line-height:1.2;font-weight:700;overflow-wrap:anywhere}
-html[data-ui="2"] body.guiding .navpanel #nextturn:has(.turn-icon){min-height:60px;padding-left:70px!important}
-html[data-ui="2"] #nextturn .turn-icon{display:block;position:absolute;left:0;top:2px;width:58px;height:58px}
-html[data-ui="2"] #nextturn .turn-icon svg{display:block;width:58px;height:58px;stroke-width:2.8}
-html[data-ui="2"] #nextturn .turn-dist{display:block;font-size:clamp(34px,11vw,46px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+html[data-ui="2"] body.guiding .navpanel #nextturn{position:relative;display:block;min-height:0;padding:0!important;margin:0!important;color:inherit!important;font-size:clamp(17px,5vw,21px)!important;line-height:1.2;font-weight:700;overflow-wrap:anywhere}
+html[data-ui="2"] body.guiding .navpanel #nextturn:has(.turn-icon){min-height:44px;padding-left:56px!important}
+html[data-ui="2"] #nextturn .turn-icon{display:block;position:absolute;left:0;top:0;width:44px;height:44px}
+html[data-ui="2"] #nextturn .turn-icon svg{display:block;width:44px;height:44px;stroke-width:2.8}
+html[data-ui="2"] #nextturn .turn-dist{display:block;font-size:clamp(26px,7.4vw,30px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 html[data-ui="2"] #nextturn .turn-sep{display:none}
-html[data-ui="2"] #nextturn .nav-road-badge{font-size:.8em}
+html[data-ui="2"] #nextturn .nav-road-badge{font-size:.78em;padding:1px 5px;margin:0 2px}
+html[data-ui="2"] body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
 /* Alerts use the yellow warning-sign look */
-html[data-ui="2"] #cameraWarning,html[data-ui="2"] #hazardWarning,html[data-ui="2"] #reportWarning,html[data-ui="2"] #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:10px 0 0!important;padding:10px 12px 10px 54px!important;font-size:clamp(16px,4.6vw,19px)!important;line-height:1.25!important;font-weight:800!important}
-html[data-ui="2"] #cameraWarning::before,html[data-ui="2"] #hazardWarning::before,html[data-ui="2"] #reportWarning::before,html[data-ui="2"] #limitWarning::before{content:"";position:absolute;left:10px;top:50%;width:34px;height:34px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
+html[data-ui="2"] #cameraWarning,html[data-ui="2"] #hazardWarning,html[data-ui="2"] #reportWarning,html[data-ui="2"] #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
+html[data-ui="2"] #cameraWarning::before,html[data-ui="2"] #hazardWarning::before,html[data-ui="2"] #reportWarning::before,html[data-ui="2"] #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
 /* Trip bar: arrival time first, then duration and distance, then two icon buttons */
-html[data-ui="2"] body.guiding #navBar{display:grid!important;grid-template-columns:minmax(0,1fr) 52px 52px;grid-template-areas:"trip details stop";align-items:center;gap:0 8px;padding:10px 12px 10px 16px!important;border-radius:26px!important;min-height:0!important;flex-wrap:nowrap!important}
+html[data-ui="2"] body.guiding #navBar{display:grid!important;grid-template-columns:minmax(0,1fr) 44px 44px;grid-template-areas:"trip details stop";align-items:center;gap:0 8px;padding:8px 10px 8px 14px!important;border-radius:22px!important;min-height:0!important;flex-wrap:nowrap!important}
 html[data-ui="2"] body.guiding #navBar .nav-trip{grid-area:trip;position:relative;min-width:0;flex:none!important}
 html[data-ui="2"] body.guiding #navBar #navdetails{grid-area:details;margin:0!important}
 html[data-ui="2"] body.guiding #navBar #endSlot{grid-area:stop}
-html[data-ui="2"] #navBar #navDestination{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px!important;font-weight:600!important;padding-right:18px}
+html[data-ui="2"] #navBar #navDestination{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px!important;font-weight:600!important;padding-right:18px}
 html[data-ui="2"] body.guiding #navBar #navTrip{display:flex!important;flex-wrap:wrap;align-items:baseline;margin-top:2px;font-size:16px!important;font-weight:700!important}
 html[data-ui="2"] #navTrip .eta-label{display:none}
 html[data-ui="2"] #navTrip .eta-time{flex:0 0 100%;display:block}
 html[data-ui="2"] #navTrip .eta-time+.eta-sep{display:none}
-html[data-ui="2"] #navTrip .eta-time b{font-size:clamp(30px,10vw,40px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
-html[data-ui="2"] #navTrip .eta-ampm{display:inline!important;font-size:15px;font-weight:700;margin-left:2px;color:var(--ink-2)}
-html[data-ui="2"] #navTrip .eta-sep{display:inline-block;width:5px;height:5px;margin:0 10px;border-radius:50%;background:var(--ink-2);opacity:.6;align-self:center;font-size:0}
-html[data-ui="2"] #navTrip .eta-dur{font-size:clamp(19px,5.8vw,24px);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
-html[data-ui="2"] #navTrip .eta-dist{font-size:clamp(19px,5.8vw,24px);font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+html[data-ui="2"] #navTrip .eta-time b{font-size:clamp(24px,7vw,28px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+html[data-ui="2"] #navTrip .eta-ampm{display:inline!important;font-size:13px;font-weight:700;margin-left:2px;color:var(--ink-2)}
+html[data-ui="2"] #navTrip .eta-sep{display:inline-block;width:4px;height:4px;margin:0 8px;border-radius:50%;background:var(--ink-2);opacity:.6;align-self:center;font-size:0}
+html[data-ui="2"] #navTrip .eta-dur{font-size:clamp(15px,4.2vw,17px);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+html[data-ui="2"] #navTrip .eta-dist{font-size:clamp(15px,4.2vw,17px);font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
 html[data-ui="2"] body.guiding #navBar .traffic-basis{position:absolute;top:6px;right:0;width:10px;height:10px;margin:0;border-radius:50%;background:var(--ink-2);opacity:.55;font-size:0!important;overflow:hidden}
 html[data-ui="2"] body.guiding #navBar .traffic-basis[data-live="1"]{background:var(--brand);opacity:1}
-html[data-ui="2"] body.guiding #navBar #navdetails,html[data-ui="2"] body.guiding #navBar #stop{width:52px;height:52px;min-height:52px;padding:0!important;border-radius:50%!important;font-size:0!important}
+html[data-ui="2"] body.guiding #navBar #navdetails,html[data-ui="2"] body.guiding #navBar #stop{width:44px;height:44px;min-height:44px;padding:0!important;border-radius:50%!important;font-size:0!important}
 html[data-ui="2"] body.guiding #navBar #stop{background:var(--bad-fill)!important;color:var(--on-bad-fill)!important}
 /* Icon buttons: a drawn symbol in the text colour replaces the glyph, the words stay for screen readers */
 html[data-ui="2"] body.guiding :is(#navMore,#locate,#navVoice,#navRepeat,#navAwake,#navdetails,#stop){font-size:0!important}
@@ -161,7 +162,8 @@ html[data-ui="2"] #navRepeat{--icon:var(--i-repeat)}html[data-ui="2"] #navAwake{
 html[data-ui="2"] #navAwake[data-state="on"]{background:var(--brand)!important;color:var(--on-brand)!important}
 html[data-ui="2"] :is(#navAwake[data-state="failed"],#navRepeat[data-state="blocked"])::after{content:"!";position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--bad-fill);color:var(--on-bad-fill);font-size:11px;font-weight:800;line-height:16px;text-align:center}
 /* The shortcut tray */
-html[data-ui="2"] body.guiding.drive-more #driveMore{background:var(--surface);border:0;box-shadow:var(--shadow)}
+html[data-ui="2"] body.guiding.drive-more #driveMore{background:var(--surface);border:0;box-shadow:var(--shadow);padding:8px;gap:6px;grid-template-columns:repeat(3,44px)}
+html[data-ui="2"] #driveMore>*{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;font-size:14px}
 html[data-ui="2"] #driveMore>*{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:14px!important;box-shadow:none!important;font-weight:800}
 html[data-ui="2"] #driveMore>#navSos{background:var(--bad-fill)!important;color:var(--on-bad-fill)!important}
 
@@ -169,7 +171,6 @@ html[data-ui="2"] #driveMore>:is(#navVoice,#navRepeat,#navAwake){display:flex!im
 /* The column grows upward from the trip bar and never spills over it; on a very small screen the turn banner stays on top. */
 html[data-ui="2"] body.guiding #driveControls{max-height:none!important;overflow:visible!important}
 @media(max-width:340px){
-html[data-ui="2"] body.guiding #navBar{grid-template-columns:minmax(0,1fr) 46px 46px;gap:0 6px;padding:10px 10px 10px 14px!important}
-html[data-ui="2"] body.guiding #navBar #navdetails,html[data-ui="2"] body.guiding #navBar #stop{width:46px;height:46px;min-height:46px}
-html[data-ui="2"] #navTrip .eta-sep{margin:0 7px}
-html[data-ui="2"] #navTrip .eta-dur,html[data-ui="2"] #navTrip .eta-dist{font-size:18px}}
+html[data-ui="2"] body.guiding #navBar{gap:0 6px;padding:8px 8px 8px 12px!important}
+html[data-ui="2"] #navTrip .eta-sep{margin:0 6px}
+html[data-ui="2"] #navTrip .eta-dur,html[data-ui="2"] #navTrip .eta-dist{font-size:15px}}
