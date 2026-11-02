@@ -1,0 +1,131 @@
+/* Lapan new look. Loaded only when ui2.js turns it on (?ui=2). The classic stylesheets stay underneath, so every rule here is scoped to
+   html[data-ui="2"] and sets colour, type and size, never layout. Day and night come from html[data-theme] (see theme.js). */
+html[data-ui="2"]{--bg:#F4F8F6;--surface:#FFFFFF;--surface-2:#EEF3F0;--line:#DCE5E0;--ink:#0E1B16;--ink-2:#4B5E56;--brand:#0F7B5F;--on-brand:#FFFFFF;--lime:#DAF67A;--route:#1F6FEB;--warn:#F2A900;--on-warn:#2A1D00;--bad:#D92D20;--ok:#22A559;--bad-fill:#D92D20;--on-bad-fill:#FFFFFF;--turn:#0E5C47;--on-turn:#FFFFFF;--focus:#1F6FEB;--shadow:0 6px 24px rgba(14,27,22,.16);color-scheme:light}
+html[data-ui="2"][data-theme="night"]{--bg:#0B1411;--surface:#14211C;--surface-2:#1B2C25;--line:#27403A;--ink:#EAF3EE;--ink-2:#9DB2A8;--brand:#2BB88F;--on-brand:#05261C;--route:#5B9BFF;--bad:#FF6B5E;--turn:#0E5C47;--focus:#7FB1FF;--shadow:0 6px 24px rgba(0,0,0,.5);color-scheme:dark}
+
+/* Base: system font (nothing to download), tabular numbers, visible focus, comfortable touch targets, calm motion. */
+html[data-ui="2"] body{background:var(--bg)!important;color:var(--ink)!important;font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif!important;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+html[data-ui="2"] button,html[data-ui="2"] input,html[data-ui="2"] select,html[data-ui="2"] summary,html[data-ui="2"] h1,html[data-ui="2"] h2,html[data-ui="2"] strong{font-family:inherit!important}
+html[data-ui="2"] :focus-visible{outline:3px solid var(--focus)!important;outline-offset:2px!important;border-radius:8px}
+html[data-ui="2"] button,html[data-ui="2"] summary,html[data-ui="2"] select{min-height:44px}
+html[data-ui="2"] a{color:var(--brand)}
+@media (prefers-reduced-motion:reduce){html[data-ui="2"] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Header */
+html[data-ui="2"] header{background:var(--surface)!important;border-bottom:1px solid var(--line)!important;color:var(--ink)!important}
+html[data-ui="2"] .brand{color:var(--ink)!important}
+html[data-ui="2"] .brand span{color:var(--ink-2)!important}
+html[data-ui="2"] a.app-version{color:var(--ink-2)!important;border:1px solid var(--line)!important;background:transparent!important}
+html[data-ui="2"] .menu-launch{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:14px!important;min-width:48px}
+
+/* Sheet and text */
+html[data-ui="2"] aside{background:var(--surface)!important;color:var(--ink)!important;border:0!important;box-shadow:0 -8px 30px rgba(14,27,22,.16)!important;scrollbar-color:var(--line) transparent}
+html[data-ui="2"] aside p,html[data-ui="2"] aside small,html[data-ui="2"] aside label,html[data-ui="2"] .status,html[data-ui="2"] .privacy-line,html[data-ui="2"] #recentHint{color:var(--ink-2)!important}
+html[data-ui="2"] aside h1,html[data-ui="2"] aside h2,html[data-ui="2"] aside summary,html[data-ui="2"] aside strong,html[data-ui="2"] aside b{color:var(--ink)!important}
+html[data-ui="2"] .search-panel{border-bottom:0!important}
+html[data-ui="2"] .search-panel>summary{font-size:20px!important;font-weight:800!important}
+html[data-ui="2"] .search-panel>summary::after,html[data-ui="2"] .more-options>summary::after{color:var(--brand)!important}
+
+/* Search fields */
+html[data-ui="2"] .fields{background:var(--surface-2)!important;border:0!important;border-radius:20px!important;padding:2px 16px!important}
+html[data-ui="2"] .field:first-child{border-bottom:1px solid var(--line)!important}
+html[data-ui="2"] .field input{color:var(--ink)!important;font-size:18px!important;font-weight:600!important;background:transparent!important}
+html[data-ui="2"] .field input::placeholder{color:var(--ink-2)!important;opacity:1}
+html[data-ui="2"] .field label{color:var(--ink-2)!important;font-size:11px!important;font-weight:700!important;letter-spacing:.4px}
+html[data-ui="2"] .tiny{color:var(--brand)!important;min-width:44px;min-height:44px}
+html[data-ui="2"] .dot{border-color:var(--route)!important;background:transparent!important}
+html[data-ui="2"] .dot.dest{background:var(--bad)!important;border-color:var(--bad)!important}
+html[data-ui="2"] .suggest{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:var(--shadow)}
+html[data-ui="2"] .suggest button{background:transparent!important;color:var(--ink)!important;border-color:var(--line)!important}
+
+/* Buttons and chips */
+html[data-ui="2"] .primary{background:var(--brand)!important;color:var(--on-brand)!important;border-radius:16px!important;min-height:56px!important;font-size:18px!important;font-weight:700!important;box-shadow:none!important}
+html[data-ui="2"] .primary:disabled{opacity:.6}
+html[data-ui="2"] .link,html[data-ui="2"] .link:visited{color:var(--brand)!important;font-weight:700}
+html[data-ui="2"] .map-place-actions button{background:transparent!important;color:var(--brand)!important;border:1px solid var(--line)!important;border-radius:14px!important;font-weight:600}
+html[data-ui="2"] .stop-categories button,html[data-ui="2"] .voice-launch,html[data-ui="2"] .toll-launch,html[data-ui="2"] .install-launch,html[data-ui="2"] .statistics-link{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:999px!important;font-weight:600}
+html[data-ui="2"] .install-launch,html[data-ui="2"] .statistics-link{border-radius:16px!important}
+html[data-ui="2"] .stop-categories button[aria-pressed="true"]{background:var(--ink)!important;color:var(--surface)!important}
+html[data-ui="2"] .voice-launch span{color:var(--brand)!important}
+html[data-ui="2"] select,html[data-ui="2"] input[type=number],html[data-ui="2"] input[type=text]{background:var(--surface-2)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:12px!important}
+html[data-ui="2"] .more-options,html[data-ui="2"] .awake-settings,html[data-ui="2"] .signal-settings,html[data-ui="2"] .recent-settings,html[data-ui="2"] .route-costs,html[data-ui="2"] .quick-stops{background:transparent!important;border-color:var(--line)!important;color:var(--ink)!important}
+html[data-ui="2"] .more-options{background:var(--surface-2)!important;border:0!important;border-radius:18px!important}
+html[data-ui="2"] .sos-link{background:#FDE7E4!important;color:#8F1D13!important;border:0!important;border-radius:12px!important}
+html[data-ui="2"][data-theme="night"] .sos-link{background:#4A1F1B!important;color:#FFB8B0!important}
+
+/* Recent places */
+html[data-ui="2"] .recent-face,html[data-ui="2"] .recent-place{background:transparent!important;color:var(--ink)!important;border-color:var(--line)!important}
+html[data-ui="2"] .recent-place small{color:var(--ink-2)!important}
+
+/* Routes */
+html[data-ui="2"] .sectionhead h2{font-size:18px!important}
+html[data-ui="2"] .route{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;color:var(--ink)!important}
+html[data-ui="2"] .route.active{border:2px solid var(--brand)!important;background:var(--surface)!important}
+html[data-ui="2"] .route strong{font-size:22px!important;font-weight:800!important;color:var(--ink)!important}
+html[data-ui="2"] .route small,html[data-ui="2"] .route p{color:var(--ink-2)!important}
+html[data-ui="2"] .badge{background:var(--lime)!important;color:#14301F!important;border-radius:999px!important;padding:4px 9px!important}
+/* Route options as rows: duration first, then distance and toll, then arrival. Three narrow columns made every line wrap. */
+html[data-ui="2"] #routes{display:flex!important;flex-direction:column;gap:8px}
+html[data-ui="2"] #routes .route{display:grid!important;grid-template-columns:100px minmax(0,1fr);grid-template-areas:"dur meta" "badge arr";align-items:center;column-gap:12px;row-gap:1px;padding:10px 12px!important;border-radius:14px!important}
+html[data-ui="2"] #routes .route.active{padding:9px 11px!important}
+html[data-ui="2"] #routes .route .top{display:contents}
+html[data-ui="2"] #routes .route strong{grid-area:dur;font-size:22px!important;line-height:1.1;white-space:nowrap}
+html[data-ui="2"] #routes .route .badge{grid-area:badge;justify-self:start;font-size:10px!important;padding:2px 8px!important;white-space:nowrap}
+html[data-ui="2"] #routes .route p{grid-area:meta;margin:0!important;font-size:14px!important;font-weight:600;line-height:1.3}
+html[data-ui="2"] #routes .route .route-arrival{grid-area:arr;min-width:0;margin:0!important;font-size:12px!important;font-weight:500!important;line-height:1.3;color:var(--ink-2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-ui="2"] #routes .route>:not(.top):not(p):not(.route-arrival){grid-column:1/-1}
+@media(max-width:340px){html[data-ui="2"] #routes .route{grid-template-columns:88px minmax(0,1fr);column-gap:8px}html[data-ui="2"] #routes .route .badge{font-size:9px!important;padding:2px 6px!important}}
+
+html[data-ui="2"] .route-basis{background:var(--surface-2)!important;color:var(--ink-2)!important;border:0!important;border-radius:14px!important}
+html[data-ui="2"] .steps *{color:var(--ink)!important;border-color:var(--line)!important}
+
+/* Driving: turn banner, ETA bar, signs, controls, alerts */
+html[data-ui="2"] .navpanel{background:var(--turn)!important;color:var(--on-turn)!important;border:0!important;border-radius:22px!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] .navpanel b,html[data-ui="2"] .navpanel p{color:var(--on-turn)!important}
+html[data-ui="2"] .navpanel #nextturn{font-size:20px!important;font-weight:700}
+html[data-ui="2"] .navpanel .link{color:#DAF67A!important}
+html[data-ui="2"] #cameraWarning,html[data-ui="2"] #limitWarning{background:var(--warn)!important;color:var(--on-warn)!important;border:0!important;border-radius:16px!important;font-weight:700}
+html[data-ui="2"] #navBar{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:24px!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] #navBar strong,html[data-ui="2"] #navBar small{color:var(--ink)!important}
+html[data-ui="2"] #navBar small{color:var(--ink-2)!important}
+html[data-ui="2"] #navBar button{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:14px!important}
+html[data-ui="2"] #navBar #stop{background:transparent!important;color:var(--bad)!important}
+html[data-ui="2"] #driveControls button,html[data-ui="2"] .open-stops,html[data-ui="2"] .recenter{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:50%!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] .open-stops{border-radius:999px!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:16px!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip strong,html[data-ui="2"] body.guiding #driveControls .speed-chip small{color:var(--ink)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.over{background:var(--warn)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.over strong,html[data-ui="2"] body.guiding #driveControls .speed-chip.over small{color:var(--on-warn)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.fast{background:var(--bad-fill)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.fast strong,html[data-ui="2"] body.guiding #driveControls .speed-chip.fast small{color:var(--on-bad-fill)!important}
+html[data-ui="2"] .limit-sign{background:#fff!important;color:#111!important;border-color:#D92D20!important}
+html[data-ui="2"] .nav-sos{background:var(--bad-fill)!important;color:var(--on-bad-fill)!important;border:0!important;border-radius:50%!important}
+
+/* Map chrome and dialogs */
+html[data-ui="2"] .maptag,html[data-ui="2"] .mapbottom{background:var(--surface)!important;color:var(--ink)!important;border:0!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] .leaflet-bar a{background:var(--surface)!important;color:var(--ink)!important;border-color:var(--line)!important}
+html[data-ui="2"] dialog{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:24px!important}
+html[data-ui="2"] dialog p,html[data-ui="2"] dialog label,html[data-ui="2"] dialog li{color:var(--ink)!important}
+
+/* Polish found in real-browser checks */
+html[data-ui="2"] .maptag,html[data-ui="2"] .maptag b{color:var(--ink)!important}
+html[data-ui="2"] .field input{font-size:17px!important;text-overflow:ellipsis}
+html[data-ui="2"] #driveControls{background:transparent!important;box-shadow:none!important;border:0!important;backdrop-filter:none!important;padding:10px!important}
+html[data-ui="2"] #driveControls button,html[data-ui="2"] #driveControls .speed-chip,html[data-ui="2"] #driveControls .limit-sign{box-shadow:0 2px 8px rgba(0,0,0,.3)!important}
+html[data-ui="2"] #navBar #navTrip{color:var(--ink)!important;font-size:22px!important;font-weight:800!important}
+html[data-ui="2"] #navBar #navDestination{color:var(--ink-2)!important;font-size:14px!important;font-weight:600!important}
+html[data-ui="2"] #navBar .traffic-basis{color:var(--ink-2)!important}
+html[data-ui="2"] .leaflet-bottom.leaflet-right{right:auto!important;left:0!important}
+html[data-ui="2"] .compact-credits{background:var(--surface)!important;color:var(--ink)!important}
+
+/* Language switch */
+html[data-ui="2"] .lang-switch{border:1px solid var(--line)!important}
+html[data-ui="2"] .lang-switch button{color:var(--ink)!important;background:transparent!important}
+html[data-ui="2"] .lang-switch button[aria-pressed="true"]{background:var(--brand)!important;color:var(--on-brand)!important}
+html[data-ui="2"] #navLang{color:var(--ink)!important;font-weight:800}
+
+/* Traffic along the route. Colours are paired with a pattern and words, never colour alone. */
+html[data-ui="2"]{--traffic-clear:var(--brand);--traffic-slow:#B87700;--traffic-heavy:#D93025;--traffic-jam:#D93025}
+html[data-ui="2"][data-theme="night"]{--traffic-clear:var(--brand);--traffic-slow:#FFB020;--traffic-heavy:#FF6B5E;--traffic-jam:#FF6B5E}
+html[data-ui="2"] .traffic-bar{background:var(--line)}
+html[data-ui="2"] .traffic-note{color:var(--ink-2)!important}
