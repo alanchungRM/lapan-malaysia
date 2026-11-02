@@ -61,9 +61,21 @@ html[data-ui="2"] .recent-place small{color:var(--ink-2)!important}
 html[data-ui="2"] .sectionhead h2{font-size:18px!important}
 html[data-ui="2"] .route{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;color:var(--ink)!important}
 html[data-ui="2"] .route.active{border:2px solid var(--brand)!important;background:var(--surface)!important}
-html[data-ui="2"] .route strong{font-size:30px!important;font-weight:800!important;color:var(--ink)!important}
+html[data-ui="2"] .route strong{font-size:22px!important;font-weight:800!important;color:var(--ink)!important}
 html[data-ui="2"] .route small,html[data-ui="2"] .route p{color:var(--ink-2)!important}
 html[data-ui="2"] .badge{background:var(--lime)!important;color:#14301F!important;border-radius:999px!important;padding:4px 9px!important}
+/* Route options as rows: duration first, then distance and toll, then arrival. Three narrow columns made every line wrap. */
+html[data-ui="2"] #routes{display:flex!important;flex-direction:column;gap:8px}
+html[data-ui="2"] #routes .route{display:grid!important;grid-template-columns:100px minmax(0,1fr);grid-template-areas:"dur meta" "badge arr";align-items:center;column-gap:12px;row-gap:1px;padding:10px 12px!important;border-radius:14px!important}
+html[data-ui="2"] #routes .route.active{padding:9px 11px!important}
+html[data-ui="2"] #routes .route .top{display:contents}
+html[data-ui="2"] #routes .route strong{grid-area:dur;font-size:22px!important;line-height:1.1;white-space:nowrap}
+html[data-ui="2"] #routes .route .badge{grid-area:badge;justify-self:start;font-size:10px!important;padding:2px 8px!important;white-space:nowrap}
+html[data-ui="2"] #routes .route p{grid-area:meta;margin:0!important;font-size:14px!important;font-weight:600;line-height:1.3}
+html[data-ui="2"] #routes .route .route-arrival{grid-area:arr;min-width:0;margin:0!important;font-size:12px!important;font-weight:500!important;line-height:1.3;color:var(--ink-2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-ui="2"] #routes .route>:not(.top):not(p):not(.route-arrival){grid-column:1/-1}
+@media(max-width:340px){html[data-ui="2"] #routes .route{grid-template-columns:88px minmax(0,1fr);column-gap:8px}html[data-ui="2"] #routes .route .badge{font-size:9px!important;padding:2px 6px!important}}
+
 html[data-ui="2"] .route-basis{background:var(--surface-2)!important;color:var(--ink-2)!important;border:0!important;border-radius:14px!important}
 html[data-ui="2"] .steps *{color:var(--ink)!important;border-color:var(--line)!important}
 
