@@ -20,8 +20,8 @@ function analyze(route){
 function summary(a){
  if(!a)return '';
  if(!a.congested)return 'No traffic delays reported';
- const km=Math.max(0.1,Math.round(a.congested/100)/10).toFixed(1),min=Math.round(a.delay/60),kind=['','slow','heavy','stop-and-go'][a.worst];
- return km+' km affected · worst: '+kind+(min>=1?' · about '+min+' min extra':'');
+ const km=Math.max(0.1,Math.round(a.congested/100)/10).toFixed(1),min=Math.round(a.delay/60),kind=['','light','heavy','stop-and-go'][a.worst];
+ return (min>=1?'+'+min+' min · ':'')+km+' km delayed · '+kind;
 }
 function bar(a,doc){
  const el=doc.createElement('div');el.className='traffic-bar';el.setAttribute('aria-hidden','true');

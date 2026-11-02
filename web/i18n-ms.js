@@ -365,12 +365,12 @@ window.LapanI18n.add({
 "Mapped traffic light; live colour unavailable":"Lampu isyarat dipetakan; warna masa nyata tidak tersedia",
 "Voice unavailable or interrupted · tap to retry, or choose a voice in Voice & sound":"Suara tidak tersedia atau terganggu · ketik untuk cuba lagi, atau pilih suara dalam Suara & bunyi",
 "No traffic delays reported":"Tiada kelewatan trafik dilaporkan",
-"{km} km affected · worst: slow":"{km} km terjejas · paling teruk: perlahan",
-"{km} km affected · worst: slow · about {min} min extra":"{km} km terjejas · paling teruk: perlahan · kira-kira {min} min tambahan",
-"{km} km affected · worst: heavy":"{km} km terjejas · paling teruk: sesak",
-"{km} km affected · worst: heavy · about {min} min extra":"{km} km terjejas · paling teruk: sesak · kira-kira {min} min tambahan",
-"{km} km affected · worst: stop-and-go":"{km} km terjejas · paling teruk: berhenti-henti",
-"{km} km affected · worst: stop-and-go · about {min} min extra":"{km} km terjejas · paling teruk: berhenti-henti · kira-kira {min} min tambahan",
 "TomTom live route":"Laluan masa nyata TomTom",
+"{km} km delayed · light":"{km} km tertangguh · ringan",
+"{km} km delayed · heavy":"{km} km tertangguh · sesak",
+"{km} km delayed · stop-and-go":"{km} km tertangguh · berhenti-henti",
+"+{min} min · {km} km delayed · light":"+{min} min · {km} km tertangguh · ringan",
+"+{min} min · {km} km delayed · heavy":"+{min} min · {km} km tertangguh · sesak",
+"+{min} min · {km} km delayed · stop-and-go":"+{min} min · {km} km tertangguh · berhenti-henti",
 "Hello":"Helo"
 });

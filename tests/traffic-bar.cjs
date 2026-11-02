@@ -21,11 +21,11 @@ assert.deepEqual(a.parts.map(p=>p.level),[0,1,2,3,2,0],'worst level wins where s
 assert.deepEqual(a.parts.map(p=>[p.from,p.to]),[[0,2],[2,4],[4,5],[5,6],[6,7],[7,10]],'edges tile the whole route');
 assert.equal(Math.round(a.parts.reduce((s,p)=>s+p.meters,0)),Math.round(a.total));
 assert.equal(a.worst,3);assert.equal(a.delay,600);assert.equal(km(a.congested),5.0);
-assert.equal(T.summary(a),'5.0 km affected · worst: stop-and-go · about 10 min extra');
+assert.equal(T.summary(a),'+10 min · 5.0 km delayed · stop-and-go');
 // Bad sections are skipped, never thrown on.
 a=T.analyze(route([null,{startPointIndex:-1,endPointIndex:3,magnitude:2},{startPointIndex:5,endPointIndex:5,magnitude:2},{startPointIndex:1,endPointIndex:99,magnitude:2},{startPointIndex:'1',endPointIndex:3,magnitude:2},{startPointIndex:1,endPointIndex:2,magnitude:2,delay:-5}]));
-assert.equal(a.parts.filter(p=>p.level).length,1);assert.equal(a.delay,0);assert.equal(T.summary(a),'1.0 km affected · worst: heavy','no delay clause under a minute');
-assert.equal(T.summary(T.analyze(route([{startPointIndex:0,endPointIndex:1,magnitude:1,delay:20}]))),'1.0 km affected · worst: slow');
+assert.equal(a.parts.filter(p=>p.level).length,1);assert.equal(a.delay,0);assert.equal(T.summary(a),'1.0 km delayed · heavy','no delay clause under a minute');
+assert.equal(T.summary(T.analyze(route([{startPointIndex:0,endPointIndex:1,magnitude:1,delay:20}]))),'1.0 km delayed · light');
 assert.equal(T.analyze(route([{startPointIndex:0,endPointIndex:2,magnitude:9,delay:10}])).worst,3,'magnitude is capped');
 
 // The bar: widths add up to 100 and every segment has a level class. It is hidden from screen readers; the sentence carries the meaning.
@@ -37,7 +37,7 @@ assert.ok(Math.abs(bar.children.reduce((s,c)=>s+parseFloat(c.style.width),0)-100
 // Every sentence has Bahasa Malaysia, with the numbers kept.
 const entries={};vm.runInNewContext(fs.readFileSync('web/i18n-ms.js','utf8'),{window:{LapanI18n:{add:e=>Object.assign(entries,e)}}});
 const ms=createI18n({storage:{getItem:()=>'ms',setItem(){}},doc:{documentElement:{}},languages:[],voices:()=>[]});ms.add(entries);ms.init();
-for(const [secs,expect] of [[[],'Tiada kelewatan trafik dilaporkan'],[[{startPointIndex:0,endPointIndex:3,magnitude:1,delay:180}],'3.0 km terjejas · paling teruk: perlahan · kira-kira 3 min tambahan'],[[{startPointIndex:0,endPointIndex:3,magnitude:2}],'3.0 km terjejas · paling teruk: sesak'],[[{startPointIndex:0,endPointIndex:3,magnitude:3,delay:90}],'3.0 km terjejas · paling teruk: berhenti-henti · kira-kira 2 min tambahan']])
+for(const [secs,expect] of [[[],'Tiada kelewatan trafik dilaporkan'],[[{startPointIndex:0,endPointIndex:3,magnitude:1,delay:180}],'+3 min · 3.0 km tertangguh · ringan'],[[{startPointIndex:0,endPointIndex:3,magnitude:2}],'3.0 km tertangguh · sesak'],[[{startPointIndex:0,endPointIndex:3,magnitude:3,delay:90}],'+2 min · 3.0 km tertangguh · berhenti-henti']])
  assert.equal(ms.lookup(T.summary(T.analyze(route(secs)))),expect);
 
 // Colour is never the only signal (a pattern and words back it up) and each colour is visible against its surface.
