@@ -364,5 +364,16 @@ window.LapanI18n.add({
 "Traffic light location · live colour unavailable":"Lokasi lampu isyarat · warna masa nyata tidak tersedia",
 "Mapped traffic light; live colour unavailable":"Lampu isyarat dipetakan; warna masa nyata tidak tersedia",
 "Voice unavailable or interrupted · tap to retry, or choose a voice in Voice & sound":"Suara tidak tersedia atau terganggu · ketik untuk cuba lagi, atau pilih suara dalam Suara & bunyi",
+"No toll roads were reported for this route. Not every plaza is mapped, so watch the road signs.":"Tiada jalan bertol dilaporkan untuk laluan ini. Tidak semua plaza dipetakan, jadi perhatikan papan tanda jalan.",
+"Fares: LLM calculator, PLUS and operator websites (data of {d}). Plaza positions: PLUS, LLM and OpenStreetMap. Coverage may be incomplete.":"Kadar: kalkulator LLM, PLUS dan laman web pengendali (data {d}). Kedudukan plaza: PLUS, LLM dan OpenStreetMap. Liputan mungkin tidak lengkap.",
+"{n} km ·":"{n} km ·",
+"Toll ~RM {a}":"Tol ~RM {a}",
+"Toll RM {a}+":"Tol RM {a}+",
+"Toll RM {a}+ (PLUS unavailable)":"Tol RM {a}+ (PLUS tidak tersedia)",
+"No toll":"Tiada tol",
+"~ means an estimate for a Class 1 car from published fares. Temporary discounts and promotions are not included.":"~ bermaksud anggaran untuk kereta Kelas 1 berdasarkan kadar yang diterbitkan. Diskaun sementara dan promosi tidak termasuk.",
+"+ means at least: some tolls on this route could not be priced, so the real total is higher. Class 1 car, standard fares; temporary discounts are not included.":"+ bermaksud sekurang-kurangnya: sebahagian tol di laluan ini tidak dapat dinilai, jadi jumlah sebenar lebih tinggi. Kereta Kelas 1, kadar piawai; diskaun sementara tidak termasuk.",
+"Toll":"Tol",
+"{a} (PLUS unavailable)":"{a} (PLUS tidak tersedia)",
 "Hello":"Helo"
 });

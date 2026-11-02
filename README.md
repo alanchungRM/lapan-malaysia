@@ -118,6 +118,10 @@ How it works: the English text in the page is the key. `web/i18n-ms.js` maps eac
 
 **Adding or changing any screen text means adding its Bahasa Malaysia in `web/i18n-ms.js` in the same PR.** `npm test` fails if page text has no Malay entry, if a placeholder like `{n}` or a tag is lost, or if a translation is long enough to overflow a button. For text built in a script, use `LapanI18n.t('English text {n}', {n: 5})`, or keep a whole sentence as one string so it reads naturally. Terms follow everyday Malaysian usage (laluan, had laju, km/j, lebuh raya, Skrin Utama). A native speaker should review new wording. Not translated yet: the public changelog and the visitor statistics page.
 
+## Toll prices
+
+Each route card shows a toll tag in the style of Waze: **Toll ~RM 8.50** (estimate), **Toll RM 4.20+** (at least; some tolls could not be priced) or **No toll**. Prices come from `worker/toll-rates.json`, built into the Worker from the Lapan toll dataset, and TomTom's toll sections decide where the route is on toll road. How it works, its limits and how to refresh it: `TOLL_ESTIMATES.md`.
+
 ## Optional edge rate limiting
 
 Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.
