@@ -1,5 +1,19 @@
 [
   {
+    "version": "1.0.35",
+    "date": "2026-11-02",
+    "title": "Optional HOT FM navigation pointer",
+    "changes": {
+      "Added": [
+        "An optional “I love hot fm” setting under Screen & navigation replaces the vehicle pointer with the supplied red HOT FM logo in driving views and the 2D fallback."
+      ]
+    },
+    "notes": [
+      "The standard pointer remains the default. Your choice is saved only in this browser."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.34",
     "date": "2026-11-01",
     "title": "Clearer navigation and easier place search",

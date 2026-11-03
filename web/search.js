@@ -42,6 +42,12 @@ $('placeUseMap').onclick=()=>{dialog.close();openMap(target)};
  input.addEventListener('input',()=>{cancelSearch();invalidate();set(id,null);target=id;const q=input.value.trim(),n=sequence;const items=local(q);if(q.length<3){inline(items,id,'Enter at least 3 characters, or choose on map.');return}inline(items,id,'Searching for matching places…');timer=setTimeout(async()=>{controller=new AbortController();try{const result=await search(q,items,controller.signal,false),found=result.items;if(n!==sequence)return;$('extraSearchCredit').hidden=!result.extra;inline(found,id,(found.some(p=>match(q,p).strong)?'Check the town and address, then select a place.':found.length?'Only similar names found. Add a town or choose on map.':'No matching places. Add a town or state, or choose on map.')+(result.warning?' Additional search is unavailable.':''))}catch(e){if(n===sequence)inline(items,id,'Online search is unavailable. Retry, use a listed place, or choose on map.')}},450)});
  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();$('plan').click()}})
 });
+const clearDestination=$('clearDestination');
+if(clearDestination)clearDestination.onclick=()=>{
+ cancelSearch();invalidate();set('destination',null);$('destination').value='';
+ $('destination').focus();cancelSearch();box.replaceChildren();box.style.display='none';
+ status('Destination cleared. Enter a new place or choose on map.');
+};
 async function resolveAll(){if(resolveBusy)return false;resolveBusy=true;cancelSearch();box.style.display='none';try{for(const id of ['origin','destination']){
  if(get(id))continue;const q=$(id).value.trim();if(!q){if(id==='origin')continue;status('Enter a destination or choose it on the map.');$(id).focus();return false}
  const rev=sequence,exact=unique([...(root.LapanPlaces?.exact(q)||[]),...local(q).filter(p=>normal(p[0])===normal(q))]);let items,extra=false;
