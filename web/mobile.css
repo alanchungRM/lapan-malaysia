@@ -124,3 +124,6 @@ body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;fo
 
 /* Centre the supplied square wordmark in the existing marker and preview frames. */
 .hot-fm-choice img,.vehicle-hot-fm img,.hot-fm-leaflet img{object-fit:cover;object-position:center}
+
+/* Keep a touch-friendly clear action beside the destination, without squeezing the input. */
+.field>div{min-width:0}.field .clear-destination{flex:0 0 44px;min-width:44px;min-height:44px;font-size:25px;line-height:1;color:#d8e8ed}.field:has(#destination:placeholder-shown) .clear-destination{visibility:hidden}.field .clear-destination:focus-visible{outline:2px solid #a7efc7;outline-offset:2px;border-radius:8px}
