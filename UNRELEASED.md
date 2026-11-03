@@ -1,3 +1,3 @@
 # Unreleased changes
 
-No pending public release notes. Reviewed changes included in v1.0.34.
+No pending public release notes. Reviewed changes included in v1.0.35.

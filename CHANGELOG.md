@@ -2,6 +2,18 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.35] — 2026-11-02
+
+Optional HOT FM navigation pointer
+
+### Added
+
+- An optional “I love hot fm” setting under Screen & navigation replaces the vehicle pointer with the supplied red HOT FM logo in driving views and the 2D fallback.
+
+> The standard pointer remains the default. Your choice is saved only in this browser.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.34] — 2026-11-01
 
 Clearer navigation and easier place search
