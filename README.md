@@ -65,7 +65,7 @@ Lapan is independent of the services below; no affiliation is implied.
 - [OpenStreetMap](https://www.openstreetmap.org/copyright): geographic data, ODbL.
 - [OSRM](https://project-osrm.org/): routing engine and public demonstration routing service.
 - [Photon](https://photon.komoot.io/): place search.
-- [Leaflet](https://leafletjs.com/): 2D map library, BSD-2-Clause; loaded from unpkg.
+- [Leaflet](https://leafletjs.com/): 2D map library, BSD-2-Clause; bundled version 1.9.4 (`web/leaflet.js`, `web/leaflet.css`, unmodified from the npm package; licence in `THIRD_PARTY_LICENSES/Leaflet-BSD-2-Clause.txt`).
 - [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js): bundled version 5.6.0, BSD-3-Clause. Preserve its copyright and license notices.
 - [OpenFreeMap](https://openfreemap.org/): driving vector basemap; preserve map attribution.
 - [Esri](https://www.esri.com/): planning raster basemap; preserve map attribution and comply with provider terms.
@@ -90,6 +90,34 @@ Before a new release, add reviewed notes for the next patch version to `web/chan
 `/statistics` shows aggregate navigation-page views, active browser tabs and broad device/browser categories. It does not identify people. Tracking starts with v1.0.18 and respects browser privacy signals and a local opt-out.
 
 Hosting requires a Cloudflare D1 binding named `DB`. Apply the schema in `drizzle/0000_visitor_statistics.sql` before serving analytics requests. On Sites, declare `"d1": "DB"` in the private hosting manifest; Sites applies packaged migrations at deploy time. No database or hosting credential belongs in the public repository.
+
+## Speed limits and speed-camera alerts
+
+`web/speed.js` shows the mapped speed limit on the driving screen, turns the speedometer amber (3 km/h over) and red (10 km/h over), warns before a limit drop of 10 km/h or more, and gives a spoken warning after about 4 seconds of sustained speeding with a 45 second cooldown. Speed-camera alerts in `web/cameras.js` use the mapped road limit when the camera itself has none. Where OpenStreetMap has no `maxspeed`, Lapan shows no limit and never guesses one.
+
+The data is `web/speed-limits.json`, generated from the Geofabrik Malaysia, Singapore and Brunei extract and licensed ODbL. It is loaded only when navigation starts. Regenerate it with:
+
+```sh
+python3 -m venv .venv && . .venv/bin/activate
+python3 -m pip install osmium
+python3 scripts/extract-speed-limits.py /path/to/malaysia-singapore-brunei.osm.pbf
+npm run build
+```
+
+The script prints how much of each road class has a mapped limit. Without the file the build still works and no limits are shown.
+
+Measured on the 2026-10-31 extract, by road length with a mapped limit: motorway 83.5%, trunk 41.9%, primary 27.6%, secondary 14.5%, tertiary 7.3%. Local roads (residential, unclassified, living street) are left out because under 3% of them have a mapped limit. Expect limits on expressways and main roads, and a blank sign space on most other streets.
+
+## Optional edge rate limiting
+
+Request limits inside each handler are per Worker isolate, so they are only a best-effort backstop. For a public deployment, add a [Workers Rate Limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) binding named `RATE_LIMITER`; `/api/route`, `/api/place-search`, `/api/traffic-eta`, `/api/visit` and `/api/nearby` are then limited per client IP and path across the location. Without the binding nothing changes, and a limiter outage fails open.
+
+```jsonc
+// wrangler.jsonc
+"ratelimits": [{"name": "RATE_LIMITER", "namespace_id": "1001", "simple": {"limit": 30, "period": 60}}]
+```
+
+Response headers (CSP, HSTS and others) are set in `worker/assets.js`. If you add a new third-party host for scripts, styles, images or data requests, add it to the Content-Security-Policy there.
 
 ## Live route planning
 
