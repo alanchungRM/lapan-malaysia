@@ -22,3 +22,13 @@ Set the server-only `TOMTOM_API_KEY` secret to enable TomTom route reassessment.
 Only `amenity=place_of_worship` + `religion=muslim` entries qualify; `access=private/no` entries and points outside the app's Malaysia polygons are excluded. Nodes and mapped way/relation geometries are supported. The existing state polygons come from geoBoundaries gbOpen MYS ADM1 2017, OSM-derived, rounded/grouped: some border or island places may be omitted. This is a geographic and OSM-tag filter, not name matching. Entrances, opening hours and facilities are not independently verified.
 
 The separate Overpass JSON importer remains available for future reviewed imports. Review attribution and geographic filtering before changing datasets. The derived database is downloadable at `/prayer-places.json`; source/licence notice is served at `/prayer-data-notices`.
+
+## Staging speed-limit trial (PR #17 / #23)
+
+Adapted from @dandycrypto's contributions. `web/speed-limits.json` is a Malaysia-filtered ODbL derived dataset generated from the Geofabrik regional extract with `python scripts/extract-speed-limits.py /path/to/extract.osm.pbf` (requires osmium and shapely). Only mapped numeric limits on motorway/trunk/primary/secondary/tertiary roads and their links are included. Conditional, directional and unmapped limits are omitted; local-road coverage is deliberately absent. Never interpret the display as authoritative. Obey posted signs. The selected 3/5/10 km/h margin changes warning sensitivity only, not the legal limit.
+
+Data loads only when navigation begins or the user enables the feature. Route matching and warning calculations run on the device, with no new external/paid requests or journey storage. Downloaded derived data includes source/licence metadata. Approximate Malaysia boundaries may omit some border/island segments. No automated data refresh is configured.
+
+## Staging bundled cameras (PR #24)
+
+`web/speed-cameras.json` contains 83 OSM-mapped camera nodes (61 speed, 22 red-light) from the 2026-11-03T21:24:23Z Geofabrik regional extract, filtered to the same approximate Malaysia boundary as prayer places. This is sparse mapped coverage, not a complete enforcement database; mobile cameras are not included. © OpenStreetMap contributors, ODbL 1.0, https://www.openstreetmap.org/copyright. Rebuild explicitly using `python scripts/extract-speed-cameras.py /path/to/extract.osm.pbf` (osmium and shapely required). The derived database is served as `/speed-cameras.json`; the legacy `/api/cameras` endpoint serves the same data without the unsupported cache API or external lookups. No automatic refresh is configured. Adapted from @dandycrypto PR #24.

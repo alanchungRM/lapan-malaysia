@@ -185,3 +185,24 @@ body.guiding:not(.drive-more) #driveMode,body.guiding:not(.drive-more) #navRepea
 .prayer-notice{margin:12px 18px;padding:10px 12px;background:#243d42;border:1px solid #4b7369;border-radius:10px;color:#d1e9df;font-size:12px;line-height:1.5}
 
 .prayer-credit{font-size:11px;margin:0 18px 12px}.prayer-credit a{color:#9beabd}
+
+/* Speed limit sign and over-limit speedometer states. */
+.limit-sign{box-sizing:border-box;width:54px;height:54px;border:6px solid #d62828;border-radius:50%;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;line-height:1;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px #0004}
+.limit-sign.hidden{display:none}
+body.guiding #driveControls .limit-sign:not(.hidden){display:flex}
+body.guiding #driveControls .speed-chip.over{background:#a85a00;border-color:#ffd9a0}
+body.guiding #driveControls .speed-chip.fast{background:#b3141f;border-color:#ffb3b8;animation:lapan-pulse 1s ease-in-out infinite}
+#driveControls .limit-sign{order:-1;margin-bottom:2px}
+#limitWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
+@media(prefers-reduced-motion:reduce){body.guiding #driveControls .speed-chip.fast{animation:none}}
+@keyframes lapan-pulse{50%{box-shadow:0 0 0 6px #b3141f55}}
+.margin-pick{display:block;margin:8px 0;font-size:12px;color:#bed0dd}.margin-pick select{display:block;width:100%;margin-top:5px;min-height:44px;border:1px solid #435365;border-radius:9px;background:#253243;color:#edf5f2;padding:8px}
+
+body.guiding #driveControls .speed-chip.over,body.guiding #driveControls .speed-chip.fast{color:#fff}body.guiding #driveControls .speed-chip.over strong,body.guiding #driveControls .speed-chip.over small,body.guiding #driveControls .speed-chip.fast strong,body.guiding #driveControls .speed-chip.fast small{color:#fff}
+
+/* Staging-only status: compact, outside map/driving controls, and never intercepts touches. */
+.staging-build{box-sizing:border-box;background:#233b35;color:#c0f2d5;border-bottom:1px solid #4e7661;padding:5px 12px;font-size:10px;line-height:1.4;text-align:center;overflow-wrap:anywhere}
+body.guiding .staging-build{position:fixed;top:0;left:0;right:0;z-index:900;padding:2px 8px;font-size:9px;pointer-events:none}
+body.guiding .navpanel{top:calc(36px + env(safe-area-inset-top))!important}
+
+@media(min-width:761px){.staging-build{height:28px;display:flex;align-items:center;justify-content:center}.shell{height:calc(100dvh - 92px)}}

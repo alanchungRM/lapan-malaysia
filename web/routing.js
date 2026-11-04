@@ -12,12 +12,16 @@ async function getJSON(url,options,signal,timeoutMs){
 }
 async function request(from,to,alternatives,signal){
  let error;
+ const osrmOnly=root.document?.documentElement?.dataset?.routingProvider==='OSRM';
+ if(osrmOnly)error={allowBasic:true,retryAfterMs:0};
+ if(!osrmOnly){
  try{
   const {r,d}=await getJSON('/api/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to,alternatives})},signal,19000);
   if(r.ok&&d.code==='Ok'&&d.routes?.length)return d;
   // Never bypass input errors, no-route decisions or rejected restricted routes.
   error=Object.assign(new Error(d.error||'Live routing unavailable'),{allowBasic:d.allowBasic===true||r.status===429||r.status>=500,retryAfterMs:Math.min(300000,Math.max(0,Number(d.retryAfterSeconds)||0))*1000});
  }catch(e){if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');error=Object.assign(new Error('Live routing connection unavailable.'),{allowBasic:true})}
+ }
  if(!error.allowBasic)throw error;
  if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');
  let result;
