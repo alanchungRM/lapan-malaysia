@@ -13,3 +13,5 @@ Connect bundled OSM prayer-place search to both From/To fields, including typing
 Staging only: adapted @dandycrypto PR #31 (16e0ccbbbfa13c96b13e209c97d00b5e71fd3a9a) to the existing design: sign-coloured turn banner and arrows, clear arrival/duration/distance hierarchy, warning panels, icon controls and a closable shortcut tray. Preserved OSRM-only routing, prayer search and staged speed/camera features; excluded the skipped new planner look. Version and public release log unchanged.
 
 Staging only: position route-drawing/GPS feedback below the measured turn banner, adapting to wrapped instructions and screen rotation, with room for the map attribution control. Version and public release log unchanged.
+
+Staging only: adapt @dandycrypto PR #21 network-first offline app shell with four-second fallback. Cache only approved app assets; exclude APIs, private reports, authentication and statistics. Content-based cache revision works without a version increase. Internet remains required for routing, search, traffic and map tiles.
