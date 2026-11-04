@@ -51,11 +51,27 @@ function badges(step={},message=format(step)){
  return parts;
 }
 const badgeRenders=new WeakMap();
+// Turn arrows for the driving banner. Own artwork, drawn with strokes so they take the banner's text colour.
+const svg=body=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+body+'</svg>';
+const ICONS={straight:svg('<path d="M12 21V4"/><path d="M5.5 10.5L12 4l6.5 6.5"/>'),right:svg('<path d="M6 21v-7a4 4 0 0 1 4-4h9"/><path d="M14.5 5.5L19 10l-4.5 4.5"/>'),left:svg('<path d="M18 21v-7a4 4 0 0 0-4-4H5"/><path d="M9.5 5.5L5 10l4.5 4.5"/>'),uturn:svg('<path d="M7 21V9.5a4.5 4.5 0 0 1 9 0V16"/><path d="M12.5 12.5L16 16.5l3.5-4"/>'),'fork-right':svg('<path d="M8 21v-5l8-8"/><path d="M10 6h6v6"/>'),'fork-left':svg('<path d="M16 21v-5L8 8"/><path d="M14 6H8v6"/>'),roundabout:svg('<circle cx="12" cy="14" r="4" stroke-width="2.2"/><path d="M12 22v-4" stroke-width="2.2"/><path d="M12 10V3.2" stroke-width="2.2"/><path d="M8.6 6.4L12 3l3.4 3.4" stroke-width="2.2"/>'),arrive:svg('<path d="M6 21V4"/><path d="M6 5h12l-3 4 3 4H6"/>')};
+function iconName(step={}){
+ const m=step.maneuver||{},type=clean(m.type).replaceAll('_',' '),mod=clean(m.modifier),side=/\bleft\b/.test(mod)?'left':/\bright\b/.test(mod)?'right':'';
+ if(type==='arrive')return 'arrive';if(/roundabout|rotary/.test(type))return 'roundabout';if(mod==='uturn')return 'uturn';
+ if(type==='fork'||/ramp/.test(type))return side==='left'?'fork-left':side==='right'?'fork-right':'straight';
+ return side||'straight';
+}
+// Expressways and their ramps are signed green in Malaysia, other roads blue.
+const expressway=(step={})=>/(^|;)\s*(?:E|AH)\s?\d/i.test(clean(step.ref))||/ramp/.test(clean(step.maneuver?.type).replaceAll('_',' '))||!!clean(step.exits);
 function render(node,step,message){
- const parts=badges(step,message),text=parts.map(part=>part.text).join(''),key=JSON.stringify(parts);
+ let parts=badges(step,message);
+ const lead=step&&step.maneuver&&typeof message==='string'?parts[0]&&!parts[0].kind&&parts[0].text.match(/^(\d+(?:\.\d+)?\s*(?:m|km))(\s*·\s*)/):null;
+ if(lead)parts=[{kind:'dist',text:lead[1]},{kind:'sep',text:lead[2]},...(parts[0].text.length>lead[0].length?[{text:parts[0].text.slice(lead[0].length)}]:[]),...parts.slice(1)];
+ const icon=lead?iconName(step):'',text=parts.map(part=>part.text).join(''),key=JSON.stringify([parts,icon]);
  if(badgeRenders.get(node)===key&&node.textContent===text)return;
  const doc=node.ownerDocument||root.document;
- node.replaceChildren(...parts.map(part=>{if(!part.kind)return doc.createTextNode(part.text);const badge=doc.createElement('span');badge.className='nav-road-badge nav-road-badge--'+part.kind;badge.textContent=part.text;badge.title=words(false).T(part.kind==='exit'?'Signed exit number':'Signed road number');return badge}));badgeRenders.set(node,key);
+ const panel=node.closest?.('.navpanel');if(panel&&panel.dataset)panel.dataset.road=lead&&expressway(step)?'expressway':'road';
+ const lead_nodes=[];if(icon){const holder=doc.createElement('span');holder.className='turn-icon';holder.innerHTML=ICONS[icon];lead_nodes.push(holder)}
+ node.replaceChildren(...lead_nodes,...parts.map(part=>{if(!part.kind)return doc.createTextNode(part.text);if(part.kind==='dist'||part.kind==='sep'){const piece=doc.createElement('span');piece.className='turn-'+part.kind;piece.textContent=part.text;return piece}const badge=doc.createElement('span');badge.className='nav-road-badge nav-road-badge--'+part.kind;badge.textContent=part.text;badge.title=words(false).T(part.kind==='exit'?'Signed exit number':'Signed road number');return badge}));badgeRenders.set(node,key);
 }
-root.LapanDirections={format,speech,badges,render};if(typeof module==='object')module.exports={format,speech,badges,render};
+root.LapanDirections={format,speech,badges,render,iconName,expressway};if(typeof module==='object')module.exports={format,speech,badges,render,iconName,expressway,ICONS};
 })(typeof window==='object'?window:globalThis);

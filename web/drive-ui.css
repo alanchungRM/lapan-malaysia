@@ -1,0 +1,65 @@
+/* Driving screen: Malaysian sign colours, large turn banner, clear trip line and an always-closable shortcut tray. */
+html{--bad-fill:#9F2434;--on-bad-fill:#FFFFFF;--sign-green:#0A6035;--sign-blue:#0B4F9C;--on-sign:#FFFFFF;--warn-sign:#FFD200;--on-warn-sign:#1A1A1A}
+html{--i-chev-left:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");--i-chev-right:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");--i-chev-up:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l7-7 7 7'/%3E%3C/svg%3E");--i-close:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");--i-locate:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3.6'/%3E%3Cpath d='M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4'/%3E%3C/svg%3E");--i-vol:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z'/%3E%3Cpath d='M15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11'/%3E%3C/svg%3E");--i-vol-less:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z'/%3E%3Cpath d='M15.5 9a4 4 0 0 1 0 6'/%3E%3C/svg%3E");--i-bell:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 17h12l-1.5-2v-4a4.5 4.5 0 0 0-9 0v4z'/%3E%3Cpath d='M10 20a2 2 0 0 0 4 0'/%3E%3C/svg%3E");--i-vol-off:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z'/%3E%3Cpath d='M16 9.5l5 5M21 9.5l-5 5'/%3E%3C/svg%3E");--i-repeat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12a8 8 0 1 1-2.6-5.9'/%3E%3Cpath d='M20 4v5h-5'/%3E%3C/svg%3E");--i-sun:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8'/%3E%3C/svg%3E");--i-warn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l9.5 9.5-9.5 9.5L2.5 12z'/%3E%3Cpath d='M12 8v5M12 16.2v.2'/%3E%3C/svg%3E")}
+
+/* Turn banner */
+html body.guiding .navpanel{background:var(--sign-blue)!important;color:var(--on-sign)!important;border:0!important;border-radius:16px!important;padding:10px 14px 12px!important;max-height:none!important;overflow:visible!important;box-shadow:0 6px 18px rgba(0,0,0,.35)!important}
+html body.guiding .navpanel[data-road="expressway"]{background:var(--sign-green)!important}
+html body.guiding .navpanel[data-mode="status"]{background:#142330!important;color:#FFFFFF!important}
+html body.guiding .navpanel #nextturn{position:relative;display:block;min-height:0;padding:0!important;margin:0!important;color:inherit!important;font-size:clamp(17px,5vw,21px)!important;line-height:1.2;font-weight:700;overflow-wrap:anywhere}
+html body.guiding .navpanel #nextturn:has(.turn-icon){min-height:44px;padding-left:56px!important}
+html #nextturn .turn-icon{display:block;position:absolute;left:0;top:0;width:44px;height:44px}
+html #nextturn .turn-icon svg{display:block;width:44px;height:44px;stroke-width:2.8}
+html #nextturn .turn-dist{display:block;font-size:clamp(26px,7.4vw,30px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+html #nextturn .turn-sep{display:none}
+html #nextturn .nav-road-badge{font-size:.78em;padding:1px 5px;margin:0 2px}
+html body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+/* Alerts use the yellow warning-sign look */
+html #cameraWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
+html #cameraWarning::before::before::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
+/* Trip bar: arrival time first, then duration and distance, then two icon buttons */
+html body.guiding #navBar{display:grid!important;grid-template-columns:minmax(0,1fr) 44px 44px;grid-template-areas:"trip details stop";align-items:center;gap:0 8px;padding:8px 10px 8px 14px!important;border-radius:22px!important;min-height:0!important;flex-wrap:nowrap!important}
+html body.guiding #navBar .nav-trip{grid-area:trip;position:relative;min-width:0;flex:none!important}
+html body.guiding #navBar #navdetails{grid-area:details;margin:0!important}
+html body.guiding #navBar #endSlot{grid-area:stop}
+html #navBar #navDestination{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px!important;font-weight:600!important;padding-right:18px}
+html body.guiding #navBar #navTrip{display:flex!important;flex-wrap:wrap;align-items:baseline;margin-top:2px;font-size:16px!important;font-weight:700!important}
+html #navTrip .eta-label{display:none}
+html #navTrip .eta-time{flex:0 0 100%;display:block}
+html #navTrip .eta-time+.eta-sep{display:none}
+html #navTrip .eta-time b{font-size:clamp(24px,7vw,28px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+html #navTrip .eta-ampm{display:inline!important;font-size:13px;font-weight:700;margin-left:2px;color:var(--muted)}
+html #navTrip .eta-sep{display:inline-block;width:4px;height:4px;margin:0 8px;border-radius:50%;background:var(--muted);opacity:.6;align-self:center;font-size:0}
+html #navTrip .eta-dur{font-size:clamp(15px,4.2vw,17px);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+html #navTrip .eta-dist{font-size:clamp(15px,4.2vw,17px);font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+html body.guiding #navBar .traffic-basis{position:absolute;top:6px;right:0;width:10px;height:10px;margin:0;border-radius:50%;background:var(--muted);opacity:.55;font-size:0!important;overflow:hidden}
+html body.guiding #navBar .traffic-basis[data-live="1"]{background:var(--green);opacity:1}
+html body.guiding #navBar #navdetails,html body.guiding #navBar #stop{width:44px;height:44px;min-height:44px;padding:0!important;border-radius:50%!important;font-size:0!important}
+html body.guiding #navBar #stop{background:var(--bad-fill)!important;color:var(--on-bad-fill)!important}
+/* Icon buttons: a drawn symbol in the text colour replaces the glyph, the words stay for screen readers */
+html body.guiding :is(#navMore,#locate,#navVoice,#navRepeat,#navAwake,#navdetails,#stop){font-size:0!important}
+html body.guiding :is(#navMore,#locate,#navVoice,#navRepeat,#navAwake,#navdetails,#stop)::before{content:"";display:block;flex:none;width:26px;height:26px;background:currentColor;-webkit-mask:var(--icon) center/contain no-repeat;mask:var(--icon) center/contain no-repeat}
+html body.guiding #driveControls :is(#navVoice,#navRepeat,#navAwake){position:relative}
+html body.guiding :is(#navMore,#locate,#navdetails,#stop){display:inline-flex!important;align-items:center;justify-content:center}
+html #navMore{--icon:var(--i-chev-left)}html body.drive-more #navMore{--icon:var(--i-chev-right)}
+html #locate{--icon:var(--i-locate)}html #navdetails{--icon:var(--i-chev-up)}html #stop{--icon:var(--i-close)}
+html #navVoice{--icon:var(--i-vol)}html #navVoice[data-mode="less"]{--icon:var(--i-vol-less)}html #navVoice[data-mode="alerts"]{--icon:var(--i-bell)}html #navVoice[data-mode="off"]{--icon:var(--i-vol-off)}
+html #navRepeat{--icon:var(--i-repeat)}html #navAwake{--icon:var(--i-sun)}
+html #navAwake[data-state="on"]{background:var(--green)!important;color:#04210f!important}
+html :is(#navAwake[data-state="failed"],#navRepeat[data-state="blocked"])::after{content:"!";position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--bad-fill);color:var(--on-bad-fill);font-size:11px;font-weight:800;line-height:16px;text-align:center}
+/* The shortcut tray */
+html body.guiding.drive-more #driveMore{background:#172232;border:0;box-shadow:0 6px 20px #0006;padding:8px;gap:6px;grid-template-columns:repeat(3,44px)}
+html #driveMore>*{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;font-size:14px}
+html #driveMore>*{background:#253243!important;color:var(--ink)!important;border:0!important;border-radius:14px!important;box-shadow:none!important;font-weight:800}
+
+html #driveMore>:is(#navVoice,#navRepeat,#navAwake){display:flex!important;align-items:center;justify-content:center}
+/* The column grows upward from the trip bar and never spills over it; on a very small screen the turn banner stays on top. */
+html body.guiding #driveControls{max-height:none!important;overflow:visible!important}
+@media(max-width:340px){
+html body.guiding #navBar{gap:0 6px;padding:8px 8px 8px 12px!important}
+html #navTrip .eta-sep{margin:0 6px}
+html #navTrip .eta-dur,html #navTrip .eta-dist{font-size:15px}}
+
+/* Keep Quick stops inside the tray so it cannot sit behind it. */
+html body.guiding #driveMore #openStops{position:static!important;inset:auto!important;margin:0!important;padding:0!important;max-width:none;font-size:24px!important}
+html #driveMore #openStops span{display:none}

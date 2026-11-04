@@ -381,3 +381,5 @@ window.LapanI18n.add({"Staging trial: KL and surrounding Selangor only. Prayer-p
 window.LapanI18n.add({"OSM masjid and surau across Malaysia. Some places may be missing or outdated. Public access, opening hours and facilities are not verified. Check the entrance before travelling.": "Masjid dan surau OSM di seluruh Malaysia. Sesetengah tempat mungkin tiada atau tidak terkini. Akses awam, waktu buka dan kemudahan belum disahkan. Semak pintu masuk sebelum perjalanan.", "Prayer-place data: OpenStreetMap contributors": "Data tempat solat: penyumbang OpenStreetMap"});
 
 window.LapanI18n.add({"Prayer-place matches:":"Padanan tempat solat:","OpenStreetMap contributors (ODbL)":"Penyumbang OpenStreetMap (ODbL)"});
+
+window.LapanI18n.add({"Driving shortcuts":"Pintasan memandu","ETA":"Tiba"});

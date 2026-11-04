@@ -206,3 +206,11 @@ body.guiding .staging-build{position:fixed;top:0;left:0;right:0;z-index:900;padd
 body.guiding .navpanel{top:calc(36px + env(safe-area-inset-top))!important}
 
 @media(min-width:761px){.staging-build{height:28px;display:flex;align-items:center;justify-content:center}.shell{height:calc(100dvh - 92px)}}
+
+/* PR31: secondary controls open beside the fixed toggle. */
+body.guiding #driveControls{overflow:visible!important}
+body.guiding:not(.drive-more) #driveMore,body:not(.guiding) #driveMore{display:none!important}
+body.guiding.drive-more #driveMore{display:grid!important;grid-template-columns:repeat(3,48px);gap:8px;position:absolute;right:calc(100% + 6px);bottom:0;padding:10px;border-radius:18px;background:#142330f5;border:1px solid #536577;box-shadow:0 6px 20px #0006;z-index:830}
+#driveMore>*{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;width:48px;height:48px;min-width:48px;min-height:48px;margin:0;padding:0;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer}
+
+#cameraWarning:not(.hidden)~#limitWarning{display:none}

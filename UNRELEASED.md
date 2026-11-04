@@ -9,3 +9,5 @@ Staging only: adapted @dandycrypto PR #24, bundled Malaysia camera data and came
 Staging only: OSRM routing and rerouting enabled directly; TomTom routing/traffic handlers blocked before caches/upstream calls with TOMTOM_ROUTING_DISABLED=true. Existing key retained for restoration. Status strip identifies OSRM ONLY; no production/version/public log changes.
 
 Connect bundled OSM prayer-place search to both From/To fields, including typing, with cancellation, no paid provider and fallback isolation. Apply a reviewed local mosque name/address correction verified against the licensed regional directory and official listing, preserving the existing pin. No public release log or version change.
+
+Staging only: adapted @dandycrypto PR #31 (16e0ccbbbfa13c96b13e209c97d00b5e71fd3a9a) to the existing design: sign-coloured turn banner and arrows, clear arrival/duration/distance hierarchy, warning panels, icon controls and a closable shortcut tray. Preserved OSRM-only routing, prayer search and staged speed/camera features; excluded the skipped new planner look. Version and public release log unchanged.
