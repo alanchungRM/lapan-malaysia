@@ -15,3 +15,5 @@ Staging only: adapted @dandycrypto PR #31 (16e0ccbbbfa13c96b13e209c97d00b5e71fd3
 Staging only: position route-drawing/GPS feedback below the measured turn banner, adapting to wrapped instructions and screen rotation, with room for the map attribution control. Version and public release log unchanged.
 
 Staging only: adapt @dandycrypto PR #21 network-first offline app shell with four-second fallback. Cache only approved app assets; exclude APIs, private reports, authentication and statistics. Content-based cache revision works without a version increase. Internet remains required for routing, search, traffic and map tiles.
+
+Staging only: pause GPS freshness checks while hidden and reacquire a fresh fix once on foreground return, retaining the route. Ignore callbacks from replaced watches and keep timeout/permission failures visible. No new polling or API calls on focus alone; version/public log unchanged.
