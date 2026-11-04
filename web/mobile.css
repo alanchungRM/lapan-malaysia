@@ -119,3 +119,41 @@ body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;fo
 
 /* Make additional search discoverable before weak/no-match suggestions. */
 #suggest .search-more-prompt{margin:8px;padding:12px;border:1px solid #75c99f;border-radius:12px;background:#193c37}#suggest .search-more-prompt strong{color:#e5fff0;font-size:14px;line-height:1.4}#suggest .search-more-help{color:#c1e4d3;font-size:12px;line-height:1.5;margin:5px 0 10px}#suggest .search-more-action{display:block;box-sizing:border-box;width:calc(100% - 16px);margin:8px;min-height:52px;padding:12px 16px;border:2px solid #a7efc7;border-radius:10px;background:#a7efc7;color:#142c3d;font-family:inherit;font-size:16px;font-weight:700;line-height:1.35;text-align:center;cursor:pointer;touch-action:manipulation}#suggest .search-more-prompt .search-more-action{width:100%;margin:0}#suggest .search-more-action:focus-visible{outline:3px solid #fff;outline-offset:2px}#suggest .search-more-action:disabled{opacity:.7;cursor:wait}#suggest .search-map-fallback{color:#b8d6cc;font-size:13px;text-align:center}
+/* Speed limit sign and over-limit speedometer states. */
+.limit-sign{box-sizing:border-box;width:54px;height:54px;border:6px solid #d62828;border-radius:50%;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;line-height:1;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px #0004}
+.limit-sign.hidden{display:none}
+body.guiding #driveControls .limit-sign:not(.hidden){display:flex}
+body.guiding #driveControls .speed-chip.over{background:#a85a00;border-color:#ffd9a0}
+body.guiding #driveControls .speed-chip.fast{background:#b3141f;border-color:#ffb3b8;animation:lapan-pulse 1s ease-in-out infinite}
+#driveControls .limit-sign{order:-1;margin-bottom:2px}
+#limitWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
+@media(prefers-reduced-motion:reduce){body.guiding #driveControls .speed-chip.fast{animation:none}}
+@keyframes lapan-pulse{50%{box-shadow:0 0 0 6px #b3141f55}}
+/* Planner declutter: one task up front, tools one tap away. */
+.menu-launch{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid #496457;border-radius:10px;background:#20382f;color:#b8f2ce;font-size:16px;font-weight:700}
+.menu-launch span{font-size:12px}
+.search-panel .map-place-actions{margin:4px 0 10px;gap:6px}
+.search-panel .map-place-actions button{min-height:36px;font-size:11px;background:transparent;border-color:#3a4d5e;color:#8fe0b4}
+.privacy-line{font-size:11px;line-height:1.4;color:#9bb0bd;margin:8px 2px 0;text-align:center}
+.search-panel .quick-stops,.search-panel .recent-settings{border:0;background:transparent;padding:0;margin:12px 0 0}
+.search-panel .quick-stops summary,.search-panel .recent-settings summary{pointer-events:none;cursor:default;min-height:28px!important;padding:0!important;font-size:11px!important;text-transform:uppercase;letter-spacing:.8px;color:#9bb0bd}
+.search-panel .quick-stops summary::after,.search-panel .recent-settings summary::after{display:none}
+#recentList .recent-row:nth-child(n+4){display:none}
+#recentHint{font-size:10px;margin:4px 0}
+.more-options{border:1px solid #425369;border-radius:12px;margin:16px 0;background:#1d2b3a;padding:0 10px}
+.more-options>summary{cursor:pointer;min-height:48px;display:flex;align-items:center;font-weight:700;font-size:14px;color:#edf5f0;list-style:none}
+.more-options>summary::-webkit-details-marker{display:none}
+.more-options>summary span{margin-left:auto;margin-right:8px;font-size:10px;font-weight:400;color:#9bb0bd}
+.more-options>summary::after{content:'⌄';font-size:22px;color:#96e9b7}
+.more-options[open]>summary::after{content:'⌃'}
+.more-options .more-row{display:flex;gap:12px;align-items:center;margin:4px 0 8px}
+body.guiding .menu-launch{display:none}
+#status:empty{display:none}
+.search-panel .stop-categories{display:flex;gap:8px;margin-top:6px;padding:0}
+.search-panel .stop-categories button{flex:1;flex-direction:row;gap:6px;min-height:44px;padding:6px 8px;font-size:13px}
+.search-panel .quick-stops summary>span{display:none}
+/* Nothing to show on a first visit, so the recents block stays out of the way. */
+.search-panel .recent-settings:has(#recentCount:empty){display:none}
+.more-options details>summary{display:flex;align-items:center;min-height:44px}
+.more-options details{margin:8px 0}
+
