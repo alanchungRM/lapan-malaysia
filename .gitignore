@@ -1,15 +1,1 @@
-node_modules/
-dist/
-.openai/
-.wrangler/
-.env
-.env.*
-!.env.example
-*.log
-.DS_Store
-
-# Generated public-data index; reproducible with npm run prepare:poi.
-/worker/poi-data.json
-__pycache__/
-
-.venv/
+/dist/

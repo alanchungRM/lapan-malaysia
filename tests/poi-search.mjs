@@ -20,18 +20,18 @@ try{
  let response=await additionalPlaceSearch(req('Cafe Example'),{},q=>{regionalCalls++;return searchRegionalPlaces(q,data)});
  assert.equal(response.status,200);assert.equal((await response.json()).source,'Overture Maps');assert.equal(providerCalls,0);
  await additionalPlaceSearch(req('cafe example'),{},()=>{throw Error('cached')});assert.equal(regionalCalls,1);
- response=await additionalPlaceSearch(req('Missing Example'),{},q=>searchRegionalPlaces(q,data));assert.equal(response.status,503);
+ response=await additionalPlaceSearch(req('Missing Example'),{},q=>searchRegionalPlaces(q,data));assert.equal(response.status,200);assert.equal((await response.json()).items.length,0);
  // The legacy secondary provider is called only after a local miss.
  globalThis.fetch=async()=>{providerCalls++;return Response.json({results:[]})};
- response=await additionalPlaceSearch(req('Another Missing Example'),{TOMTOM_API_KEY:'test-only'},async()=>[]);assert.equal(response.status,200);assert.equal(providerCalls,1);
+ response=await additionalPlaceSearch(req('Another Missing Example'),{TOMTOM_API_KEY:'test-only',TOMTOM_SEARCH_ENABLED:'true'},async()=>[]);assert.equal(response.status,200);assert.equal(providerCalls,1);
  // A failed shard must not disable existing provider fallback.
- response=await additionalPlaceSearch(req('Broken shard example'),{TOMTOM_API_KEY:'test-only'},async()=>{throw Error('bad shard')});assert.equal(response.status,200);assert.equal(providerCalls,2);
+ response=await additionalPlaceSearch(req('Broken shard example'),{TOMTOM_API_KEY:'test-only',TOMTOM_SEARCH_ENABLED:'true'},async()=>{throw Error('bad shard')});assert.equal(response.status,200);assert.equal(providerCalls,2);
  // Bound repeated free misses and prevent further downstream quota use.
  for(let i=0;i<30;i++)await additionalPlaceSearch(req('miss '+i,'rate-test'),{},async()=>[]);
  response=await additionalPlaceSearch(req('one more miss','rate-test'),{},async()=>[]);assert.equal(response.status,429);
  // Pause TomTom, then ensure free local hits still work.
  globalThis.fetch=async()=>new Response('provider unavailable',{status:429});
- await additionalPlaceSearch(req('Pause provider now','pause-test'),{TOMTOM_API_KEY:'test-only'},async()=>[]);
+ await additionalPlaceSearch(req('Pause provider now','pause-test'),{TOMTOM_API_KEY:'test-only',TOMTOM_SEARCH_ENABLED:'true'},async()=>[]);
  response=await additionalPlaceSearch(req('Aeon Example','free-while-paused'),{},q=>searchRegionalPlaces(q,data));assert.equal(response.status,200);assert.equal((await response.json()).source,'Overture Maps');
 }finally{globalThis.fetch=oldFetch}
 console.log('PASS: regional index normalization, address matching, bounded input, cache, no-key lookup, provider fallback and free lookup during provider outage');

@@ -2,6 +2,33 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.36] — 2026-11-04
+
+Simpler planning, calmer driving and Bahasa Malaysia
+
+### Added
+
+- EN/BM language switching with remembered preference and translated guidance; Malay speech uses an available device voice with English fallback.
+- A clear-destination action beside the destination field.
+
+### Improved
+
+- Simplified planning with a prominent route action, grouped Menu controls and a destination that starts empty.
+- Driving controls use a More button for secondary actions while essential guidance stays visible.
+- Bundled Leaflet and marker assets, stronger security headers, asset caching and automatic test discovery.
+- TomTom remains the primary routing provider with OSRM fallback. Scheduled traffic checks run every ten minutes. TomTom Search remains disabled.
+
+### Fixed
+
+- Recent locations starts collapsed, its disclosure arrow follows its state, and all saved entries can be reached by scrolling.
+- Destination search now says “Search places”; restored Leaflet marker and layer-control images.
+
+> Thank you to @dandycrypto (https://github.com/dandycrypto) for contributions through PRs #15, #16, #18, #19, #20 and #26, adapted and tested for this release.
+>
+> OSRM fallback has no live traffic or road-closure checks. Map data and translations may be incomplete; always follow road signs.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.35] — 2026-11-02
 
 Optional HOT FM navigation pointer
@@ -51,11 +78,6 @@ Expanded regional place search
 ## [1.0.32] — 2026-10-31
 
 Clearer navigation startup and speed display
-
-### Additional source updates
-
-- Night maps use a softer grey palette with readable roads and labels, retaining the green route highlight.
-- Both location pickers keep full map attribution behind a compact information control.
 
 ### Added
 

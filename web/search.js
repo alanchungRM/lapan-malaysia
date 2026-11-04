@@ -30,7 +30,7 @@ box.prepend(note);
 if(q.length>=3){const more=document.createElement('button');more.type='button';more.className='search-more-action';more.textContent=searchingMore?'Searching more places…':'Search more places';more.disabled=searchingMore;more.onclick=()=>moreMatches(id,q);
 if(weak&&!message.startsWith('Searching')){const panel=document.createElement('div'),title=document.createElement('strong'),help=document.createElement('small');panel.className='search-more-prompt';title.textContent=items.length?'Not the place you’re looking for?':'Can’t find your place?';help.className='search-more-help';help.textContent='Tap below to look in more business and address listings.';panel.append(title,help,more);box.prepend(panel)}else box.append(more)}
 const b=document.createElement('button');b.type='button';b.className='search-map-fallback';b.textContent='⌖ Choose '+(id==='origin'?'starting point':'destination')+' on map';b.onclick=()=>openMap(id);box.append(b);
-if($('extraSearchCredit').hidden===false){const credit=document.createElement('small');credit.textContent='Place data: Overture Maps contributors / TomTom';box.append(credit)}box.style.display='block'}
+if($('extraSearchCredit').hidden===false){const credit=document.createElement('small');credit.textContent='Place data: Overture Maps contributors';box.append(credit)}box.style.display='block'}
 
 function settle(value){const done=pending;pending=null;done?.(value)}
 dialog.addEventListener('close',()=>{if(!dialog.open)settle(null)});dialog.addEventListener('cancel',()=>settle(null));$('closePlace').onclick=()=>dialog.close();

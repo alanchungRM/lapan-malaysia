@@ -5,7 +5,8 @@ const json=(d,status=200)=>Response.json(d,{status,headers:{'Cache-Control':'pri
 if(request.method!=='POST')return json({error:'POST required'},405);
 if(request.headers.get('origin')&&request.headers.get('origin')!==u.origin)return json({error:'Origin not allowed'},403);
 let query;try{const text=await request.text();if(text.length>1200)throw Error();const body=JSON.parse(text);if(!body||Object.keys(body).some(k=>k!=='query')||typeof body.query!=='string')throw Error();query=body.query.trim().replace(/\s+/g,' ');if(query.length<3||query.length>180||/[\u0000-\u001f\u007f]/.test(query))throw Error()}catch{return json({error:'Enter a place name or address between 3 and 180 characters.'},400)}
-const key=query.toLowerCase(),now=Date.now(),cached=placeSearchCache.get(key);if(cached&&now-cached.at<900000)return json(cached.data);
+const tomTomSearchEnabled=env.TOMTOM_SEARCH_ENABLED==='true';
+const key=(tomTomSearchEnabled?'tomtom:':'regional:')+query.toLowerCase(),now=Date.now(),cached=placeSearchCache.get(key);if(cached&&now-cached.at<900000)return json(cached.data);
 // Try the free bundled regional index even when TomTom is unavailable or paused.
 if(regionalSearch){
  const ip=request.headers.get('cf-connecting-ip')||'anonymous',freeKey='poi:'+ip,client=placeSearchClients.get(freeKey);
@@ -15,6 +16,8 @@ if(regionalSearch){
  placeSearchInFlight++;
  try{const items=await regionalSearch(query);if(items.length){const data={items,source:'Overture Maps',coverage:'Regional directory: KL and surrounding Selangor areas',snapshot:'2026-10-21.0'};placeSearchCache.set(key,{at:now,data});if(placeSearchCache.size>100)placeSearchCache.delete(placeSearchCache.keys().next().value);return json(data)}}catch{/* Existing providers remain available if a local index shard fails. */}finally{placeSearchInFlight--}
 }
+// TomTom Search is opt-in and independent of the routing/traffic API key.
+if(!tomTomSearchEnabled)return json({items:[],source:'Overture Maps',coverage:'Regional directory: KL and surrounding Selangor areas'});
 if(!env.TOMTOM_API_KEY)return json({error:'Additional place search is unavailable. Try a full address or choose on map.'},503);
 if(now<placeSearchPauseUntil)return json({error:'Additional place search is temporarily unavailable. Try a full address or choose on map.',code:placeSearchPauseCode},503);
 const ip=request.headers.get('cf-connecting-ip')||'anonymous',client=placeSearchClients.get(ip);if((client&&now-client.at<60000&&client.n>=6)||placeSearchInFlight>=2)return json({error:'Additional search is busy. Please retry shortly.'},429);placeSearchClients.set(ip,client&&now-client.at<60000?{at:client.at,n:client.n+1}:{at:now,n:1});if(placeSearchClients.size>1000)placeSearchClients.delete(placeSearchClients.keys().next().value);placeSearchInFlight++;
