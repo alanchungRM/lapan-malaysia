@@ -4,12 +4,14 @@ Public feature updates and fixes. Dates use Malaysia time.
 
 ## [1.0.36] — 2026-11-04
 
-Simpler planning, calmer driving and Bahasa Malaysia
+Simpler planning, Bahasa Malaysia and prayer stops
 
 ### Added
 
 - EN/BM language switching with remembered preference and translated guidance; Malay speech uses an available device voice with English fallback.
 - A clear-destination action beside the destination field.
+- Masjid / Surau is available in Quick stops, with nearby locations and a Route here action.
+- A bundled OSM dataset contains 6,678 Muslim places of worship across Peninsular and East Malaysia. Prayer-place searches run locally on the server without paid search calls.
 
 ### Improved
 
@@ -26,6 +28,10 @@ Simpler planning, calmer driving and Bahasa Malaysia
 > Thank you to @dandycrypto (https://github.com/dandycrypto) for contributions through PRs #15, #16, #18, #19, #20 and #26, adapted and tested for this release.
 >
 > OSRM fallback has no live traffic or road-closure checks. Map data and translations may be incomplete; always follow road signs.
+>
+> Prayer-place results show up to 15 nearby mapped locations within 12 km. OSM coverage can be incomplete or outdated; access, facilities, opening hours and entrances are not independently verified.
+>
+> Prayer-place data © OpenStreetMap contributors, ODbL 1.0, through 3 November 2026. Malaysia boundary filtering is approximate and may omit some border or island locations.
 
 [GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
 

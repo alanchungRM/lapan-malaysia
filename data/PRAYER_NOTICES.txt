@@ -1,0 +1,18 @@
+Malaysia prayer-place dataset for Lapan
+
+Copyright: © OpenStreetMap contributors.
+Licence: Open Data Commons Open Database License (ODbL) 1.0
+https://opendatacommons.org/licenses/odbl/1-0/
+https://www.openstreetmap.org/copyright
+
+Source: Geofabrik Malaysia, Singapore and Brunei OpenStreetMap extract.
+https://download.geofabrik.de/asia/malaysia-singapore-brunei.html
+OSM data through: 2026-11-03T21:24:23Z
+Included records: 6678
+
+Changes: retained only amenity=place_of_worship + religion=muslim; excluded known access=private/no and locations outside the app's Malaysia boundary polygons; selected/truncated listing fields and rounded coordinates. Building/area locations use an internal representative point; line features use a midpoint. Geographic filtering reuses geoBoundaries gbOpen MYS ADM1 (2017), OSM-derived, rounded/grouped into the app's regions. Some border/island places may be omitted by this approximation.
+Boundary source: https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData/gbOpen/MYS/ADM1
+
+Coverage: Malaysia, including Peninsular and East Malaysia. Only mapped and appropriately tagged places are included; this is not an exhaustive or verified mosque register. Public access, opening hours, Friday prayer availability and facilities are not independently verified. Coordinates may represent a building rather than a routable entrance. Check road access and the entrance before travelling.
+
+Derived database available under ODbL 1.0 at /prayer-places.json on this same site. Extraction code is scripts/extract-prayer-places.py. No paid API calls, per-visitor public Overpass queries, GPS trails or journey history are added by this dataset.
