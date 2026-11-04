@@ -2,6 +2,37 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.37] — 2026-11-04
+
+Clearer driving guidance and more reliable navigation
+
+### Added
+
+- Mapped speed-limit signs, speedometer warnings and a saved 3/5/10 km/h warning margin (PRs #17 and #23).
+- Bundled Malaysia camera data with camera-type labels (PR #24).
+- Network-first app interface caching with a four-second fallback during network/server problems (PR #21).
+
+### Improved
+
+- Clearer turn arrows, sign-coloured guidance, arrival-time hierarchy and a closable driving shortcut tray (PR #31).
+- Bundled prayer-place results participate in From and To search, with reviewed naming corrections.
+- TomTom remains the primary route provider with OSRM fallback; scheduled traffic checks remain ten minutes.
+
+### Fixed
+
+- Route-drawing feedback stays below the turn banner as its height changes.
+- Navigation preserves its route when the app is backgrounded and reacquires GPS on return, ignoring callbacks from replaced watches.
+
+> Special thanks to @dandycrypto (https://github.com/dandycrypto) for the open-source contributions in PRs #17, #21, #23, #24 and #31, adapted and tested for this release.
+>
+> Speed-limit and camera coverage is incomplete and may be outdated; follow posted signs.
+>
+> The offline fallback saves the app interface only. Maps, search, routing and traffic still need internet; live APIs, private reports and authentication pages are not cached.
+>
+> OSRM has no live traffic or closure checks. Browser GPS can pause in the background; recovery requires the page to return to the foreground.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.36] — 2026-11-04
 
 Simpler planning, Bahasa Malaysia and prayer stops

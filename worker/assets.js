@@ -33,11 +33,12 @@ export function withSecurityHeaders(response){
  for(const [name,value] of Object.entries(securityHeaders))if(!out.headers.has(name))out.headers.set(name,value);
  return out;
 }
-export function serveAsset(request,assets){
+export function serveAsset(request,assets,env={}){
  const u=new URL(request.url);
  if(request.method!=='GET'&&request.method!=='HEAD')return withSecurityHeaders(new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}}));
  const path=u.pathname==='/'?'/index.html':u.pathname==='/changelog/'?'/changelog':u.pathname==='/statistics'||u.pathname==='/statistics/'?'/statistics.html':u.pathname;
- const file=Object.hasOwn(assets,path)?assets[path]:null;
+ let file=Object.hasOwn(assets,path)?assets[path]:null;
+ if(file&&path==='/index.html'&&env.TOMTOM_ROUTING_DISABLED==='true'){file={...file,body:file.body.replace('data-routing-provider="AUTO"','data-routing-provider="OSRM"').replace(/<!-- STAGING_STATUS v([^ ]+) -->/,'<div class="staging-build" data-no-i18n role="note">STAGING · v$1 · OSRM ONLY · Applied PRs: #15 · #16 · #17 · #18 · #19 · #20 · #21 · #23 · #24 · #26 · #31</div>'),etag:file.etag?.replace(/"$/,'-osrm"')}}
  if(!file)return withSecurityHeaders(new Response('Not found',{status:404}));
  const headers={'Content-Type':file.type+'; charset=utf-8','Cache-Control':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
  if(file.etag){headers.ETag=file.etag;if(etagMatches(request.headers.get('If-None-Match'),file.etag))return withSecurityHeaders(new Response(null,{status:304,headers}))}

@@ -9,7 +9,7 @@
     "dev": "node scripts/dev.mjs",
     "prepare:poi": "python3 scripts/prepare-poi-directory.py"
   },
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "Mobile-friendly Malaysia road navigation and PLUS toll planning",
   "engines": {
     "node": ">=22"

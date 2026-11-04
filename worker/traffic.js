@@ -8,6 +8,7 @@ const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control
 if(request.method!=='POST')return json({error:'POST required'},405);
 if(request.headers.get('origin')&&request.headers.get('origin')!==u.origin)return json({error:'Origin not allowed'},403);
 
+if(env.TOMTOM_ROUTING_DISABLED==='true')return json({error:'TomTom traffic refresh is disabled for OSRM staging tests.'},503);
 if(!env.TOMTOM_API_KEY)return json({error:'Traffic service is not configured. Road estimate remains available.'},503);
 let coords;try{const raw=await request.text();if(raw.length>1000000)throw Error();coords=JSON.parse(raw).coordinates;if(!Array.isArray(coords)||coords.length<2||coords.length>20000||!coords.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&p[0]>=99&&p[0]<=120&&p[1]>=.8&&p[1]<=7.6))throw Error()}catch{return json({error:'Invalid Malaysian route geometry'},400)}
 if(globalThis.LapanRoadRestrictions.blocked(coords))return json({error:'This route crosses a reported restriction. Replan your route.'},422);

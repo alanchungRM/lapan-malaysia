@@ -1,13 +1,6 @@
-// Public country-wide data: no user coordinates or route sent to Overpass.
-let cameraPending=null;
-export async function speedCameras(request){
- if(request.method!=='GET')return new Response('GET required',{status:405});
- const key=new Request(new URL('/_camera-data/malaysia-v1',request.url)),cache=globalThis.caches?.default;
- const cached=await cache?.match(key);if(cached)return cached;
- // Concurrent cache misses share one Overpass lookup.
- cameraPending??=loadCameras(key,cache).finally(()=>{cameraPending=null});
- return (await cameraPending).clone();
-}
-async function loadCameras(key,cache){
- try{const query='[out:json][timeout:15];area["ISO3166-1"="MY"][admin_level=2]->.a;node[highway=speed_camera](area.a);out body;';let d;for(const host of ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter']){try{const r=await fetch(host+'?'+new URLSearchParams({data:query}),{headers:{'User-Agent':'Lapan/1.0 (https://lapan-malaysia.com; OSM camera lookup)'},signal:AbortSignal.timeout(12000)});if(!r.ok)continue;const candidate=await r.json();if(!candidate.remark&&Array.isArray(candidate.elements)){d=candidate;break}}catch{}}if(!d)throw Error();const cameras=d.elements.filter(n=>n.type==='node'&&Number.isFinite(n.lon)&&Number.isFinite(n.lat)).map(n=>({id:n.id,point:[n.lon,n.lat],maxspeed:n.tags?.['maxspeed:conditional']?null:n.tags?.maxspeed||null,direction:n.tags?.direction||null}));const response=Response.json({cameras,dataThrough:d.osm3s?.timestamp_osm_base||null,source:'OpenStreetMap contributors',license:'ODbL-1.0'},{headers:{'Cache-Control':'public, max-age=86400'}});await cache?.put(key,response.clone());return response}catch{return Response.json({error:'Camera data unavailable; camera coverage cannot be confirmed.'},{status:503,headers:{'Cache-Control':'no-store'}})}
+// Backward-compatible camera endpoint: packaged OSM snapshot only; no cache API or upstream lookup.
+export async function speedCameras(request,data){
+ if(!['GET','HEAD'].includes(request.method))return new Response('GET or HEAD required',{status:405,headers:{Allow:'GET, HEAD'}});
+ if(!Array.isArray(data?.cameras))return Response.json({error:'Camera data unavailable; camera coverage cannot be confirmed.'},{status:503,headers:{'Cache-Control':'no-store'}});
+ return new Response(request.method==='HEAD'?null:JSON.stringify(data),{headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'public, max-age=3600'}});
 }
