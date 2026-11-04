@@ -51,5 +51,10 @@ def main():
  boundary=malaysia_boundary();handler=PrayerPlaces(boundary);handler.apply_file(str(source),locations=True,idx='flex_mem');places=sorted(handler.places.values(),key=lambda p:p['id'])
  if not places:raise ValueError('No prayer places; refusing to overwrite snapshot')
  data={'source':'OpenStreetMap contributors / Geofabrik','sourceUrl':'https://download.geofabrik.de/asia/malaysia-singapore-brunei.html','licence':'ODbL-1.0','dataAsOf':timestamp,'coverage':'Malaysia: Peninsular Malaysia, Sabah, Sarawak and Labuan','selection':'amenity=place_of_worship + religion=muslim; access=private/no excluded','boundary':'App Malaysia state polygons: geoBoundaries gbOpen MYS ADM1 2017 (OSM-derived), rounded and grouped; boundary approximation may omit border/island places','places':places}
+ overrides=Path('data/prayer-place-overrides.json')
+ for correction in json.loads(overrides.read_text()) if overrides.exists() else []:
+  for place in data['places']:
+   if place['id']==correction['id'] and abs(place['lat']-correction['expectedPoint'][0])<.0001 and abs(place['lon']-correction['expectedPoint'][1])<.0001:
+    place.update({k:correction[k] for k in ['name','address','aliases','nameSource','listingSource']})
  Path('data/prayer-places-my.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':'))+'\n');print(json.dumps({'count':len(places),'outsideMalaysiaRejected':handler.rejected,'invalidGeometrySkipped':handler.invalid,'dataAsOf':timestamp,'bytes':Path('data/prayer-places-my.json').stat().st_size}))
 if __name__=='__main__':main()

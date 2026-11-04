@@ -16,3 +16,5 @@ Boundary source: https://github.com/wmgeolab/geoBoundaries/tree/main/releaseData
 Coverage: Malaysia, including Peninsular and East Malaysia. Only mapped and appropriately tagged places are included; this is not an exhaustive or verified mosque register. Public access, opening hours, Friday prayer availability and facilities are not independently verified. Coordinates may represent a building rather than a routable entrance. Check road access and the entrance before travelling.
 
 Derived database available under ODbL 1.0 at /prayer-places.json on this same site. Extraction code is scripts/extract-prayer-places.py. No paid API calls, per-visitor public Overpass queries, GPS trails or journey history are added by this dataset.
+
+Local naming corrections: selected missing names/addresses and aliases may be enriched from the existing licensed Overture directory and verified official listings. Coordinates remain the original OSM points. See data/prayer-place-overrides.json for evidence and checks.

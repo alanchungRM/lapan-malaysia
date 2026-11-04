@@ -1,0 +1,24 @@
+[
+  {
+    "id": "node/6979400884",
+    "expectedPoint": [
+      2.923981,
+      101.30596
+    ],
+    "name": "Masjid Sultan Abdul Aziz Pulau Indah",
+    "address": "Persiaran Masjid Sultan, Pulau Indah, Pelabuhan Klang, Selangor 42920",
+    "aliases": [
+      "Masjid Sultan Abdul Aziz",
+      "Masjid Diraja Sultan Abdul Aziz Pulau Indah",
+      "Sultan Abdul Aziz Mosque Pulau Indah",
+      "Sultan Abdul Aziz Mosque Royal Mosque"
+    ],
+    "nameSource": "https://e-masjid.jais.gov.my/profail/masjid/132/showhome",
+    "listingSource": "Overture Maps Places 2026-10-21.0, existing licensed Lapan regional directory",
+    "listingPoint": [
+      2.923902,
+      101.305944
+    ],
+    "checked": "2026-11-04"
+  }
+]

@@ -16,4 +16,9 @@ for e in raw['elements']:
  places.append({'id':str(e['type'])+'/'+str(e['id']),'name':name[:180],'lat':lat,'lon':lon,'address':', '.join(filter(None,[t.get('addr:street'),t.get('addr:city')]))[:200],'access':t.get('access','')[:60],'openingHours':t.get('opening_hours','')[:160]})
 if not places:raise ValueError('No valid prayer places; refusing to replace dataset')
 d={'source':'OpenStreetMap contributors','licence':'ODbL-1.0','dataAsOf':raw.get('osm3s',{}).get('timestamp_osm_base'),'places':sorted(places,key=lambda p:p['id'])}
+overrides=Path('data/prayer-place-overrides.json')
+for correction in json.loads(overrides.read_text()) if overrides.exists() else []:
+ for place in d['places']:
+  if place['id']==correction['id'] and abs(place['lat']-correction['expectedPoint'][0])<.0001 and abs(place['lon']-correction['expectedPoint'][1])<.0001:
+   place.update({k:correction[k] for k in ['name','address','aliases','nameSource','listingSource']})
 Path('data/prayer-places-my.json').write_text(json.dumps(d,ensure_ascii=False,separators=(',',':'))+'\n');print(len(places),'prayer places')
