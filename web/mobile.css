@@ -214,3 +214,6 @@ body.guiding.drive-more #driveMore{display:grid!important;grid-template-columns:
 #driveMore>*{display:flex!important;align-items:center;justify-content:center;box-sizing:border-box;width:48px;height:48px;min-width:48px;min-height:48px;margin:0;padding:0;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer}
 
 #cameraWarning:not(.hidden)~#limitWarning{display:none}
+
+/* Loading feedback follows the measured turn banner, including wrapped guidance and safe-area offsets. */
+body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);max-width:calc(100% - 100px);box-sizing:border-box;text-align:center;font-size:13px;line-height:1.35}
