@@ -217,3 +217,11 @@ body.guiding.drive-more #driveMore{display:grid!important;grid-template-columns:
 
 /* Loading feedback follows the measured turn banner, including wrapped guidance and safe-area offsets. */
 body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);max-width:calc(100% - 100px);box-sizing:border-box;text-align:center;font-size:13px;line-height:1.35}
+
+/* Published-rate estimate on route cards. */
+.route .toll-badge{display:inline-block;max-width:100%;box-sizing:border-box;padding:2px 7px;border-radius:8px;background:#263544;color:#f4f9f8;font-size:12px;font-weight:800;line-height:1.4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+/* Full-width route rows keep fares and their qualifiers readable on phones. */
+#routes{grid-template-columns:1fr}
+#routes .route .top{flex-direction:row;align-items:center;flex-wrap:wrap}
+#routes .route .toll-badge{white-space:normal}
