@@ -225,3 +225,6 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 #routes{grid-template-columns:1fr}
 #routes .route .top{flex-direction:row;align-items:center;flex-wrap:wrap}
 #routes .route .toll-badge{white-space:normal}
+
+#hazardWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
+#hazardWarning:not(.hidden)~#limitWarning{display:none}
