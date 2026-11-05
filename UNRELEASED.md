@@ -1,3 +1,3 @@
 # Unreleased changes
 
-No pending release notes. Changes curated into v1.0.38.
+- Staging: Home and Work shortcuts saved only in this browser, with English and Bahasa Malaysia labels (PR #27 by Dandy / @dandycrypto).

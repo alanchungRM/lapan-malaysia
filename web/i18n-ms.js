@@ -418,3 +418,32 @@ window.LapanI18n.add({
 "Toll plazas, railway crossings and speed bumps are mapped by OpenStreetMap contributors (data {d}); only a share of them is mapped. Sharp curves are found from the route shape. Never rely on this alone.":"Plaza tol, lintasan keretapi dan bonggol jalan dipetakan oleh penyumbang OpenStreetMap (data {d}); hanya sebahagian yang dipetakan. Selekoh tajam dikesan daripada bentuk laluan. Jangan bergantung pada ini sahaja.",
 "Mapped hazard data could not load. Route-shape curve alerts remain available. Try again by switching road hazard alerts off and on during navigation.":"Data bahaya dipetakan tidak dapat dimuatkan. Amaran selekoh daripada bentuk laluan masih tersedia. Cuba lagi dengan mematikan dan menghidupkan amaran bahaya jalan semasa navigasi."
 });
+
+window.LapanI18n.add({
+"Saved places":"Tempat disimpan",
+"Home":"Rumah",
+"Work":"Kerja",
+"Tap to set":"Ketik untuk tetapkan",
+"Change Home":"Tukar Rumah",
+"Change Work":"Tukar Kerja",
+"Set Home":"Tetapkan Rumah",
+"Set Work":"Tetapkan Kerja",
+"Remove Home":"Buang Rumah",
+"Remove Work":"Buang Kerja",
+"YOUR PLACES":"TEMPAT ANDA",
+"Close saved places":"Tutup tempat disimpan",
+"Saved place:":"Tempat disimpan:",
+"Use the place in the To box":"Guna tempat dalam kotak Ke",
+"Use my current location":"Guna lokasi semasa saya",
+"To use another place, search for it in the To box first, then open this again.":"Untuk guna tempat lain, cari dahulu dalam kotak Ke, kemudian buka semula ini.",
+"Saved only on this device.":"Disimpan pada peranti ini sahaja.",
+"Home saved.":"Rumah disimpan.",
+"Work saved.":"Kerja disimpan.",
+"Home removed.":"Rumah dibuang.",
+"Work removed.":"Kerja dibuang.",
+"Home selected. Tap Find my route.":"Rumah dipilih. Ketik Cari laluan saya.",
+"Work selected. Tap Find my route.":"Kerja dipilih. Ketik Cari laluan saya.",
+"Search for a place in the To box first.":"Cari tempat dalam kotak Ke dahulu.",
+"This browser cannot save places right now.":"Pelayar ini tidak dapat menyimpan tempat sekarang.",
+"Location is unavailable or permission was denied.":"Lokasi tidak tersedia atau kebenaran dinafikan."
+});
