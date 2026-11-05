@@ -1,3 +1,16 @@
+function refreshTrafficSections(route,points){
+ const result=[];let budget=20000;
+ for(const s of (Array.isArray(route.sections)?route.sections:[]).slice(0,2000)){
+  const a=s.startPointIndex,b=s.endPointIndex;
+  if(s.sectionType!=='TRAFFIC'||s.simpleCategory!=='JAM'||![a,b].every(Number.isInteger)||a<0||b>=points.length||b<=a)continue;
+  const severity=s.magnitudeOfDelay===3?'heavy':[1,2].includes(s.magnitudeOfDelay)?'moderate':null;
+  if(!severity)continue;
+  const coordinates=points.slice(a,b+1);
+  if(coordinates.length>budget||!coordinates.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&p[0]>=99&&p[0]<=120&&p[1]>=.8&&p[1]<=7.6))continue;
+  budget-=coordinates.length;result.push({severity,geometry:{type:'LineString',coordinates}});
+ }
+ return result;
+}
 let trafficProviderPauseUntil=0;
 // Server-only TomTom route reassessment. Never include API keys in client assets.
 const trafficPending=new Map(),trafficCache=new Map(),trafficClients=new Map();let trafficInFlight=0;
@@ -18,13 +31,15 @@ if(cached&&Date.now()-cached.at<120000)return json(cached.data);
 if(trafficPending.has(key))return (await trafficPending.get(key)).clone();
 const ip=request.headers.get('cf-connecting-ip')||'anonymous',now=Date.now(),client=trafficClients.get(ip);if(client&&now-client.at<60000&&client.count>=6)return json({error:'Traffic refresh limit reached. Using road estimate.'},429);if(trafficInFlight>=2)return json({error:'Traffic service busy. Using road estimate.'},429);
 trafficClients.set(ip,client&&now-client.at<60000?{at:client.at,count:client.count+1}:{at:now,count:1});if(trafficClients.size>1000)trafficClients.delete(trafficClients.keys().next().value);trafficInFlight++;
-const work=(async()=>{try{const first=coords[0],last=coords.at(-1),url=new URL(`https://api.tomtom.com/routing/1/calculateRoute/${first[1]},${first[0]}:${last[1]},${last[0]}/json`);for(const [k,v]of Object.entries({key:env.TOMTOM_API_KEY,traffic:'true',departAt:'now',computeTravelTimeFor:'all',routeRepresentation:'polyline',reconstructionMode:'normal',maxAlternatives:'0',travelMode:'car'}))url.searchParams.set(k,v);
+const work=(async()=>{try{const first=coords[0],last=coords.at(-1),url=new URL(`https://api.tomtom.com/routing/1/calculateRoute/${first[1]},${first[0]}:${last[1]},${last[0]}/json`);for(const [k,v]of Object.entries({key:env.TOMTOM_API_KEY,traffic:'true',departAt:'now',computeTravelTimeFor:'all',sectionType:'traffic',routeRepresentation:'polyline',reconstructionMode:'normal',maxAlternatives:'0',travelMode:'car'}))url.searchParams.set(k,v);
 const response=await fetch(url.toString(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...(globalThis.LapanRoadRestrictions.avoidAreas().rectangles.length?{avoidAreas:globalThis.LapanRoadRestrictions.avoidAreas()}:{}),supportingPoints:coords.map(p=>({latitude:p[1],longitude:p[0]}))}),signal:AbortSignal.timeout(18000)});
 if(response.status===429)trafficProviderPauseUntil=Date.now()+Math.max(30,Math.min(300,Number(response.headers.get('Retry-After'))||60))*1000;
 if(!response.ok)return json({error:response.status===401||response.status===403?'Traffic key access is unavailable. Using road estimate.':response.status===429?'Traffic allowance or request limit reached. Using road estimate.':'Traffic provider unavailable. Using road estimate.'},502);
 const result=await response.json(),route=result.routes?.[0],s=route?.summary,seconds=s?.liveTrafficIncidentsTravelTimeInSeconds??s?.travelTimeInSeconds,delaySeconds=s?.trafficDelayInSeconds??0;
 if(!Number.isFinite(seconds)||seconds<0||seconds>604800||!Number.isFinite(delaySeconds)||delaySeconds<0)throw Error();
 const points=(route.legs||[]).flatMap(l=>(l.points||[]).map(p=>[p.longitude,p.latitude]));if(points.length<2||globalThis.LapanRoadRestrictions.blocked(points))throw Error();let misses=0,samples=0;const stride=Math.max(1,Math.floor(points.length/60));for(let i=0;i<points.length;i+=stride){samples++;if(routeGap(points[i],coords)>150)misses++}if(misses>Math.max(1,samples*.05))return json({error:'Traffic route differs from your selected road route. Using road estimate.'},422);
-const data={seconds,delaySeconds,checkedAt:new Date().toISOString(),source:'TomTom',basis:'traffic-aware route estimate'};trafficCache.set(key,{at:Date.now(),data});if(trafficCache.size>100)trafficCache.delete(trafficCache.keys().next().value);return json(data);
+let matchBudget=200;
+const trafficSections=refreshTrafficSections(route,points).filter(s=>{const c=s.geometry.coordinates,stride=Math.max(1,Math.ceil(c.length/20)),samples=c.filter((_,i)=>i%stride===0||i===c.length-1);if(samples.length>matchBudget)return false;matchBudget-=samples.length;return samples.every(p=>routeGap(p,coords)<=35)});
+const data={seconds,delaySeconds,trafficSections,checkedAt:new Date().toISOString(),source:'TomTom',basis:'traffic-aware route estimate'};trafficCache.set(key,{at:Date.now(),data});if(trafficCache.size>100)trafficCache.delete(trafficCache.keys().next().value);return json(data);
 }catch{return json({error:'Traffic estimate unavailable. Using road estimate.'},502)}finally{trafficInFlight--}})();trafficPending.set(key,work);try{return (await work).clone()}finally{trafficPending.delete(key)}
 }
