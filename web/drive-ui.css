@@ -15,8 +15,8 @@ html #nextturn .turn-sep{display:none}
 html #nextturn .nav-road-badge{font-size:.78em;padding:1px 5px;margin:0 2px}
 html body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
 /* Alerts use the yellow warning-sign look */
-html #cameraWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
-html #cameraWarning::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
+html #cameraWarning,html #hazardWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
+html #cameraWarning::before,html #hazardWarning::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
 /* Trip bar: arrival time first, then duration and distance, then two icon buttons */
 html body.guiding #navBar{display:grid!important;grid-template-columns:minmax(0,1fr) 44px 44px;grid-template-areas:"trip details stop";align-items:center;gap:0 8px;padding:8px 10px 8px 14px!important;border-radius:22px!important;min-height:0!important;flex-wrap:nowrap!important}
 html body.guiding #navBar .nav-trip{grid-area:trip;position:relative;min-width:0;flex:none!important}

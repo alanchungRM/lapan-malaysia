@@ -398,3 +398,23 @@ window.LapanI18n.add({
 "~ means an estimate for a Class 1 car from published fares. Temporary discounts and promotions are not included.":"~ bermaksud anggaran untuk kereta Kelas 1 berdasarkan kadar yang diterbitkan. Diskaun sementara dan promosi tidak termasuk.",
 "+ means at least: some tolls on this route could not be priced, so the real total is higher. Class 1 car, standard fares; temporary discounts are not included.":"+ bermaksud sekurang-kurangnya: sebahagian tol di laluan ini tidak dapat dinilai, jadi jumlah sebenar lebih tinggi. Kereta Kelas 1, kadar piawai; diskaun sementara tidak termasuk.",
 });
+
+window.LapanI18n.add({
+"Road hazard alerts":"Amaran bahaya jalan",
+"Toll plazas, railway crossings and speed bumps are mapped by OpenStreetMap contributors; only a share of them is mapped. Sharp curves are found from the route shape. Never rely on this alone.":"Plaza tol, lintasan keretapi dan bonggol jalan dipetakan oleh penyumbang OpenStreetMap; hanya sebahagian yang dipetakan. Selekoh tajam dikesan daripada bentuk laluan. Jangan bergantung pada ini sahaja.",
+"Toll plaza ahead":"Plaza tol di hadapan",
+"Railway crossing ahead":"Lintasan keretapi di hadapan",
+"Speed bump ahead":"Bonggol jalan di hadapan",
+"Speed bumps ahead":"Beberapa bonggol jalan di hadapan",
+"Sharp curve to the left":"Selekoh tajam ke kiri",
+"Sharp curve to the right":"Selekoh tajam ke kanan",
+"Toll plaza ahead, in {m} metres.":"Plaza tol di hadapan, dalam {m} meter.",
+"Railway crossing ahead, in {m} metres. Slow down.":"Lintasan keretapi di hadapan, dalam {m} meter. Perlahankan.",
+"Speed bump ahead, in {m} metres.":"Bonggol jalan di hadapan, dalam {m} meter.",
+"Speed bumps ahead, in {m} metres.":"Beberapa bonggol jalan di hadapan, dalam {m} meter.",
+"Sharp curve to the left, in {m} metres.":"Selekoh tajam ke kiri, dalam {m} meter.",
+"Sharp curve to the right, in {m} metres.":"Selekoh tajam ke kanan, dalam {m} meter.",
+"Mapped road hazards load when navigation starts. Coverage is incomplete; obey road signs.":"Bahaya jalan dipetakan dimuatkan apabila navigasi bermula. Liputan tidak lengkap; patuhi papan tanda jalan.",
+"Toll plazas, railway crossings and speed bumps are mapped by OpenStreetMap contributors (data {d}); only a share of them is mapped. Sharp curves are found from the route shape. Never rely on this alone.":"Plaza tol, lintasan keretapi dan bonggol jalan dipetakan oleh penyumbang OpenStreetMap (data {d}); hanya sebahagian yang dipetakan. Selekoh tajam dikesan daripada bentuk laluan. Jangan bergantung pada ini sahaja.",
+"Mapped hazard data could not load. Route-shape curve alerts remain available. Try again by switching road hazard alerts off and on during navigation.":"Data bahaya dipetakan tidak dapat dimuatkan. Amaran selekoh daripada bentuk laluan masih tersedia. Cuba lagi dengan mematikan dan menghidupkan amaran bahaya jalan semasa navigasi."
+});

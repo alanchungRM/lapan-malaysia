@@ -4,12 +4,13 @@ Public feature updates and fixes. Dates use Malaysia time.
 
 ## [1.0.38] — 2026-11-05
 
-Expanded toll estimates, traffic colours and tidier map attribution
+Toll estimates, road hazard alerts and clearer maps
 
 ### Added
 
 - Yellow and red route sections show reported slow traffic and heavy congestion on planning and navigation maps.
 - Expanded Class 1 toll estimates from published fare data for 33 Malaysian highways, with route-card prices, itemised breakdowns and English/Bahasa Malaysia labels (PR #33).
+- Mapped toll-plaza, railway-crossing and speed-bump alerts, plus sharp-curve alerts derived from the route, with English/Bahasa Malaysia banners and voice prompts (PR #29).
 
 ### Fixed
 
@@ -19,9 +20,11 @@ Expanded toll estimates, traffic colours and tidier map attribution
 >
 > Stale or unavailable congestion information is cleared. Uncoloured route sections do not guarantee clear traffic. OSRM-only routes do not provide live congestion data.
 >
-> Special thanks to Dandy (@dandycrypto, https://github.com/dandycrypto) for the open-source contribution in PR #33 (https://github.com/alanchungRM/lapan-malaysia/pull/33), adapted and tested for Lapan.
+> Special thanks to Dandy (@dandycrypto, https://github.com/dandycrypto) for the open-source contributions in PR #29 (https://github.com/alanchungRM/lapan-malaysia/pull/29) and PR #33 (https://github.com/alanchungRM/lapan-malaysia/pull/33), adapted and tested for Lapan.
 >
 > Toll fares are estimates from bundled published data dated 2 November 2026. Coverage and plaza matching are incomplete; partial fares are marked with +. Standard Class 1 fares exclude temporary discounts. OSRM-only routes do not supply the TomTom toll-road sections required for automatic estimates.
+>
+> Road hazard data loads only when navigation starts and is cached in the browser. Alerts reuse mapped OpenStreetMap data and route geometry without additional TomTom requests. Coverage is incomplete and may be outdated; obey road signs and do not rely on alerts alone.
 
 [GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
 
