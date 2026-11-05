@@ -387,3 +387,14 @@ window.LapanI18n.add({"Driving shortcuts":"Pintasan memandu","ETA":"Tiba"});
 window.LapanI18n.add({"Arrive":"Tiba","U-turn":"Pusing U","Roundabout":"Bulatan","Roundabout · exit {n}":"Bulatan · keluar {n}","Exit":"Keluar","Ramp":"Susur"});
 
 window.LapanI18n.add({"Bear":"Ikut","Sharp turn":"Belokan tajam","Exit roundabout":"Keluar bulatan"});
+
+window.LapanI18n.add({
+"No toll roads were reported for this route. Not every plaza is mapped, so watch the road signs.":"Tiada jalan bertol dilaporkan untuk laluan ini. Tidak semua plaza dipetakan, jadi perhatikan papan tanda jalan.",
+"Fares: LLM calculator, PLUS and operator websites (data of {d}). Plaza positions: PLUS, LLM and OpenStreetMap. Coverage may be incomplete.":"Kadar: kalkulator LLM, PLUS dan laman web pengendali (data {d}). Kedudukan plaza: PLUS, LLM dan OpenStreetMap. Liputan mungkin tidak lengkap.",
+"Toll ~RM {a}":"Tol ~RM {a}",
+"Toll RM {a}+":"Tol RM {a}+",
+"Toll RM {a}+ (PLUS unavailable)":"Tol RM {a}+ (PLUS tidak tersedia)",
+"No toll":"Tiada tol",
+"~ means an estimate for a Class 1 car from published fares. Temporary discounts and promotions are not included.":"~ bermaksud anggaran untuk kereta Kelas 1 berdasarkan kadar yang diterbitkan. Diskaun sementara dan promosi tidak termasuk.",
+"+ means at least: some tolls on this route could not be priced, so the real total is higher. Class 1 car, standard fares; temporary discounts are not included.":"+ bermaksud sekurang-kurangnya: sebahagian tol di laluan ini tidak dapat dinilai, jadi jumlah sebenar lebih tinggi. Kereta Kelas 1, kadar piawai; diskaun sementara tidak termasuk.",
+});
