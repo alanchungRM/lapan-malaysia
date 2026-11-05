@@ -247,11 +247,11 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 #savedSearch{width:100%;box-sizing:border-box;min-height:48px;border:1px solid #526779;border-radius:12px;background:#243546;color:#f5faf9;padding:12px;font:inherit;font-size:16px}
 #savedSearch::placeholder{color:#b1c6cf}
 .saved-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px}.saved-methods .saved-action{font-size:13px}
-#savedResults{display:grid;gap:6px;max-height:220px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y}
-.saved-result{display:grid;gap:4px;text-align:left;min-height:52px;padding:10px 12px;border:1px solid #526779;border-radius:12px;background:#243546;color:#f5faf9;font:inherit;cursor:pointer;overflow-wrap:anywhere}
+#savedResults{display:block;max-height:220px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y}
+.saved-result{display:flex;flex-direction:column;gap:4px;box-sizing:border-box;width:100%;height:auto;margin:0 0 6px;flex-shrink:0;text-align:left;min-height:52px;padding:10px 12px;border:1px solid #526779;border-radius:12px;background:#243546;color:#f5faf9;font:inherit;cursor:pointer;overflow-wrap:anywhere}
 .saved-result strong{font-size:14px}.saved-result small{font-size:12px;color:#b1c6cf}
 #savedSelection{display:grid;gap:5px;padding:12px;border:1px solid #39d48d;border-radius:12px;background:#1c3d39;overflow-wrap:anywhere}#savedSelection small{color:#b4e3d4;font-size:12px}#savedSelection strong{font-size:15px}
-#savedSelection[hidden]{display:none}.saved-footer{position:sticky;bottom:-18px;display:grid;grid-template-columns:1fr 1.5fr;gap:10px;padding:12px 0 2px;background:#172738}.saved-footer .primary{margin:0;font-size:16px;min-height:48px;padding:12px}.saved-footer .saved-action{align-items:center}
+#savedSelection[hidden]{display:none}.saved-footer{position:static;display:grid;grid-template-columns:1fr 1.5fr;gap:10px;padding:12px 0 2px;background:#172738}.saved-footer .primary{margin:0;font-size:16px;min-height:48px;padding:12px}.saved-footer .saved-action{align-items:center}
 #saveSaved:disabled{opacity:.5;cursor:default}#savedDialog .stops-head>button{min-width:44px;min-height:44px}#savedStatus:empty,#savedResults:empty{display:none}
 .saved-result:focus-visible,#savedSearch:focus-visible,#saveSaved:focus-visible{outline:3px solid #daf67a;outline-offset:2px}.saved-hint{white-space:normal!important}
 
