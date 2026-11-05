@@ -1,6 +1,8 @@
 // Bahasa Malaysia for Lapan. Each key is the exact English text; {name} marks a value that is kept. Entries equal to their key are intentionally the same in both languages.
 // Terms follow everyday Malaysian usage: laluan (route), had laju (speed limit), km/j, lebuh raya, Skrin Utama. A native speaker should review before release.
 window.LapanI18n.add({
+"↻ Refresh route":"↻ Kemas kini laluan",
+"Current route kept. Tap Refresh route for a fresh calculation.":"Laluan semasa dikekalkan. Ketik Kemas kini laluan untuk pengiraan baharu.",
 "lapan":"lapan",
 "MALAYSIA":"MALAYSIA",
 "Menu":"Menu",

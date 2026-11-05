@@ -31,7 +31,7 @@ function init({get,set,places,status,invalidate}){
 const $=id=>document.getElementById(id),box=$('suggest'),dialog=$('placeDialog'),results=$('placeMatches');let target='destination',sequence=0,timer,controller,pending=null,mapView,pin,point,resolveBusy=false;
 const local=q=>unique([...(root.LapanPlaces?.search(q)||[]),...[...root.LapanHistory?.places()||[],...places].filter(p=>normal(p[0]).includes(normal(q)))]);
 function cancelSearch(){sequence++;clearTimeout(timer);controller?.abort()}
-function choose(id,p){cancelSearch();invalidate();set(id,p.slice());$(id).value=p[0];root.LapanHistory?.remember(p,'selected');box.replaceChildren();box.style.display='none';status((id==='origin'?'Starting point':'Destination')+' selected. Tap Find my route.');}
+function choose(id,p){cancelSearch();const previous=get(id),same=previous&&previous[1]===p[1]&&previous[2]===p[2];if(!same)invalidate();set(id,p.slice());$(id).value=p[0];root.LapanHistory?.remember(p,'selected');box.replaceChildren();box.style.display='none';status((id==='origin'?'Starting point':'Destination')+' selected. Tap Find my route.');}
 function list(el,items,id,onSelect){el.replaceChildren();items.forEach(p=>{const b=document.createElement('button');b.type='button';const title=document.createElement('strong'),detail=document.createElement('small');title.textContent=p[0].split(',')[0];detail.textContent=(match($(id).value,p).strong?'':'Similar name — check carefully · ')+p[0]+' · '+p[1].toFixed(5)+', '+p[2].toFixed(5);b.append(title,detail);b.onclick=()=>onSelect(p);el.append(b)})}
 function inline(items,id,message){
 const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=!items.some(p=>prayerMatches.has(prayerKey(p)));

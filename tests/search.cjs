@@ -10,6 +10,8 @@ function harness(){
 const feature=(name,lat=3.1,lon=101.6,city='Klang')=>({geometry:{coordinates:[lon,lat]},properties:{name,street:'Jalan Test',city,state:'Selangor',country:'Malaysia'}});
 let completed=false;process.on('beforeExit',()=>{if(!completed){console.error('Search tests did not finish');process.exitCode=1}});
 (async()=>{
+ // Reselecting exactly the same place must preserve the current route.
+ const same=harness();same.chosen.destination=['Genting Highlands',3.4238,101.7932];same.$('destination').value='Genting Highlands';same.$('destination').focus();same.$('suggest').children[1].click();assert.equal(same.invalidations,0,'same search result does not invalidate the existing plan');
  // Saved-place map selection reuses the picker without changing either planner field.
  let saved=harness(),picked=null,cancelledSaved=0;saved.chosen.origin=['Origin',3,101];saved.chosen.destination=['Destination',3.5,102];
  saved.api.pickSaved({place:['Home',3.2,101.7],title:'Choose Home on map',onChoose:p=>picked=p,onCancel:()=>cancelledSaved++});saved.mapHandlers.click({latlng:{lat:3.3,lng:101.8}});saved.$('confirmMapPoint').click();await new Promise(setImmediate);assert.equal(picked[1],3.3);assert.equal(saved.chosen.origin[0],'Origin');assert.equal(saved.chosen.destination[0],'Destination');assert.equal(saved.invalidations,0);assert.equal(cancelledSaved,0);
