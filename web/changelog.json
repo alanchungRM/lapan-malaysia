@@ -12,6 +12,9 @@
       ],
       "Fixed": [
         "Smaller map-attribution controls with improved positioning to prevent overlaps in planning and navigation."
+      ],
+      "Improved": [
+        "Identical route plans are reused for up to two minutes. Selecting the same place preserves the current route, and Refresh route requests a fresh calculation."
       ]
     },
     "notes": [

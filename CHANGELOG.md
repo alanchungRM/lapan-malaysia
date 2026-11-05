@@ -17,6 +17,12 @@ Saved places, toll estimates and road hazard alerts
 
 - Smaller map-attribution controls with improved positioning to prevent overlaps in planning and navigation.
 
+### Improved
+
+- Home and Work setup includes Search more places, using the existing extended place search with cancellation safeguards and English/Bahasa Malaysia labels.
+- Scheduled traffic checks are skipped with under five minutes remaining; clear routes use a twenty-minute interval, while congested or unknown conditions retain ten minutes.
+- Identical route plans are reused for up to two minutes. Selecting the same place preserves the current route, and Refresh route requests a fresh calculation.
+
 > Congestion colours reuse traffic information from existing TomTom routing and traffic-refresh requests. This feature adds no API requests.
 >
 > Stale or unavailable congestion information is cleared. Uncoloured route sections do not guarantee clear traffic. OSRM-only routes do not provide live congestion data.
