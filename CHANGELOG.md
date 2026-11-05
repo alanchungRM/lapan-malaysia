@@ -2,6 +2,24 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.38] — 2026-11-05
+
+Traffic congestion colours and tidier map attribution
+
+### Added
+
+- Yellow and red route sections show reported slow traffic and heavy congestion on planning and navigation maps.
+
+### Fixed
+
+- Smaller map-attribution controls with improved positioning to prevent overlaps in planning and navigation.
+
+> Congestion colours reuse traffic information from existing TomTom routing and traffic-refresh requests. The ten-minute refresh schedule is unchanged; this feature adds no API requests.
+>
+> Stale or unavailable congestion information is cleared. Uncoloured route sections do not guarantee clear traffic. OSRM-only routes do not provide live congestion data.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.37] — 2026-11-04
 
 Clearer driving guidance and more reliable navigation
