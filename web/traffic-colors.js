@@ -1,6 +1,6 @@
 (function(root){
 // Rendering only: this module never fetches data or starts a timer.
-const colors={moderate:'#f5b800',heavy:'#dc2626'},listeners=new Set(),FRESH_MS=600000;
+const colors={moderate:'#FF8C00',heavy:'#dc2626'},listeners=new Set(),FRESH_MS=600000;
 function features(route,now=Date.now()){
  if(route?.provider!=='TomTom'||!Number.isFinite(Date.parse(route.trafficCheckedAt))||now-Date.parse(route.trafficCheckedAt)>=FRESH_MS||Date.parse(route.trafficCheckedAt)>now+60000)return {type:'FeatureCollection',features:[]};
  const sections=Array.isArray(route.trafficSections)?route.trafficSections:[];
