@@ -2,10 +2,11 @@
   {
     "version": "1.0.38",
     "date": "2026-11-05",
-    "title": "Traffic congestion colours and tidier map attribution",
+    "title": "Expanded toll estimates, traffic colours and tidier map attribution",
     "changes": {
       "Added": [
-        "Yellow and red route sections show reported slow traffic and heavy congestion on planning and navigation maps."
+        "Yellow and red route sections show reported slow traffic and heavy congestion on planning and navigation maps.",
+        "Expanded Class 1 toll estimates from published fare data for 33 Malaysian highways, with route-card prices, itemised breakdowns and English/Bahasa Malaysia labels (PR #33)."
       ],
       "Fixed": [
         "Smaller map-attribution controls with improved positioning to prevent overlaps in planning and navigation."
@@ -13,7 +14,9 @@
     },
     "notes": [
       "Congestion colours reuse traffic information from existing TomTom routing and traffic-refresh requests. The ten-minute refresh schedule is unchanged; this feature adds no API requests.",
-      "Stale or unavailable congestion information is cleared. Uncoloured route sections do not guarantee clear traffic. OSRM-only routes do not provide live congestion data."
+      "Stale or unavailable congestion information is cleared. Uncoloured route sections do not guarantee clear traffic. OSRM-only routes do not provide live congestion data.",
+      "Special thanks to Dandy (@dandycrypto, https://github.com/dandycrypto) for the open-source contribution in PR #33 (https://github.com/alanchungRM/lapan-malaysia/pull/33), adapted and tested for Lapan.",
+      "Toll fares are estimates from bundled published data dated 2 November 2026. Coverage and plaza matching are incomplete; partial fares are marked with +. Standard Class 1 fares exclude temporary discounts. OSRM-only routes do not supply the TomTom toll-road sections required for automatic estimates."
     ],
     "commits": []
   },
