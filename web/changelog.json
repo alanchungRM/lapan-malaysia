@@ -2,23 +2,25 @@
   {
     "version": "1.0.38",
     "date": "2026-11-05",
-    "title": "Toll estimates, road hazard alerts and clearer maps",
+    "title": "Saved places, toll estimates and road hazard alerts",
     "changes": {
       "Added": [
         "Yellow and red route sections show reported slow traffic and heavy congestion on planning and navigation maps.",
         "Expanded Class 1 toll estimates from published fare data for 33 Malaysian highways, with route-card prices, itemised breakdowns and English/Bahasa Malaysia labels (PR #33).",
-        "Mapped toll-plaza, railway-crossing and speed-bump alerts, plus sharp-curve alerts derived from the route, with English/Bahasa Malaysia banners and voice prompts (PR #29)."
+        "Mapped toll-plaza, railway-crossing and speed-bump alerts, plus sharp-curve alerts derived from the route, with English/Bahasa Malaysia banners and voice prompts (PR #29).",
+        "Home and Work shortcuts saved only on this device, with direct place search, current-location and map selection, explicit Save confirmation and English/Bahasa Malaysia labels (partially adapted from PR #27)."
       ],
       "Fixed": [
         "Smaller map-attribution controls with improved positioning to prevent overlaps in planning and navigation."
       ]
     },
     "notes": [
-      "Congestion colours reuse traffic information from existing TomTom routing and traffic-refresh requests. The ten-minute refresh schedule is unchanged; this feature adds no API requests.",
+      "Congestion colours reuse traffic information from existing TomTom routing and traffic-refresh requests. This feature adds no API requests.",
       "Stale or unavailable congestion information is cleared. Uncoloured route sections do not guarantee clear traffic. OSRM-only routes do not provide live congestion data.",
       "Special thanks to Dandy (@dandycrypto, https://github.com/dandycrypto) for the open-source contributions in PR #29 (https://github.com/alanchungRM/lapan-malaysia/pull/29) and PR #33 (https://github.com/alanchungRM/lapan-malaysia/pull/33), adapted and tested for Lapan.",
       "Toll fares are estimates from bundled published data dated 2 November 2026. Coverage and plaza matching are incomplete; partial fares are marked with +. Standard Class 1 fares exclude temporary discounts. OSRM-only routes do not supply the TomTom toll-road sections required for automatic estimates.",
-      "Road hazard data loads only when navigation starts and is cached in the browser. Alerts reuse mapped OpenStreetMap data and route geometry without additional TomTom requests. Coverage is incomplete and may be outdated; obey road signs and do not rely on alerts alone."
+      "Road hazard data loads only when navigation starts and is cached in the browser. Alerts reuse mapped OpenStreetMap data and route geometry without additional TomTom requests. Coverage is incomplete and may be outdated; obey road signs and do not rely on alerts alone.",
+      "Special thanks to Dandy (@dandycrypto, https://github.com/dandycrypto) for the original Home and Work shortcuts contribution in PR #27 (https://github.com/alanchungRM/lapan-malaysia/pull/27). Parts of this open-source contribution were reused and redesigned for Lapan, with additional selection, cancellation and storage safeguards."
     ],
     "commits": []
   },
