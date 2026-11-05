@@ -383,3 +383,7 @@ window.LapanI18n.add({"OSM masjid and surau across Malaysia. Some places may be 
 window.LapanI18n.add({"Prayer-place matches:":"Padanan tempat solat:","OpenStreetMap contributors (ODbL)":"Penyumbang OpenStreetMap (ODbL)"});
 
 window.LapanI18n.add({"Driving shortcuts":"Pintasan memandu","ETA":"Tiba"});
+
+window.LapanI18n.add({"Arrive":"Tiba","U-turn":"Pusing U","Roundabout":"Bulatan","Roundabout · exit {n}":"Bulatan · keluar {n}","Exit":"Keluar","Ramp":"Susur"});
+
+window.LapanI18n.add({"Bear":"Ikut","Sharp turn":"Belokan tajam","Exit roundabout":"Keluar bulatan"});
