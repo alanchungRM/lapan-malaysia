@@ -464,3 +464,5 @@ window.LapanI18n.add({
 "Choose Home on map":"Pilih Rumah pada peta",
 "Choose Work on map":"Pilih Kerja pada peta"
 });
+
+window.LapanI18n.add({"Additional search is unavailable. Try a full address or choose on map.":"Carian tambahan tidak tersedia. Cuba alamat penuh atau pilih pada peta."});

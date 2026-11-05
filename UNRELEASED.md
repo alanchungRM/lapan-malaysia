@@ -1,3 +1,3 @@
 # Unreleased changes
 
-No pending release notes. Changes curated into v1.0.38.
+- Home and Work setup: add an explicit Search more places action using the existing extended place search, with cancellation safeguards and EN/BM labels.

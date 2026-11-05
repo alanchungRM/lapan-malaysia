@@ -254,3 +254,5 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 #savedSelection[hidden]{display:none}.saved-footer{position:sticky;bottom:-18px;display:grid;grid-template-columns:1fr 1.5fr;gap:10px;padding:12px 0 2px;background:#172738}.saved-footer .primary{margin:0;font-size:16px;min-height:48px;padding:12px}.saved-footer .saved-action{align-items:center}
 #saveSaved:disabled{opacity:.5;cursor:default}#savedDialog .stops-head>button{min-width:44px;min-height:44px}#savedStatus:empty,#savedResults:empty{display:none}
 .saved-result:focus-visible,#savedSearch:focus-visible,#saveSaved:focus-visible{outline:3px solid #daf67a;outline-offset:2px}.saved-hint{white-space:normal!important}
+
+#savedMore{border-color:#39d48d;color:#a9f1ce;align-items:center}#savedMoreCredit[hidden]{display:none}
