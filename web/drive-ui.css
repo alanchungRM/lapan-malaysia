@@ -6,17 +6,17 @@ html{--i-chev-left:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 html body.guiding .navpanel{background:var(--sign-blue)!important;color:var(--on-sign)!important;border:0!important;border-radius:16px!important;padding:10px 14px 12px!important;max-height:none!important;overflow:visible!important;box-shadow:0 6px 18px rgba(0,0,0,.35)!important}
 html body.guiding .navpanel[data-road="expressway"]{background:var(--sign-green)!important}
 html body.guiding .navpanel[data-mode="status"]{background:#142330!important;color:#FFFFFF!important}
-html body.guiding .navpanel #nextturn{position:relative;display:block;min-height:0;padding:0!important;margin:0!important;color:inherit!important;font-size:clamp(17px,5vw,21px)!important;line-height:1.2;font-weight:700;overflow-wrap:anywhere}
+html body.guiding .navpanel #nextturn{position:relative;display:block;min-height:0;padding:0!important;margin:0!important;color:inherit!important;font-size:clamp(18px,4.8vw,20px)!important;line-height:1.2;font-weight:700;overflow-wrap:anywhere}
 html body.guiding .navpanel #nextturn:has(.turn-icon){min-height:44px;padding-left:56px!important}
 html #nextturn .turn-icon{display:block;position:absolute;left:0;top:0;width:44px;height:44px}
 html #nextturn .turn-icon svg{display:block;width:44px;height:44px;stroke-width:2.8}
-html #nextturn .turn-dist{display:block;font-size:clamp(26px,7.4vw,30px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+html #nextturn .turn-dist{display:block;font-size:clamp(34px,9vw,40px);font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
 html #nextturn .turn-sep{display:none}
 html #nextturn .nav-road-badge{font-size:.78em;padding:1px 5px;margin:0 2px}
-html body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden}
+html body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
 /* Alerts use the yellow warning-sign look */
 html #cameraWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
-html #cameraWarning::before::before::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
+html #cameraWarning::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
 /* Trip bar: arrival time first, then duration and distance, then two icon buttons */
 html body.guiding #navBar{display:grid!important;grid-template-columns:minmax(0,1fr) 44px 44px;grid-template-areas:"trip details stop";align-items:center;gap:0 8px;padding:8px 10px 8px 14px!important;border-radius:22px!important;min-height:0!important;flex-wrap:nowrap!important}
 html body.guiding #navBar .nav-trip{grid-area:trip;position:relative;min-width:0;flex:none!important}
@@ -27,11 +27,11 @@ html body.guiding #navBar #navTrip{display:flex!important;flex-wrap:wrap;align-i
 html #navTrip .eta-label{display:none}
 html #navTrip .eta-time{flex:0 0 100%;display:block}
 html #navTrip .eta-time+.eta-sep{display:none}
-html #navTrip .eta-time b{font-size:clamp(24px,7vw,28px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+html #navTrip .eta-time b{font-size:clamp(32px,9vw,38px);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
 html #navTrip .eta-ampm{display:inline!important;font-size:13px;font-weight:700;margin-left:2px;color:var(--muted)}
 html #navTrip .eta-sep{display:inline-block;width:4px;height:4px;margin:0 8px;border-radius:50%;background:var(--muted);opacity:.6;align-self:center;font-size:0}
-html #navTrip .eta-dur{font-size:clamp(15px,4.2vw,17px);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
-html #navTrip .eta-dist{font-size:clamp(15px,4.2vw,17px);font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+html #navTrip .eta-dur{font-size:clamp(18px,4.8vw,20px);font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+html #navTrip .eta-dist{font-size:clamp(18px,4.8vw,20px);font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 html body.guiding #navBar .traffic-basis{position:absolute;top:6px;right:0;width:10px;height:10px;margin:0;border-radius:50%;background:var(--muted);opacity:.55;font-size:0!important;overflow:hidden}
 html body.guiding #navBar .traffic-basis[data-live="1"]{background:var(--green);opacity:1}
 html body.guiding #navBar #navdetails,html body.guiding #navBar #stop{width:44px;height:44px;min-height:44px;padding:0!important;border-radius:50%!important;font-size:0!important}
@@ -63,3 +63,5 @@ html #navTrip .eta-dur,html #navTrip .eta-dist{font-size:15px}}
 /* Keep Quick stops inside the tray so it cannot sit behind it. */
 html body.guiding #driveMore #openStops{position:static!important;inset:auto!important;margin:0!important;padding:0!important;max-width:none;font-size:24px!important}
 html #driveMore #openStops span{display:none}
+
+html #nextturn .turn-action{display:block;font-size:clamp(24px,6.5vw,28px);font-weight:800;line-height:1.18;margin:2px 0 4px}body.guiding #navpanel[data-mode="status"] #nextturn{font-size:18px!important}

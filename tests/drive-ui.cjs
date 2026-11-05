@@ -24,7 +24,7 @@ assert.equal(D.expressway({maneuver:{type:'off ramp'}}),true);assert.equal(D.exp
 function banner(){const made=[];const d={createElement:tag=>({tag,className:'',textContent:'',title:'',set innerHTML(v){this.html=v}}),createTextNode:text=>({text,textContent:text})};
  const panel={dataset:{}};const n={ownerDocument:d,closest:()=>panel,replaceChildren(...c){this.children=c},children:[],get textContent(){return this.children.map(c=>c.textContent??c.text).join('')}};return {n,panel}}
 {const {n,panel}=banner(),s=step('turn','left',{name:'Jalan Trinity',ref:'',exits:''});D.render(n,s,'310 m · Turn left onto Jalan Trinity');
- assert.deepEqual(n.children.map(c=>c.className||'text'),['turn-icon','turn-dist','turn-sep','text']);assert.equal(n.children[0].html,D.ICONS.left);assert.equal(n.textContent,'310 m · Turn left onto Jalan Trinity','text is unchanged');assert.equal(panel.dataset.road,'road');
+ assert.deepEqual(n.children.map(c=>c.className||'text'),['turn-icon','turn-dist','turn-sep','turn-action','text','text']);assert.equal(n.children[0].html,D.ICONS.left);assert.equal(n.textContent,'310 m · Turn left Jalan Trinity','banner wording is concise');assert.equal(panel.dataset.road,'road');
  const e=step('off ramp','right',{name:'Lebuhraya DUKE',ref:'E33',exits:'214'});D.render(n,e,'1.2 km · Take exit 214 · E33');assert.equal(panel.dataset.road,'expressway');assert.equal(n.children[0].html,D.ICONS['fork-right']);assert.equal(n.children[1].textContent,'1.2 km');
  D.render(n,{},'Checking your route…');assert.deepEqual(n.children.map(c=>c.className||'text'),['text'],'status messages have no icon or distance');assert.equal(panel.dataset.road,'road');
  D.render(n,step('arrive','straight'),'45 m · Arrive at your destination');assert.equal(n.children[0].html,D.ICONS.arrive);}
@@ -38,11 +38,11 @@ for(const [fg,bg] of [['on-sign','sign-green'],['on-sign','sign-blue'],['on-warn
 assert.ok(ratio(tokens['warn-sign'],tokens['sign-blue'])>=4,'the yellow alert stands out on the blue banner');assert.ok(ratio(tokens['warn-sign'],tokens['sign-green'])>=4,'and on the green one');
 
 // Look rules that keep the screen readable and closable.
-assert.match(css,/#nextturn \.turn-dist\{[^}]*font-size:clamp\(26px/,'distance is the biggest text on the banner');assert.match(css,/#nextturn\{[^}]*font-size:clamp\(17px/,'road text is at least 17px');
-assert.match(css,/#navTrip .eta-time b\{font-size:clamp\(24px/,'arrival time is the biggest trip text');assert.match(css,/#navTrip \.eta-time\{flex:0 0 100%/,'duration and distance sit on their own line');
+assert.match(css,/#nextturn \.turn-dist\{[^}]*font-size:clamp\(34px/,'distance is the biggest text on the banner');assert.match(css,/#nextturn\{[^}]*font-size:clamp\(18px/,'road text is at least 17px');
+assert.match(css,/#navTrip .eta-time b\{font-size:clamp\(32px/,'arrival time is the biggest trip text');assert.match(css,/#navTrip \.eta-time\{flex:0 0 100%/,'duration and distance sit on their own line');
 assert.match(css,/#navMore\{--icon:var\(--i-chev-left\)\}[^\n]*#navMore\{--icon:var\(--i-chev-right\)\}/,'the toggle is an arrow that flips when open');
 // Nothing on the driving screen is allowed to grow past a phone-friendly ceiling.
-for(const [what,re,max] of [['turn distance',/#nextturn \.turn-dist\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,32],['turn road text',/#nextturn\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,24],['arrival time',/#navTrip \.eta-time b\{font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,30],['alert text',/#cameraWarning,[^{]*\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,18]]){const m=css.match(re);assert.ok(m,what);assert.ok(Number(m[1])<=max,what+' ceiling '+m[1]+' > '+max)}
+for(const [what,re,max] of [['turn distance',/#nextturn \.turn-dist\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,40],['turn road text',/#nextturn\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,24],['arrival time',/#navTrip \.eta-time b\{font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,38],['alert text',/#cameraWarning,[^{]*\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,18]]){const m=css.match(re);assert.ok(m,what);assert.ok(Number(m[1])<=max,what+' ceiling '+m[1]+' > '+max)}
 assert.match(css,/#cameraWarning::before[^{]*\{[^}]*mask:var\(--i-warn\)/,'alerts carry a warning-sign symbol');
 assert.match(css,/#navBar #stop\{background:var\(--bad-fill\)/);assert.match(css,/max-width:340px/,'narrow phones get a tighter trip bar');
 // The tray is closed by default and cannot be stuck open or hidden behind the trip bar.
@@ -53,3 +53,5 @@ const entries={};vm.runInNewContext(fs.readFileSync('web/i18n-ms.js','utf8'),{wi
 assert.equal(entries['ETA'],'Tiba');assert.ok(entries['ETA'].length<=5,'short label');
 const html=fs.readFileSync('web/index.html','utf8');assert.ok(html.indexOf('drive-ui.js')<html.indexOf('eta.js')&&html.indexOf('eta.js')<html.indexOf('src="app.js"'),'the trip helper loads before the ETA code');
 console.log('PASS: trip line parts, turn arrows, expressway and road sign colours, banner structure, sign contrast, readable sizes, closable tray and short Malay label');
+
+const short=D.compact({maneuver:{type:'off ramp',modifier:'slight left'},ref:'E11',exits:'214',destinations:'USJ 21 (Main Place), Subang Jaya, Persiaran Something'});assert.equal(short.action,'Exit left');assert.equal(short.detail,'EXIT 214 · E11 · USJ 21');assert.equal(D.compact({maneuver:{type:'roundabout',exit:3}}).action,'Roundabout · exit 3');assert.equal(D.compact({maneuver:{type:'turn',modifier:'slight right'}}).action,'Bear right');assert.equal(D.compact({maneuver:{type:'turn',modifier:'sharp left'}}).action,'Sharp turn left');

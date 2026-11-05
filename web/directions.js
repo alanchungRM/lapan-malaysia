@@ -62,8 +62,20 @@ function iconName(step={}){
 }
 // Expressways and their ramps are signed green in Malaysia, other roads blue.
 const expressway=(step={})=>/(^|;)\s*(?:E|AH)\s?\d/i.test(clean(step.ref))||/ramp/.test(clean(step.maneuver?.type).replaceAll('_',' '))||!!clean(step.exits);
+// Short display guidance; full instructions remain in Details and speech keeps its own wording.
+function compact(step={}){
+ const {T}=words(false),m=step.maneuver||{},type=clean(m.type).replaceAll('_',' '),mod=clean(m.modifier),side=/left/.test(mod)?T('left'):/right/.test(mod)?T('right'):'';
+ let action=type==='arrive'?T('Arrive'):mod==='uturn'?T('U-turn'):/^exit (roundabout|rotary)$/.test(type)?T('Exit roundabout'):/roundabout|rotary/.test(type)?(Number.isInteger(m.exit)&&m.exit>0?T('Roundabout · exit {n}',{n:m.exit}):T('Roundabout')):type==='off ramp'?T('Exit'):type==='on ramp'?T('Ramp'):type==='fork'?T('Keep'):type==='merge'?T('Merge'):['continue','new name','depart','notification',''].includes(type)?T('Continue'):/^slight /.test(mod)?T('Bear'):/^sharp /.test(mod)?T('Sharp turn'):T('Turn');
+ if(side&&!/roundabout|rotary|arrive/.test(type)&&mod!=='uturn')action+=' '+side;
+ const short=value=>{const text=clean(value).split(/[;,]/)[0].replace(/\s*\([^)]*\)/g,'').trim();return text.length>28?text.slice(0,27).replace(/\s+\S*$/,'')+'…':text};
+ const exit=signs(step.exits),ref=signs(step.ref),place=short(step.destinations||step.name);
+ const detail=[exit&&!/roundabout|rotary/.test(type)?T('EXIT')+' '+exit:'',ref,place&&place.toLowerCase()!==ref.toLowerCase()?place:''].filter(Boolean).join(' · ');
+ return {action,detail:type==='arrive'?'':detail};
+}
 function render(node,step,message){
- let parts=badges(step,message);
+ const distance=typeof message==='string'?message.match(/^(\d+(?:\.\d+)?\s*(?:m|km))\s*·\s*/):null;
+ const brief=distance&&step?.maneuver?compact(step):null;
+ let parts=brief?[{text:distance[1]+' · '},{kind:'action',text:brief.action},...(brief.detail?[{text:' '},...badges(step,brief.detail)]:[])]:badges(step,message);
  const lead=step&&step.maneuver&&typeof message==='string'?parts[0]&&!parts[0].kind&&parts[0].text.match(/^(\d+(?:\.\d+)?\s*(?:m|km))(\s*·\s*)/):null;
  if(lead)parts=[{kind:'dist',text:lead[1]},{kind:'sep',text:lead[2]},...(parts[0].text.length>lead[0].length?[{text:parts[0].text.slice(lead[0].length)}]:[]),...parts.slice(1)];
  const icon=lead?iconName(step):'',text=parts.map(part=>part.text).join(''),key=JSON.stringify([parts,icon]);
@@ -71,7 +83,7 @@ function render(node,step,message){
  const doc=node.ownerDocument||root.document;
  const panel=node.closest?.('.navpanel');if(panel&&panel.dataset)panel.dataset.road=lead&&expressway(step)?'expressway':'road';
  const lead_nodes=[];if(icon){const holder=doc.createElement('span');holder.className='turn-icon';holder.innerHTML=ICONS[icon];lead_nodes.push(holder)}
- node.replaceChildren(...lead_nodes,...parts.map(part=>{if(!part.kind)return doc.createTextNode(part.text);if(part.kind==='dist'||part.kind==='sep'){const piece=doc.createElement('span');piece.className='turn-'+part.kind;piece.textContent=part.text;return piece}const badge=doc.createElement('span');badge.className='nav-road-badge nav-road-badge--'+part.kind;badge.textContent=part.text;badge.title=words(false).T(part.kind==='exit'?'Signed exit number':'Signed road number');return badge}));badgeRenders.set(node,key);
+ node.replaceChildren(...lead_nodes,...parts.map(part=>{if(!part.kind)return doc.createTextNode(part.text);if(part.kind==='dist'||part.kind==='sep'||part.kind==='action'){const piece=doc.createElement('span');piece.className='turn-'+part.kind;piece.textContent=part.text;return piece}const badge=doc.createElement('span');badge.className='nav-road-badge nav-road-badge--'+part.kind;badge.textContent=part.text;badge.title=words(false).T(part.kind==='exit'?'Signed exit number':'Signed road number');return badge}));badgeRenders.set(node,key);
 }
-root.LapanDirections={format,speech,badges,render,iconName,expressway};if(typeof module==='object')module.exports={format,speech,badges,render,iconName,expressway,ICONS};
+root.LapanDirections={format,speech,badges,render,iconName,expressway,compact};if(typeof module==='object')module.exports={format,speech,badges,render,iconName,expressway,compact,ICONS};
 })(typeof window==='object'?window:globalThis);
