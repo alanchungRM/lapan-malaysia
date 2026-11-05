@@ -31,10 +31,10 @@ assert.equal(coordinates(3.139003,101.686855),'3.1390, 101.6869');
 
 // The markup and the code agree, and every string shown by saved.js has Bahasa Malaysia.
 const html=fs.readFileSync('web/index.html','utf8'),js=fs.readFileSync('web/saved.js','utf8');
-for(const id of ['savedDialog','savedTitle','savedCurrent','savedName','savedUseTo','savedToName','savedUseHere','savedRemove','savedStatus','closeSaved','doneSaved'])assert.ok(html.includes('id="'+id+'"'),'index.html lacks #'+id);
+for(const id of ['savedDialog','savedTitle','savedCurrent','savedName','savedSearch','savedResults','savedUseHere','savedUseMap','savedSelection','savedSelectedName','savedSelectedCoords','savedRemove','savedStatus','closeSaved','cancelSaved','saveSaved'])assert.ok(html.includes('id="'+id+'"'),'index.html lacks #'+id);
 for(const k of KINDS)for(const attr of ['data-saved="'+k+'"','data-saved-edit="'+k+'"'])assert.ok(html.includes(attr),attr);
 assert.match(html,/<script src="saved\.js"><\/script>/);assert.ok(html.indexOf('saved.js')<html.indexOf('src="app.js"'),'saved.js loads before app.js');
-for(const name of ['savedName','savedToName'])assert.match(html,new RegExp('id="'+name+'" data-no-i18n'),name+' holds a place name and must not be translated');
+for(const name of ['savedName','savedSelectedName','savedSelectedCoords'])assert.match(html,new RegExp('id="'+name+'" data-no-i18n'),name+' holds a place name and must not be translated');
 assert.ok(!/innerHTML/.test(js),'place names are never written as HTML');
 const dict={};vm.runInNewContext(fs.readFileSync('web/i18n-ms.js','utf8'),{window:{LapanI18n:{add:o=>Object.assign(dict,o)}}});
 const labels={home:'Home',work:'Work'},needed=[];
@@ -42,6 +42,6 @@ for(const k of KINDS){const L=labels[k];needed.push(L,'Set '+L,'Change '+L,'Remo
 needed.push('Tap to set','Saved places','Search for a place in the To box first.','This browser cannot save places right now.','Location is unavailable or permission was denied.','Finding your location…','Your location is outside Malaysia. Choose a Malaysian starting point.','This browser does not support location.');
 for(const text of needed)assert.ok(dict[text]&&dict[text]!==text||text==='Home'&&dict[text],'no Bahasa Malaysia for: '+text);
 for(const text of [...js.matchAll(/(?:dialogState|status\)?\.textContent=|status\()\s*['"]([^'"]+)['"]/g)].map(m=>m[1]))assert.ok(dict[text],'untranslated string in saved.js: '+text);
-for(const m of js.matchAll(/'([A-Za-z ]+ )'\+LABEL\[kind\]|LABEL\[kind\]\+'([^']+)'/g))for(const L of Object.values(labels)){const text=m[1]?m[1]+L:L+m[2];assert.ok(dict[text],'untranslated composed string in saved.js: '+text)}
+for(const m of js.matchAll(/'([A-Za-z ]+ )'\+LABEL\[kind\](?:\+'([^']+)')?|LABEL\[kind\]\+'([^']+)'/g))for(const L of Object.values(labels)){const text=m[1]?m[1]+L+(m[2]||''):L+m[3];assert.ok(dict[text],'untranslated composed string in saved.js: '+text)}
 assert.equal(chipLabel('5.3582, 100.3190'),'5.358, 100.319','coordinates fit on a chip');assert.equal(chipLabel('Menara KL'),'Menara KL');assert.equal(chipLabel('Jalan 3.1234, 101.5678 Utara'),'Jalan 3.1234, 101.5678 Utara','only plain coordinates are shortened');
 console.log('PASS: Home and Work validation, storage, bad data, blocked storage, markup and Bahasa Malaysia coverage');

@@ -447,3 +447,20 @@ window.LapanI18n.add({
 "This browser cannot save places right now.":"Pelayar ini tidak dapat menyimpan tempat sekarang.",
 "Location is unavailable or permission was denied.":"Lokasi tidak tersedia atau kebenaran dinafikan."
 });
+
+window.LapanI18n.add({
+"Save Home":"Simpan Rumah",
+"Save Work":"Simpan Kerja",
+"Search for a place or address":"Cari tempat atau alamat",
+"Choose on map":"Pilih pada peta",
+"Place search results":"Hasil carian tempat",
+"Selected location":"Lokasi dipilih",
+"Check the location, then tap Save.":"Semak lokasi, kemudian ketik Simpan.",
+"Select a place. Check the town and address.":"Pilih tempat. Semak bandar dan alamat.",
+"No matching places. Try a town or choose on map.":"Tiada tempat sepadan. Cuba nama bandar atau pilih pada peta.",
+"Online search is unavailable. Choose a listed place or choose on map.":"Carian dalam talian tidak tersedia. Pilih tempat tersenarai atau pilih pada peta.",
+"GPS accuracy is low. Check the location on the map before saving.":"Ketepatan GPS rendah. Semak lokasi pada peta sebelum menyimpan.",
+"Map selection is unavailable. Try searching for a place.":"Pemilihan peta tidak tersedia. Cuba cari tempat.",
+"Choose Home on map":"Pilih Rumah pada peta",
+"Choose Work on map":"Pilih Kerja pada peta"
+});
