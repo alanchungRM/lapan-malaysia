@@ -15,18 +15,23 @@ let lastPlan=null;
 const copy=data=>JSON.parse(JSON.stringify(data));
 async function request(from,to,alternatives,signal,_allowBasic,purpose='planning',refresh=false){
  if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');
- const provider=root.document?.documentElement?.dataset?.routingProvider||'TomTom',key=JSON.stringify({from,to,alternatives,provider});
+ let provider=root.document?.documentElement?.dataset?.routingProvider||'TomTom',revision=0;
+ if(root.document?.documentElement?.dataset?.routingConfig==='server'){
+  try{const {r,d}=await getJSON('/api/routing-config',{cache:'no-store'},signal,4000);if(!r.ok||!['TomTom','OSRM','HERE'].includes(d.provider))throw Error();provider=d.provider;revision=d.revision||0}
+  catch(e){if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');provider='OSRM'}
+ }
+ const key=JSON.stringify({from,to,alternatives,provider,revision});
  if(purpose==='planning'&&!refresh&&lastPlan?.key===key&&Date.now()-lastPlan.at<120000)return copy(lastPlan.data);
  if(purpose==='planning'&&refresh)lastPlan=null;
  const remember=data=>{
   if(purpose==='planning'){
-   const checked=Date.parse(data.checkedAt),at=data.source==='TomTom'?checked:Date.now();
+   const checked=Date.parse(data.checkedAt),at=['TomTom','HERE'].includes(data.source)?checked:Date.now();
    lastPlan=Number.isFinite(at)?{key,at,data:copy(data)}:null;
   }
   return data;
  };
  let error;
- const osrmOnly=root.document?.documentElement?.dataset?.routingProvider==='OSRM';
+ const osrmOnly=provider==='OSRM';
  if(osrmOnly)error={allowBasic:true,retryAfterMs:0};
  if(!osrmOnly){
  try{
@@ -46,6 +51,6 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
  if(!d.routes.length)throw Error('No basic route avoiding the reported restriction is available.');
  d.routes.forEach(route=>{route.provider='OSRM';route.closureCheckedAt=null;route.trafficCheckedAt=null});return remember(d);
 }
-function label(route){return route?.provider==='TomTom'?'TomTom live route · closures checked at '+new Date(route.closureCheckedAt).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})+' · reported closures only':'OSRM basic route · no live traffic · road closures NOT checked'}
+function label(route){const provider=route?.provider;if(['TomTom','HERE'].includes(provider))return provider+' live route · closures checked at '+new Date(route.closureCheckedAt).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})+' · reported closures only';return 'OSRM basic route · no live traffic · road closures NOT checked'}
 root.LapanRouting={request,label};if(typeof module==='object')module.exports={request,label};
 })(typeof window==='object'?window:globalThis);

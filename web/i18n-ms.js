@@ -1,6 +1,13 @@
 // Bahasa Malaysia for Lapan. Each key is the exact English text; {name} marks a value that is kept. Entries equal to their key are intentionally the same in both languages.
 // Terms follow everyday Malaysian usage: laluan (route), had laju (speed limit), km/j, lebuh raya, Skrin Utama. A native speaker should review before release.
 window.LapanI18n.add({
+"Routes and rerouting use the routing provider selected by the administrator: TomTom, HERE or OSRM. Starting and destination coordinates are sent to that service. If a paid routing service is unavailable, Lapan may send these coordinates to OSRM as a fallback. OSRM does not provide live traffic or closure checks. TomTom Search is disabled. Searches and Quick stops use Photon, except Masjid / Surau which uses bundled OSM data; additional place search uses the bundled regional directory. GPS is used only when you enable location. Recent places, language and preferences are saved only in this browser. PLUS fare requests contain plaza codes only. The visitor counter records aggregate views, visits and broad browser categories, without names, raw IP addresses, precise GPS, destinations or journey history. Existing tracking preferences apply.":"Laluan dan pengiraan semula menggunakan penyedia yang dipilih pentadbir: TomTom, HERE atau OSRM. Koordinat mula dan destinasi dihantar kepada perkhidmatan itu. Jika perkhidmatan laluan berbayar tidak tersedia, Lapan boleh menghantar koordinat ini kepada OSRM sebagai sandaran. OSRM tidak menyediakan trafik langsung atau semakan penutupan jalan. Carian TomTom dilumpuhkan. Carian dan Hentian pantas menggunakan Photon, kecuali Masjid / Surau menggunakan data OSM terbina dalam; carian tambahan menggunakan direktori wilayah. GPS digunakan hanya apabila anda mengaktifkan lokasi. Tempat terkini, bahasa dan pilihan disimpan dalam pelayar ini sahaja. Permintaan tambang PLUS hanya mengandungi kod plaza. Kaunter pelawat merekodkan jumlah paparan, lawatan dan kategori umum pelayar tanpa nama, IP mentah, GPS tepat, destinasi atau sejarah perjalanan. Pilihan penjejakan sedia ada terpakai.",
+"HERE live route":"Laluan masa nyata HERE",
+"HERE live route · closures checked at {time} · reported closures only":"Laluan masa nyata HERE · penutupan jalan disemak pada {time} · penutupan yang dilaporkan sahaja",
+"HERE traffic":"Trafik HERE",
+"HERE traffic · checked {time}":"Trafik HERE · disemak {time}",
+"HERE traffic · Orange: slow · Red: heavy · checked {time}":"Trafik HERE · Oren: perlahan · Merah: sesak · disemak {time}",
+
 "↻ Refresh route":"↻ Kemas kini laluan",
 "Current route kept. Tap Refresh route for a fresh calculation.":"Laluan semasa dikekalkan. Ketik Kemas kini laluan untuk pengiraan baharu.",
 "lapan":"lapan",

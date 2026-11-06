@@ -1,0 +1,1 @@
+CREATE TABLE routing_settings (id INTEGER PRIMARY KEY NOT NULL CHECK(id=1), provider TEXT NOT NULL CHECK(provider IN ('TomTom','OSRM','HERE')), revision INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL);

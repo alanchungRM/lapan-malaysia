@@ -38,7 +38,13 @@ export function serveAsset(request,assets,env={}){
  if(request.method!=='GET'&&request.method!=='HEAD')return withSecurityHeaders(new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}}));
  const path=u.pathname==='/'?'/index.html':u.pathname==='/changelog/'?'/changelog':u.pathname==='/statistics'||u.pathname==='/statistics/'?'/statistics.html':u.pathname;
  let file=Object.hasOwn(assets,path)?assets[path]:null;
- if(file&&path==='/index.html'&&env.TOMTOM_ROUTING_DISABLED==='true'){file={...file,body:file.body.replace('data-routing-provider="AUTO"','data-routing-provider="OSRM"').replace(/<!-- STAGING_STATUS v([^ ]+) -->/,'<div class="staging-build" data-no-i18n role="note">STAGING · v$1 · OSRM ONLY · TomTom routing OFF · Applied PRs: #15 · #16 · #17 · #18 · #19 · #20 · #21 · #23 · #24 · #26 · #27 · #29 · #31 · #33</div>'),etag:file.etag?.replace(/"$/,'-osrm-off"')}}
+ if(file&&path==='/index.html'){
+  const provider=env.LAPAN_SELECTED_PROVIDER||(env.TOMTOM_ROUTING_DISABLED==='true'?'OSRM':'TomTom');
+  const staging=env.TOMTOM_ROUTING_DISABLED==='true';
+  const status=provider==='OSRM'?'OSRM ONLY · TomTom routing OFF · HERE routing OFF':provider==='HERE'?'HERE PRIMARY · OSRM fallback · TomTom routing OFF':'TomTom PRIMARY · OSRM fallback · HERE routing OFF';
+  file={...file,body:file.body.replace('data-routing-provider="AUTO"','data-routing-provider="'+(provider==='TomTom'?'AUTO':provider)+'"').replace(/<!-- STAGING_STATUS v([^ ]+) -->/,staging?'<div class="staging-build" data-no-i18n role="note">STAGING · v$1 · '+status+' · Applied PRs: #15 · #16 · #17 · #18 · #19 · #20 · #21 · #23 · #24 · #26 · #27 · #29 · #31 · #33</div>':'<!-- STAGING_STATUS v$1 -->'),etag:file.etag?.replace(/"$/,'-'+provider+'"')};
+ }
+
  if(!file)return withSecurityHeaders(new Response('Not found',{status:404}));
  const headers={'Content-Type':file.type+'; charset=utf-8','Cache-Control':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
  if(file.etag){headers.ETag=file.etag;if(etagMatches(request.headers.get('If-None-Match'),file.etag))return withSecurityHeaders(new Response(null,{status:304,headers}))}
