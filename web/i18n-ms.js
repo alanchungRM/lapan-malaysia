@@ -55,6 +55,7 @@ window.LapanI18n.add({
 "Middle ramp":"Susur tengah",
 "Keep to the middle":"Kekal di tengah",
 "Keep middle":"Kekal tengah",
+"Known subtotal for a Class 1 car from Lapan fare data. + means some tolls may be missing; the full cost may be higher. Temporary discounts are not included.":"Subtotal yang diketahui untuk kereta Kelas 1 daripada data tambang Lapan. + bermaksud sesetengah tol mungkin belum dimasukkan; jumlah sebenar mungkin lebih tinggi. Diskaun sementara tidak termasuk.",
 "Car":"Kereta",
 "Motorcycle":"Motosikal",
 "Vehicle":"Kenderaan",

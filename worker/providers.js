@@ -17,7 +17,7 @@ export async function dispatchRoute(request,env,estimateTolls){
  const u=new URL(request.url);if(request.headers.get('origin')&&request.headers.get('origin')!==u.origin)return Response.json({error:'Origin not allowed'},{status:403});
  const setting=await routingSetting(env);
  if(setting.provider==='OSRM')return Response.json({error:body.vehicle==='motorcycle'?'Motorcycle routing requires TomTom or HERE.':'Paid routing is disabled. OSRM is selected.',allowBasic:body.vehicle!=='motorcycle'},{status:503,headers:{'Cache-Control':'private, no-store'}});
- const response=await (setting.provider==='HERE'?planHereRoute(request,env,body):planLiveRoute(request,{...env,TOMTOM_ROUTING_DISABLED:'false'},estimateTolls));
+ const response=await (setting.provider==='HERE'?planHereRoute(request,env,body,estimateTolls):planLiveRoute(request,{...env,TOMTOM_ROUTING_DISABLED:'false'},estimateTolls));
  if(body.vehicle==='motorcycle'&&!response.ok){const data=await response.json();return Response.json({...data,allowBasic:false},{status:response.status,headers:response.headers})}
  return response;
 }

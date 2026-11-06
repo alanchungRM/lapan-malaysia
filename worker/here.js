@@ -28,6 +28,37 @@ function normalizeHereRoute(route,checkedAt){
  if(globalThis.LapanRoadRestrictions.blocked(coordinates))throw Error('HERE route crosses a reported restriction');
  return {provider:'HERE',duration,distance,geometry:{type:'LineString',coordinates},legs,trafficSections:trafficSections.slice(0,2000),trafficCheckedAt:checkedAt,closureCheckedAt:checkedAt,trafficDelay:baseKnown?Math.max(0,duration-baseDuration):null,tollEstimate:null,hereRouteHandle:typeof route.routeHandle==='string'&&route.routeHandle.length<=100000?route.routeHandle:null};
 }
+// Adapt HERE geometry/toll flags to the existing local Class 1 fare matcher.
+// Never ask HERE for toll prices; no second route, route import or toll API call.
+function hereTollRoute(raw){
+ const points=[],sections=[],instructions=[];
+ for(const section of raw.sections){
+  const coords=decodeHerePolyline(section.polyline),base=points.length;points.push(...coords.map(([longitude,latitude])=>({longitude,latitude})));
+  for(const a of section.turnByTurnActions||[]){const road=a.nextRoad||a.currentRoad||{};instructions.push({pointIndex:base+a.offset,street:hereRoad(road.name),roadNumbers:Array.isArray(road.number)?road.number.map(n=>hereText(n.value)).filter(Boolean):[]})}
+  const spans=section.spans;if(!Array.isArray(spans)||spans.length>100000)continue;
+  // An invalid span layout is not evidence of toll-free roads or priced coverage.
+  if(spans.some((span,i)=>!Number.isInteger(span.offset)||span.offset<0||span.offset>=coords.length||(i&&span.offset<=spans[i-1].offset)))continue;
+  for(let i=0;i<spans.length;i++){
+   const span=spans[i],end=spans[i+1]?.offset??coords.length-1;
+   if(end<=span.offset||!Array.isArray(span.carAttributes)||!span.carAttributes.includes('tollRoad'))continue;
+   const startPointIndex=base+span.offset,endPointIndex=base+end,last=sections.at(-1);
+   if(last&&last.endPointIndex===startPointIndex)last.endPointIndex=endPointIndex;
+   else sections.push({sectionType:'TOLL',startPointIndex,endPointIndex});
+  }
+ }
+ return {provider:'HERE',legs:[{points}],sections,guidance:{instructions}};
+}
+async function hereLocalTolls(raw,estimateTolls){
+ const empty={status:'unavailable',currency:'MYR',vehicleClass:1,amount:null,items:[],basis:'local-fares',note:'Local Class 1 fare coverage is incomplete. Missing prices never mean toll-free.'};
+ try{
+  const route=hereTollRoute(raw);if(!route.sections.length)return empty;
+  const toll=await estimateTolls(route);if(!toll)return empty;
+  const known=(toll.items||[]).filter(i=>Number.isFinite(i.amount)&&i.amount>0),amount=Math.round(known.reduce((n,i)=>n+i.amount,0)*100)/100;
+  // Even a matched subtotal cannot prove every Malaysian toll was identified.
+  if(!known.length||!Number.isFinite(amount)||amount<=0)return {...toll,...empty,items:toll.items||[]};
+  return {...toll,status:'partial',currency:'MYR',vehicleClass:1,amount,basis:'local-fares',note:empty.note};
+ }catch{return empty}
+}
 const hereFailures={HERE_AUTH:'HERE rejected the API key. Check the configured HERE credentials.',HERE_ACCESS:'HERE Routing access is denied. Check the linked service and project permissions.',HERE_REQUEST:'HERE rejected the routing request. Please retry or choose another point.',HERE_GUIDANCE:'HERE returned guidance Lapan cannot use. Please try another route.',HERE_NO_ROUTE:'HERE could not return a usable road route between these points.',HERE_LIMIT:'HERE request allowance or rate limit reached. Please wait before retrying.'};
 const herePending=new Map(),hereCache=new Map(),hereClients=new Map();let hereInFlight=0,herePauseUntil=0;
 async function hereLimited(request,env,purpose,key,refresh,run){
@@ -40,11 +71,11 @@ async function hereLimited(request,env,purpose,key,refresh,run){
  const work=(async()=>{try{const data=await run();hereCache.set(key,{at:Date.now(),data});if(hereCache.size>20)hereCache.delete(hereCache.keys().next().value);return json(data)}catch(e){const code=Object.hasOwn(hereFailures,e.code||'')?e.code:'HERE_UNAVAILABLE';return json({error:e.restricted?'HERE returned a route violating a road restriction. Choose another point.':hereFailures[code]||'HERE routing is temporarily unavailable. Please retry.',code,allowBasic:!e.restricted},e.restricted?422:502)}finally{hereInFlight--}})();herePending.set(key,work);try{return (await work).clone()}finally{herePending.delete(key)}
 }
 async function fetchHere(url,env,purpose){await globalThis.LapanHereUsage?.record(env,purpose);const response=await fetch(url,{signal:AbortSignal.timeout(18000)});if(response.status===429)herePauseUntil=Date.now()+Math.max(30,Math.min(300,Number(response.headers.get('Retry-After'))||60))*1000;if(!response.ok)throw Object.assign(Error('HERE unavailable'),{code:({400:'HERE_REQUEST',401:'HERE_AUTH',403:'HERE_ACCESS',429:'HERE_LIMIT'})[response.status]||'HERE_UNAVAILABLE'});return response.json()}
-function hereParameters(url,env,vehicle='car'){for(const [key,value]of Object.entries({apiKey:env.HERE_API_KEY,transportMode:vehicle==='motorcycle'?'scooter':'car',routingMode:'fast',return:'polyline,summary,turnByTurnActions,routeHandle',spans:'dynamicSpeedInfo,length',lang:'en-GB'}))url.searchParams.set(key,value);if(vehicle==='motorcycle'){url.searchParams.set('scooter[allowHighway]','true');url.searchParams.set('vehicle[speedCap]','30.555556')}const areas=globalThis.LapanRoadRestrictions.list();if(areas.length)url.searchParams.set('avoid[areas]',areas.map(r=>'bbox:'+r.west+','+r.south+','+r.east+','+r.north).join('|'));return url}
-export async function planHereRoute(request,env,body){
+function hereParameters(url,env,vehicle='car',localTolls=false){for(const [key,value]of Object.entries({apiKey:env.HERE_API_KEY,transportMode:vehicle==='motorcycle'?'scooter':'car',routingMode:'fast',return:'polyline,summary,turnByTurnActions,routeHandle',spans:'dynamicSpeedInfo,length'+(localTolls?',carAttributes':''),lang:'en-GB'}))url.searchParams.set(key,value);if(vehicle==='motorcycle'){url.searchParams.set('scooter[allowHighway]','true');url.searchParams.set('vehicle[speedCap]','30.555556')}const areas=globalThis.LapanRoadRestrictions.list();if(areas.length)url.searchParams.set('avoid[areas]',areas.map(r=>'bbox:'+r.west+','+r.south+','+r.east+','+r.north).join('|'));return url}
+export async function planHereRoute(request,env,body,estimateTolls=async()=>null){
  const key='route:'+JSON.stringify({from:body.from,to:body.to,alternatives:body.alternatives,vehicle:body.vehicle||'car'});return hereLimited(request,env,body.purpose||'planning',key,body.refresh===true,async()=>{
-  const url=hereParameters(new URL('https://router.hereapi.com/v8/routes'),env,body.vehicle);url.searchParams.set('origin',body.from[1]+','+body.from[0]);url.searchParams.set('destination',body.to[1]+','+body.to[0]);url.searchParams.set('alternatives',body.alternatives?'2':'0');const raw=await fetchHere(url,env,body.purpose||'planning'),checkedAt=new Date().toISOString(),routes=[];let guidanceFailure=false;if((raw.notices||[]).some(n=>n.severity==='critical'||n.code==='noRouteFound'))throw Object.assign(Error('No permitted HERE route'),{restricted:true});
-  for(const route of (raw.routes||[]).slice(0,3)){if(hereCritical(route)){if(!routes.length)throw Object.assign(Error('Restricted'),{restricted:true});continue}try{routes.push({...normalizeHereRoute(route,checkedAt),vehicle:body.vehicle||'car'})}catch(e){guidanceFailure=true;if(/restriction/.test(e.message))throw Object.assign(e,{restricted:true})}}
+  const url=hereParameters(new URL('https://router.hereapi.com/v8/routes'),env,body.vehicle,body.vehicle!=='motorcycle');url.searchParams.set('origin',body.from[1]+','+body.from[0]);url.searchParams.set('destination',body.to[1]+','+body.to[0]);url.searchParams.set('alternatives',body.alternatives?'2':'0');const raw=await fetchHere(url,env,body.purpose||'planning'),checkedAt=new Date().toISOString(),routes=[];let guidanceFailure=false;if((raw.notices||[]).some(n=>n.severity==='critical'||n.code==='noRouteFound'))throw Object.assign(Error('No permitted HERE route'),{restricted:true});
+  for(const route of (raw.routes||[]).slice(0,3)){if(hereCritical(route)){if(!routes.length)throw Object.assign(Error('Restricted'),{restricted:true});continue}try{const normalized={...normalizeHereRoute(route,checkedAt),vehicle:body.vehicle||'car'};if(body.vehicle!=='motorcycle')normalized.tollEstimate=await hereLocalTolls(route,estimateTolls);routes.push(normalized)}catch(e){guidanceFailure=true;if(/restriction/.test(e.message))throw Object.assign(e,{restricted:true})}}
   if(!routes.length)throw Object.assign(Error('No usable HERE route'),{code:guidanceFailure?'HERE_GUIDANCE':'HERE_NO_ROUTE'});return {code:'Ok',source:'HERE',checkedAt,routes};
  });
 }
