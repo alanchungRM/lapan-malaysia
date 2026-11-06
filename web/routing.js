@@ -13,14 +13,16 @@ async function getJSON(url,options,signal,timeoutMs){
 // One browser-session entry; never persist route coordinates or journeys.
 let lastPlan=null;
 const copy=data=>JSON.parse(JSON.stringify(data));
-async function request(from,to,alternatives,signal,_allowBasic,purpose='planning',refresh=false){
+async function request(from,to,alternatives,signal,_allowBasic,purpose='planning',refresh=false,vehicle='car'){
  if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');
  let provider=root.document?.documentElement?.dataset?.routingProvider||'TomTom',revision=0;
  if(root.document?.documentElement?.dataset?.routingConfig==='server'){
   try{const {r,d}=await getJSON('/api/routing-config',{cache:'no-store'},signal,4000);if(!r.ok||!['TomTom','OSRM','HERE'].includes(d.provider))throw Error();provider=d.provider;revision=d.revision||0}
   catch(e){if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');provider='OSRM'}
  }
- const key=JSON.stringify({from,to,alternatives,provider,revision});
+ if(!['car','motorcycle'].includes(vehicle))throw Error('Choose Car or Motorcycle.');
+ if(vehicle==='motorcycle'&&provider==='OSRM')throw Error('Motorcycle routing requires TomTom or HERE. Ask the administrator to change the routing provider.');
+ const key=JSON.stringify({from,to,alternatives,provider,revision,vehicle});
  if(purpose==='planning'&&!refresh&&lastPlan?.key===key&&Date.now()-lastPlan.at<120000)return copy(lastPlan.data);
  if(purpose==='planning'&&refresh)lastPlan=null;
  const remember=data=>{
@@ -35,12 +37,13 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
  if(osrmOnly)error={allowBasic:true,retryAfterMs:0};
  if(!osrmOnly){
  try{
-  const {r,d}=await getJSON('/api/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to,alternatives,purpose,...(refresh?{refresh:true}:{})})},signal,19000);
-  if(r.ok&&d.code==='Ok'&&d.routes?.length)return remember(d);
+  const {r,d}=await getJSON('/api/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to,alternatives,purpose,vehicle,...(refresh?{refresh:true}:{})})},signal,19000);
+  if(r.ok&&d.code==='Ok'&&d.routes?.length){d.routes.forEach(route=>route.vehicle=vehicle);return remember(d);}
   // Never bypass input errors, no-route decisions or rejected restricted routes.
   error=Object.assign(new Error(d.error||'Live routing unavailable'),{allowBasic:d.allowBasic===true||r.status===429||r.status>=500,retryAfterMs:Math.min(300000,Math.max(0,Number(d.retryAfterSeconds)||0))*1000});
  }catch(e){if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');error=Object.assign(new Error('Live routing connection unavailable.'),{allowBasic:true})}
  }
+ if(vehicle==='motorcycle')throw Object.assign(new Error((error.message||'Motorcycle routing is unavailable.')+' For motorcycles, car routing cannot be used as a fallback.'),{allowBasic:false});
  if(!error.allowBasic)throw error;
  if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');
  let result;
@@ -51,6 +54,6 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
  if(!d.routes.length)throw Error('No basic route avoiding the reported restriction is available.');
  d.routes.forEach(route=>{route.provider='OSRM';route.closureCheckedAt=null;route.trafficCheckedAt=null});return remember(d);
 }
-function label(route){const provider=route?.provider;if(['TomTom','HERE'].includes(provider))return provider+' live route · closures checked at '+new Date(route.closureCheckedAt).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})+' · reported closures only';return 'OSRM basic route · no live traffic · road closures NOT checked'}
+function label(route){const provider=route?.provider;if(route?.vehicle==='motorcycle')return provider+' motorcycle route · '+(provider==='TomTom'?'beta · ':'')+'restrictions and dedicated lanes may be incomplete · obey road signs';if(['TomTom','HERE'].includes(provider))return provider+' live route · closures checked at '+new Date(route.closureCheckedAt).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})+' · reported closures only';return 'OSRM basic route · no live traffic · road closures NOT checked'}
 root.LapanRouting={request,label};if(typeof module==='object')module.exports={request,label};
 })(typeof window==='object'?window:globalThis);

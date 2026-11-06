@@ -10,16 +10,16 @@ function format(step={},speech=false){const {on,T}=words(speech);if(!on&&clean(s
 if(type==='arrive')return T('Arrive at your destination');
 if(type==='depart')action=T('Head onto');
 else if(type==='off ramp')action=exit?T('Take exit {n}',{n:exit}):T('Take the exit');
-else if(type==='on ramp')action=T('Take the ramp');
+else if(type==='on ramp')action=m.branch==='middle'?T('Take the middle ramp'):T('Take the ramp');
 else if(type==='merge')action=T('Merge');
-else if(type==='fork')action=T('Keep');
+else if(type==='fork')action=m.branch==='middle'?T('Keep to the middle'):T('Keep');
 else if(type==='roundabout'||type==='rotary')action=Number.isInteger(m.exit)&&m.exit>0?T('At the roundabout, take the {ordinal} exit',{ordinal:ordinal(m.exit),n:m.exit}):T('Enter the roundabout');
 else if(type==='roundabout turn')action=T('At the roundabout, turn');
 else if(type==='exit roundabout'||type==='exit rotary')action=T('Exit the roundabout');
 else if(type==='turn'||type==='end of road')action=direction==='uturn'?T('Make a U-turn'):T('Turn');
 else if(type==='continue'||type==='new name'||type==='notification'||!type)action=T('Continue');
 else action=T('Turn');
-if(direction&&direction!=='uturn'&&!(on&&type==='depart')&&!['roundabout','rotary','exit roundabout','exit rotary'].includes(type))action+=' '+T(direction);
+if(direction&&direction!=='uturn'&&!(['fork','on ramp'].includes(type)&&m.branch==='middle')&&!(on&&type==='depart')&&!['roundabout','rotary','exit roundabout','exit rotary'].includes(type))action+=' '+T(direction);
 if(exit&&type!=='off ramp'&&!['roundabout','rotary','roundabout turn','exit roundabout','exit rotary'].includes(type))action+=' · '+T('Exit {x}',{x:exit});
 const road=[ref,name&&name.toLowerCase()!==ref.toLowerCase()?name:''].filter(Boolean).join(' · ');if(road)action+=' · '+road;if(toward&&toward.toLowerCase()!==name.toLowerCase())action+=' '+T('toward {x}',{x:toward});return action;
 }
@@ -65,7 +65,7 @@ const expressway=(step={})=>/(^|;)\s*(?:E|AH)\s?\d/i.test(clean(step.ref))||/ram
 // Short display guidance; full instructions remain in Details and speech keeps its own wording.
 function compact(step={}){
  const {T}=words(false),m=step.maneuver||{},type=clean(m.type).replaceAll('_',' '),mod=clean(m.modifier),side=/left/.test(mod)?T('left'):/right/.test(mod)?T('right'):'';
- let action=type==='arrive'?T('Arrive'):mod==='uturn'?T('U-turn'):/^exit (roundabout|rotary)$/.test(type)?T('Exit roundabout'):/roundabout|rotary/.test(type)?(Number.isInteger(m.exit)&&m.exit>0?T('Roundabout · exit {n}',{n:m.exit}):T('Roundabout')):type==='off ramp'?T('Exit'):type==='on ramp'?T('Ramp'):type==='fork'?T('Keep'):type==='merge'?T('Merge'):['continue','new name','depart','notification',''].includes(type)?T('Continue'):/^slight /.test(mod)?T('Bear'):/^sharp /.test(mod)?T('Sharp turn'):T('Turn');
+ let action=type==='arrive'?T('Arrive'):mod==='uturn'?T('U-turn'):/^exit (roundabout|rotary)$/.test(type)?T('Exit roundabout'):/roundabout|rotary/.test(type)?(Number.isInteger(m.exit)&&m.exit>0?T('Roundabout · exit {n}',{n:m.exit}):T('Roundabout')):type==='off ramp'?T('Exit'):type==='on ramp'?(m.branch==='middle'?T('Middle ramp'):T('Ramp')):type==='fork'?(m.branch==='middle'?T('Keep middle'):T('Keep')):type==='merge'?T('Merge'):['continue','new name','depart','notification',''].includes(type)?T('Continue'):/^slight /.test(mod)?T('Bear'):/^sharp /.test(mod)?T('Sharp turn'):T('Turn');
  if(side&&!/roundabout|rotary|arrive/.test(type)&&mod!=='uturn')action+=' '+side;
  const short=value=>{const text=clean(value).split(/[;,]/)[0].replace(/\s*\([^)]*\)/g,'').trim();return text.length>28?text.slice(0,27).replace(/\s+\S*$/,'')+'…':text};
  const exit=signs(step.exits),ref=signs(step.ref),place=short(step.destinations||step.name);

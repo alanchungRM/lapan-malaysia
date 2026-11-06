@@ -40,9 +40,10 @@ export function serveAsset(request,assets,env={}){
  let file=Object.hasOwn(assets,path)?assets[path]:null;
  if(file&&path==='/index.html'){
   const provider=env.LAPAN_SELECTED_PROVIDER||(env.TOMTOM_ROUTING_DISABLED==='true'?'OSRM':'TomTom');
-  const staging=env.TOMTOM_ROUTING_DISABLED==='true';
+  const staging=env.LAPAN_ENVIRONMENT==='staging'||env.TOMTOM_ROUTING_DISABLED==='true';
+  const baseline=env.LAPAN_ENVIRONMENT==='staging'?' · Production live baseline':'';
   const status=provider==='OSRM'?'OSRM ONLY · TomTom routing OFF · HERE routing OFF':provider==='HERE'?'HERE PRIMARY · OSRM fallback · TomTom routing OFF':'TomTom PRIMARY · OSRM fallback · HERE routing OFF';
-  file={...file,body:file.body.replace('data-routing-provider="AUTO"','data-routing-provider="'+(provider==='TomTom'?'AUTO':provider)+'"').replace(/<!-- STAGING_STATUS v([^ ]+) -->/,staging?'<div class="staging-build" data-no-i18n role="note">STAGING · v$1 · '+status+' · Applied PRs: #15 · #16 · #17 · #18 · #19 · #20 · #21 · #23 · #24 · #26 · #27 · #29 · #31 · #33</div>':'<!-- STAGING_STATUS v$1 -->'),etag:file.etag?.replace(/"$/,'-'+provider+'"')};
+  file={...file,body:file.body.replace('data-routing-provider="AUTO"','data-routing-provider="'+(provider==='TomTom'?'AUTO':provider)+'"').replace(/<!-- STAGING_STATUS v([^ ]+) -->/,staging?'<div class="staging-build" data-no-i18n role="note">STAGING · v$1'+baseline+' · '+status+'</div>':'<!-- STAGING_STATUS v$1 -->'),etag:file.etag?.replace(/"$/,'-'+provider+(staging?(baseline?'-production-baseline':'-staging'):'')+'"')};
  }
 
  if(!file)return withSecurityHeaders(new Response('Not found',{status:404}));
