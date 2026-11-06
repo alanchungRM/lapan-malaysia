@@ -1,5 +1,25 @@
 [
   {
+    "version": "1.0.39",
+    "date": "2026-11-07",
+    "title": "Easier saved-place search, motorcycle routes and navigation fixes",
+    "changes": {
+      "Added": [
+        "Motorcycle routing and a simpler Car label in the vehicle selector."
+      ],
+      "Improved": [
+        "Home and Work setup now includes a clear Search more places action, with English and Bahasa Malaysia labels and cancellation safeguards."
+      ],
+      "Fixed": [
+        "Reduce unnecessary traffic requests by reusing fresh planning data when navigation starts or restarts. End Navigation, arrival and GPS failure cancel pending checks and reroutes, and late callbacks cannot restart stopped navigation."
+      ]
+    },
+    "notes": [
+      "Motorcycle routes require a supported routing provider and do not use the OSRM car fallback. Car Class 1 toll fares are not applied to motorcycles."
+    ],
+    "commits": []
+  },
+  {
     "version": "1.0.38",
     "date": "2026-11-05",
     "title": "Saved places, toll estimates and road hazard alerts",

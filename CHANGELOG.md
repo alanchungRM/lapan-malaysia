@@ -2,6 +2,26 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.39] — 2026-11-07
+
+Easier saved-place search, motorcycle routes and navigation fixes
+
+### Added
+
+- Motorcycle routing and a simpler Car label in the vehicle selector.
+
+### Improved
+
+- Home and Work setup now includes a clear Search more places action, with English and Bahasa Malaysia labels and cancellation safeguards.
+
+### Fixed
+
+- Reduce unnecessary traffic requests by reusing fresh planning data when navigation starts or restarts. End Navigation, arrival and GPS failure cancel pending checks and reroutes, and late callbacks cannot restart stopped navigation.
+
+> Motorcycle routes require a supported routing provider and do not use the OSRM car fallback. Car Class 1 toll fares are not applied to motorcycles.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.38] — 2026-11-05
 
 Saved places, toll estimates and road hazard alerts
