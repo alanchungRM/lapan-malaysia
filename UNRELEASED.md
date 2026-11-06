@@ -19,3 +19,5 @@ The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are n
 - Promote the tested staging improvements to production with TomTom primary and OSRM secondary fallback for Car routes. Align the staging status and existing visible version with production; retain provider controls and the motorcycle fallback restriction.
 
 - Preserve planned HERE/TomTom traffic freshness when starting or restarting navigation, block traffic requests from late callbacks after End or arrival, and cancel pending reroutes and retries while hidden or after GPS failure. Retain normal active-navigation refresh cadence and timeout recovery.
+
+- Simplify the Find my route button to text only, including after route planning finishes.
