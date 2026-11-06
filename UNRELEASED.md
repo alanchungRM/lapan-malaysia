@@ -9,3 +9,5 @@ The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are n
 - Prepare alternate routing-provider support, with provider-aware guidance, traffic refreshes and existing OSRM fallback.
 
 - Staging: rename vehicle option to Car and add Motorcycle routing with TomTom/HERE, separate caches and traffic refresh modes, no car-only OSRM fallback or Class 1 toll estimates. HERE motorcycles allow highways with a 110 km/h speed cap; dedicated-lane/restriction coverage remains incomplete.
+
+- Staging: fix HERE motorway and U-turn instruction handling that rejected valid car/motorcycle routes, and show specific routing failures instead of hiding them behind a generic motorcycle error.

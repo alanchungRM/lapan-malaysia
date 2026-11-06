@@ -43,7 +43,7 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
   error=Object.assign(new Error(d.error||'Live routing unavailable'),{allowBasic:d.allowBasic===true||r.status===429||r.status>=500,retryAfterMs:Math.min(300000,Math.max(0,Number(d.retryAfterSeconds)||0))*1000});
  }catch(e){if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');error=Object.assign(new Error('Live routing connection unavailable.'),{allowBasic:true})}
  }
- if(vehicle==='motorcycle')throw Object.assign(new Error('Motorcycle routing is unavailable. Please retry with the selected provider; car routing cannot be used as a fallback.'),{allowBasic:false});
+ if(vehicle==='motorcycle')throw Object.assign(new Error((error.message||'Motorcycle routing is unavailable.')+' For motorcycles, car routing cannot be used as a fallback.'),{allowBasic:false});
  if(!error.allowBasic)throw error;
  if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');
  let result;
