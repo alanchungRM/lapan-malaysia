@@ -2,6 +2,26 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.40] — 2026-11-11
+
+Avoid Tolls, better search and clearer navigation
+
+### Added
+
+- Choose Faster or Avoid Tolls when planning a route. Rerouting keeps your toll preference.
+
+### Improved
+
+- Short place searches prioritize nearby results and show clearer branch names, addresses and distances.
+- Landscape navigation gives the speed limit, current speed and driving controls separate space.
+- Voice guidance uses more natural phrasing, rounded distances and clearer turn and exit instructions.
+
+### Fixed
+
+- Fixed reported route bugs.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.39] — 2026-11-07
 
 Easier saved-place search, motorcycle routes and navigation fixes
@@ -39,8 +59,6 @@ Saved places, toll estimates and road hazard alerts
 
 ### Improved
 
-- Home and Work setup includes Search more places, using the existing extended place search with cancellation safeguards and English/Bahasa Malaysia labels.
-- Scheduled traffic checks are skipped with under five minutes remaining; clear routes use a twenty-minute interval, while congested or unknown conditions retain ten minutes.
 - Identical route plans are reused for up to two minutes. Selecting the same place preserves the current route, and Refresh route requests a fresh calculation.
 
 > Congestion colours reuse traffic information from existing TomTom routing and traffic-refresh requests. This feature adds no API requests.

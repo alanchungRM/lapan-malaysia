@@ -1,5 +1,25 @@
 [
   {
+    "version": "1.0.40",
+    "date": "2026-11-11",
+    "title": "Avoid Tolls, better search and clearer navigation",
+    "changes": {
+      "Added": [
+        "Choose Faster or Avoid Tolls when planning a route. Rerouting keeps your toll preference."
+      ],
+      "Improved": [
+        "Short place searches prioritize nearby results and show clearer branch names, addresses and distances.",
+        "Landscape navigation gives the speed limit, current speed and driving controls separate space.",
+        "Voice guidance uses more natural phrasing, rounded distances and clearer turn and exit instructions."
+      ],
+      "Fixed": [
+        "Fixed reported route bugs."
+      ]
+    },
+    "notes": [],
+    "commits": []
+  },
+  {
     "version": "1.0.39",
     "date": "2026-11-07",
     "title": "Easier saved-place search, motorcycle routes and navigation fixes",
