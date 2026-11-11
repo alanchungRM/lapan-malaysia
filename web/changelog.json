@@ -1,8 +1,8 @@
 [
   {
-    "version": "1.0.41",
+    "version": "1.0.40",
     "date": "2026-11-11",
-    "title": "Navigation improvements and route fixes",
+    "title": "Avoid Tolls, better search and clearer navigation",
     "changes": {
       "Added": [
         "Choose Faster or Avoid Tolls when planning a route. Rerouting keeps your toll preference."
@@ -14,26 +14,6 @@
       ],
       "Fixed": [
         "Fixed reported route bugs."
-      ]
-    },
-    "notes": [],
-    "commits": []
-  },
-  {
-    "version": "1.0.40",
-    "date": "2026-11-11",
-    "title": "Avoid Tolls, better search and clearer navigation",
-    "changes": {
-      "Added": [
-        "Choose Faster or Avoid Tolls when planning a route. Rerouting keeps your toll preference."
-      ],
-      "Improved": [
-        "Short place searches prioritize nearby results and show clearer branch names, addresses and distances.",
-        "Voice guidance uses more natural phrasing, rounded distances and clearer turn and exit instructions.",
-        "Landscape navigation gives the speed limit, current speed and driving controls separate space."
-      ],
-      "Fixed": [
-        "Fixed reported route bugs and improved U-turn guidance."
       ]
     },
     "notes": [],

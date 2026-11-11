@@ -7,5 +7,5 @@
     "release": "node scripts/release.mjs",
     "pretest": "node scripts/build.mjs"
   },
-  "version": "1.0.41"
+  "version": "1.0.40"
 }
