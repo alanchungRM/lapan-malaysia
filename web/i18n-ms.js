@@ -503,3 +503,80 @@ window.LapanI18n.add({
 });
 
 window.LapanI18n.add({"Additional search is unavailable. Try a full address or choose on map.":"Carian tambahan tidak tersedia. Cuba alamat penuh atau pilih pada peta."});
+
+window.LapanI18n.add({
+  "ANONYMOUS": "ANONIM",
+  "Report on the road": "Lapor di jalan raya",
+  "Close report": "Tutup laporan",
+  "Crash": "Kemalangan",
+  "Stopped vehicle": "Kenderaan berhenti",
+  "Object on road": "Objek di jalan",
+  "Flooding": "Banjir",
+  "Pothole": "Lubang jalan",
+  "Still there?": "Masih ada?",
+  "Yes": "Ya",
+  "No": "Tidak",
+  "Crash reported ahead": "Kemalangan dilaporkan di hadapan",
+  "Stopped vehicle reported ahead": "Kenderaan berhenti dilaporkan di hadapan",
+  "Object on the road reported ahead": "Objek di jalan dilaporkan di hadapan",
+  "Flooding reported ahead": "Banjir dilaporkan di hadapan",
+  "Pothole reported ahead": "Lubang jalan dilaporkan di hadapan",
+  "Crash reported ahead, in {m} metres.": "Kemalangan dilaporkan di hadapan, dalam {m} meter.",
+  "Stopped vehicle reported ahead, in {m} metres.": "Kenderaan berhenti dilaporkan di hadapan, dalam {m} meter.",
+  "Object on the road reported ahead, in {m} metres.": "Objek di jalan dilaporkan di hadapan, dalam {m} meter.",
+  "Flooding reported ahead, in {m} metres.": "Banjir dilaporkan di hadapan, dalam {m} meter.",
+  "Pothole reported ahead, in {m} metres.": "Lubang jalan dilaporkan di hadapan, dalam {m} meter.",
+  " · just now": " · baru sahaja",
+  " · {n} min ago": " · {n} min lalu",
+  " · {n} h ago": " · {n} j lalu",
+  "Waiting for a GPS fix. Try again in a moment.": "Menunggu isyarat GPS. Cuba lagi sebentar nanti.",
+  "Sending…": "Menghantar…",
+  "Thank you. Your report helps drivers behind you.": "Terima kasih. Laporan anda membantu pemandu di belakang.",
+  "Too many reports. Please wait a minute.": "Terlalu banyak laporan. Sila tunggu seminit.",
+  "Reports are not available right now.": "Laporan tidak tersedia sekarang.",
+  "Could not send the report. Please try again.": "Laporan tidak dapat dihantar. Sila cuba lagi.",
+  "Could not send. Check your connection and try again.": "Tidak dapat dihantar. Semak sambungan anda dan cuba lagi.",
+  "No account or name required. Reports expire after eight hours.": "Tiada akaun atau nama diperlukan. Laporan tamat selepas lapan jam.",
+  "Time remaining: {h} h {m} min": "Masa berbaki: {h} j {m} min",
+  "Time remaining: {m} min {s} s": "Masa berbaki: {m} min {s} s",
+  "Report expired": "Laporan telah tamat"
+});
+window.LapanI18n.add({"Community reports, when you choose to send one, share the report type and a rounded location with nearby drivers. While navigating, Lapan uses an approximate location to find nearby reports. Reports and their votes expire after eight hours. Anonymous daily counts contain no locations.": "Laporan komuniti yang anda hantar berkongsi jenis laporan dan lokasi anggaran dengan pemandu berdekatan. Semasa navigasi, Lapan menggunakan lokasi anggaran untuk mencari laporan berdekatan. Laporan dan undian tamat selepas lapan jam. Kiraan harian anonim tidak mengandungi lokasi."});
+
+window.LapanI18n.add({
+  "Police | Hidden": "Polis | Tersembunyi",
+  "Police reported ahead": "Polis dilaporkan di hadapan",
+  "Police reported ahead, in {m} metres.": "Polis dilaporkan di hadapan, dalam {m} meter.",
+  "Still there": "Masih ada",
+  "Cleared": "Sudah tiada",
+  "Confirm report": "Sahkan laporan",
+  "Back": "Kembali",
+  "Submit a {kind} report here?": "Hantar laporan {kind} di sini?",
+  "Report updated": "Laporan dikemas kini",
+  "Could not update the report. Try again.": "Laporan tidak dapat dikemas kini. Cuba lagi.",
+  "Location is out of date. Choose the report again.": "Lokasi tidak terkini. Pilih laporan sekali lagi."
+});
+
+window.LapanI18n.add({
+  "Share this place": "Kongsi tempat ini",
+  "Sharing makes a link that keeps only the place and its name for six months. No account, no tracking.": "Perkongsian menghasilkan pautan yang hanya menyimpan tempat dan namanya selama enam bulan. Tiada akaun, tiada penjejakan.",
+  "Share my drive": "Kongsi perjalanan saya",
+  "Selected place": "Tempat dipilih",
+  "Send": "Hantar",
+  "Routes": "Laluan",
+  "Looking up the place…": "Mencari tempat…",
+  "Unnamed road": "Jalan tanpa nama",
+  "Place selected. Tap Find my route.": "Tempat dipilih. Ketik Cari laluan saya.",
+  "Choose a destination first.": "Pilih destinasi dahulu.",
+  "Making your link…": "Menyediakan pautan anda…",
+  "Link copied. Paste it in a chat.": "Pautan disalin. Tampal dalam sembang.",
+  "Sharing is not available here. Copy this link: {url}": "Perkongsian tidak tersedia di sini. Salin pautan ini: {url}",
+  "This shared link has expired or is not valid.": "Pautan dikongsi ini telah tamat tempoh atau tidak sah.",
+  "Meet me at {name}. Open in Lapan: {url}": "Jumpa di {name}. Buka dalam Lapan: {url}",
+  "I'm on my way to {name}, arriving about {time}. Open in Lapan: {url}": "Saya dalam perjalanan ke {name}, tiba lebih kurang {time}. Buka dalam Lapan: {url}",
+  "Lapan: {name}": "Lapan: {name}",
+  "Close": "Tutup",
+  "Sharing a place makes a link that keeps only the place and its name for six months. No account, no tracking.": "Perkongsian tempat menghasilkan pautan yang hanya menyimpan tempat dan namanya selama enam bulan. Tiada akaun, tiada penjejakan.",
+  "Share link": "Kongsi pautan",
+  "Anyone with a share link can see the destination. Short links store the place and name for about six months and renew when reused. Sharing a drive adds the estimated arrival to your message. Lapan sends tapped map coordinates to Photon to look up place names.": "Sesiapa yang mempunyai pautan kongsi boleh melihat destinasi. Pautan pendek menyimpan tempat dan nama selama kira-kira enam bulan dan diperbaharui apabila digunakan semula. Perkongsian perjalanan menambah anggaran ketibaan pada mesej anda. Lapan menghantar koordinat yang diketuk pada peta kepada Photon untuk mencari nama tempat."
+});

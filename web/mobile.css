@@ -277,3 +277,83 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
  body.guiding #driveControls .limit-sign{margin-bottom:0}
  body.guiding.drive-more #driveMore{right:0;bottom:calc(100% + 8px)}
 }
+
+/* Community reports */
+#navReport{display:flex;align-items:center;justify-content:center;width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:#ffd27a;cursor:pointer}
+#navReport[hidden],body.guiding:not(.drive-more) #navReport{display:none!important}#driveControls #navReport{order:-3}
+#reportWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
+#cameraWarning:not(.hidden)~#reportWarning{display:none}
+#reportAsk{display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px 10px;border-radius:12px;background:#223143;color:#f4f9f8;font-weight:700}#reportAsk.hidden{display:none}#reportAsk span{flex:1}#reportAsk small{display:block;font-size:12px;font-weight:600;color:#ffd27a}
+#reportAsk button{min-width:64px;min-height:48px;border:0;border-radius:12px;background:#2bb88f;color:#05261c;font-size:16px;font-weight:800;cursor:pointer}#reportAsk #reportNo{background:#3a495a;color:#f4f9f8}
+#reportDialog{padding:0 0 18px;border:1px solid #526779;border-radius:24px 24px 16px 16px;background:#172738;color:#f4f9f8;width:min(440px,calc(100vw - 24px));max-height:88dvh;overflow:auto;box-shadow:0 12px 60px #0007;margin:auto auto max(12px,env(safe-area-inset-bottom))}#reportDialog::backdrop{background:#07131dcc;backdrop-filter:blur(3px)}
+.report-body{padding:4px 18px 0;display:grid;gap:12px}.report-body p{margin:0;font-size:13px;color:#cfdedb}#reportStatus{min-height:20px;font-weight:700;color:#f4f9f8}
+.report-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.report-kind{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:88px;padding:10px;border:1px solid #475d6e;border-radius:16px;background:#243546;color:#f5faf9;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.report-kind svg{color:var(--report-accent)}
+.report-kind:focus-visible,#navReport:focus-visible,#reportAsk button:focus-visible{outline:3px solid #daf67a;outline-offset:2px}
+.report-pin{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:36px;height:36px;padding:0;border-radius:50%;background:var(--report-icon-surface);color:var(--report-accent);border:2px solid var(--report-accent);box-shadow:0 0 0 2px #10202e,0 2px 6px #0008;cursor:pointer}.report-pin svg{width:23px;height:23px}
+.report-kind:last-child:nth-child(odd){grid-column:1/-1}
+/* Shape and colour identify reports consistently in the menu, on the map and in details. */
+.report-crash{--report-accent:#ff9e9e;--report-icon-surface:#481f2a}
+.report-stopped{--report-accent:#ffd27a;--report-icon-surface:#42311c}
+.report-object{--report-accent:#ffb083;--report-icon-surface:#44281e}
+.report-flood{--report-accent:#7fe4f2;--report-icon-surface:#153948}
+.report-pothole{--report-accent:#e3b7ff;--report-icon-surface:#39294d}
+.report-police-hidden{--report-accent:#a9c9ff;--report-icon-surface:#213b65}
+.report-pin:focus-visible{outline:2px solid #f4f8fc;outline-offset:3px}
+/* Report details share the driving panel palette. Scope MapLibre overrides to report pins. */
+.lapan-report-popup{
+ --report-surface:#142534;
+ --report-border:#526779;
+ --report-text:#f4f8fc;
+ --report-muted:#bdcbd8;
+ font-family:inherit;
+}
+.lapan-report-popup .maplibregl-popup-content{
+ box-sizing:border-box;
+ width:min(288px,calc(100vw - 32px));
+ padding:12px;
+ border:1px solid var(--report-border);
+ border-radius:18px;
+ background:var(--report-surface);
+ color:var(--report-text);
+ box-shadow:0 8px 24px #0006;
+}
+.lapan-report-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.lapan-report-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.lapan-report-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{border-bottom-color:var(--report-border)}
+.lapan-report-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.lapan-report-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.lapan-report-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{border-top-color:var(--report-border)}
+.lapan-report-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip{border-right-color:var(--report-border)}
+.lapan-report-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip{border-left-color:var(--report-border)}
+.report-popup{font-size:14px;line-height:1.35}
+.report-popup-header{display:grid;grid-template-columns:34px minmax(0,1fr) 44px;align-items:center;gap:8px}
+.report-popup-header strong{font-size:16px;line-height:1.2;overflow-wrap:anywhere}
+.report-popup-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--report-icon-surface);color:var(--report-accent)}
+.report-popup-icon svg{width:23px;height:23px}
+.report-popup-close{width:44px;height:44px;border:1px solid var(--report-border);border-radius:50%;background:#263b4d;color:inherit;font:24px/1 system-ui;cursor:pointer}
+.report-details{display:block;margin-top:6px;color:var(--report-muted);font-weight:600;font-variant-numeric:tabular-nums}
+.report-popup button:focus-visible{outline:2px solid #b0f6ca;outline-offset:2px}
+.report-kinds[hidden],#reportConfirm[hidden],.report-vote-actions[hidden]{display:none}
+#reportConfirm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#reportConfirmText{grid-column:1/-1}
+#reportBack,.report-vote-actions button{min-height:44px;border:1px solid #526779;border-radius:10px;padding:6px 10px;background:#243546;color:#fff;font:inherit;cursor:pointer}
+.report-vote-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.report-vote-actions button{font-weight:700;white-space:normal}
+.report-vote-actions button:first-child{background:#2bb88f;color:#05261c;border-color:transparent}
+.report-vote-actions button:disabled{opacity:.6;cursor:default}
+.report-popup p{margin:8px 0 0;color:var(--report-muted)}.report-popup p:empty{display:none}
+
+/* Share a place or a drive */
+.plan-row{display:flex;gap:8px;align-items:stretch}.plan-row #plan{flex:1;min-width:0}
+.share-icon{flex:0 0 48px;width:48px;display:flex;align-items:center;justify-content:center;border:1px solid #475d6e;border-radius:14px;background:#243546;color:#f5faf9;cursor:pointer}
+#placeCard{position:fixed;z-index:1200;left:0;right:0;top:calc(64px + env(safe-area-inset-top));width:min(360px,calc(100vw - 24px));margin:0 auto;padding:10px 12px 12px;border-radius:16px;background:#172738;color:#f4f9f8;border:1px solid #526779;box-shadow:0 6px 20px #0006;display:grid}
+#placeCard.hidden,#shareToast.hidden{display:none}
+#placeCard strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere;padding-right:36px;font-size:16px;line-height:1.25;font-weight:700}
+#placeCard small{margin:2px 0 8px;font-size:12px;color:#b1c6cf}
+#placeCardClose{position:absolute;top:2px;right:2px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:22px;cursor:pointer}
+.place-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.place-card-actions button{min-height:44px;border-radius:12px;border:1px solid #475d6e;background:#243546;color:#f5faf9;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}.place-card-actions .primary{background:#2bb88f;border-color:#2bb88f;color:#05261c}
+#shareToast{position:fixed;z-index:1300;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top));max-width:min(360px,calc(100vw - 24px));padding:8px 14px;border-radius:12px;background:#172738;color:#f4f9f8;border:1px solid #526779;box-shadow:0 4px 14px #0006;font-size:13px;font-weight:600;line-height:1.35;overflow-wrap:anywhere;text-align:center}
+body.guiding #shareToast{top:auto;bottom:calc(var(--nav-footer-height,80px) + 16px + env(safe-area-inset-bottom))}
+.share-icon:focus-visible,#placeCard button:focus-visible,#navShare:focus-visible{outline:3px solid #daf67a;outline-offset:2px}
+.sectionhead{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}.sectionhead small{margin-left:auto}.share-mini{flex:0 0 40px;width:40px;height:40px;min-height:40px;border-radius:12px}.share-mini svg{width:20px;height:20px}
+#navShare{min-height:44px;border:1px solid #526779;border-radius:12px;background:#243546;color:#fff;cursor:pointer}
+#shareLinkDialog{width:min(420px,calc(100vw - 24px));padding:18px;border:1px solid #526779;border-radius:16px;background:#172738;color:#fff}#shareLinkDialog textarea{box-sizing:border-box;width:100%;margin-bottom:12px}#shareLinkDialog::backdrop{background:#07131dcc}
