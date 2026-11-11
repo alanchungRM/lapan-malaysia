@@ -2,6 +2,26 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.40] — 2026-11-11
+
+Avoid Tolls, better search and clearer navigation
+
+### Added
+
+- Choose Faster or Avoid Tolls when planning a route. Rerouting keeps your toll preference.
+
+### Improved
+
+- Short place searches prioritize nearby results and show clearer branch names, addresses and distances.
+- Voice guidance uses more natural phrasing, rounded distances and clearer turn and exit instructions.
+- Landscape navigation gives the speed limit, current speed and driving controls separate space.
+
+### Fixed
+
+- Fixed reported route bugs and improved U-turn guidance.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.39] — 2026-11-07
 
 Easier saved-place search, motorcycle routes and navigation fixes

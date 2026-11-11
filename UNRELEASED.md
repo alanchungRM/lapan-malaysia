@@ -1,20 +1,6 @@
 # Pending website release notes
 
-- give the speed limit, current speed and driving buttons separate space in landscape.
-
-- use the nearer mapped U-turn on Persiaran Bayu Impian 2 when the planned car route detours past it.
-
-- show closer results for short place searches, improve branch and address matching, and show clearer address and distance details.
-
-- make spoken navigation more conversational with rounded distances, clearer turn and exit phrasing, and a representative voice preview.
-
-- add Faster and Avoid Tolls route preferences, with toll avoidance preserved during rerouting.
-
-- use TomTom's standard toll-avoidance request first and ask it to route around a reported obstruction when the returned routes cross one.
-
 - Add the official Lapan Malaysia Facebook link and a collapsible driving disclaimer to More options.
-
-- avoid a reported blocked divider crossing while keeping the adjacent turn lanes available.
 
 The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are not yet included in the website release notes.
 
