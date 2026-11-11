@@ -17,6 +17,3 @@ The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are n
 - Promote the tested staging improvements to production with TomTom primary and OSRM secondary fallback for Car routes. Align the staging status and existing visible version with production; retain provider controls and the motorcycle fallback restriction.
 
 - Simplify the Find my route button to text only, including after route planning finishes.
-
-- Adapt PR #30 for anonymous road reports with eight-hour expiry, report voting, and clear map icons.
-- Adapt PR #32 for sharing places and drive ETAs with short links and map cards.

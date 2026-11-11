@@ -2,6 +2,23 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.41] — 2026-11-12
+
+Anonymous road reports and easier sharing
+
+### Added
+
+- Report crashes, stopped vehicles, objects on the road, flooding, potholes, or Police | Hidden without an account. Tap a report pin to see its remaining time and vote Still there or Cleared. Reports expire after eight hours.
+- Share a place with a short link, or use Share my drive to include your estimated arrival time when available. Tap a place on the map for Send and Routes.
+
+### Improved
+
+- Road report categories use distinct symbols and colours in the report menu, on the map, and in the details popup.
+
+> Special thanks to Dandy (@dandycrypto) for the original contributions to anonymous road reports (PR #30) and place and ETA sharing (PR #32). Both features were adapted for Lapan and merged in PR #40.
+
+[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/399ca5015a0324ce5c08556b312f987c92ce20d1)
+
 ## [1.0.40] — 2026-11-11
 
 Avoid Tolls, better search and clearer navigation
