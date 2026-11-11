@@ -11,7 +11,7 @@ self.addEventListener('activate',event=>{
 function cacheable(request){
  if(request.method!=='GET')return false;
  const url=new URL(request.url);
- return url.origin===self.location.origin&&!url.pathname.startsWith('/api/')&&url.pathname!=='/sw.js'&&ALLOWED.has(url.pathname);
+ return url.origin===self.location.origin&&!url.pathname.startsWith('/api/')&&!/^\/[sl]\//.test(url.pathname)&&url.pathname!=='/sw.js'&&ALLOWED.has(url.pathname);
 }
 function fromNetwork(request){
  return new Promise((resolve,reject)=>{
