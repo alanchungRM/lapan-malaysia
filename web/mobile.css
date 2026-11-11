@@ -80,7 +80,7 @@ img.logo{display:block;background:transparent;color:inherit;object-fit:contain;b
 .route-basis{font-size:12px;line-height:1.55;color:#d4e8dc;background:#263b30;border:1px solid #597b65;border-radius:10px;padding:10px 12px}#basicRoute{color:#ffdc9d;border:1px solid #8b7043;border-radius:10px;padding:8px 10px;width:100%;margin-top:10px;text-align:left;line-height:1.5}.nav-trip .traffic-basis{color:#d2e4da}
 
 /* A single flow prevents recenter and speed from occupying the same space. */
-#driveControls{display:contents}#driveControls>:not(#locate){display:none}body.guiding #driveControls{position:fixed;right:14px;bottom:calc(var(--nav-footer-height,160px) + 20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;max-height:calc(100dvh - var(--nav-footer-height,160px) - var(--nav-turn-bottom,84px) - 44px - env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:2px 3px 3px;z-index:820}body.guiding #driveControls::-webkit-scrollbar{display:none}body.guiding #driveControls>:not(#locate){display:flex;align-items:center;justify-content:center;flex-shrink:0}body.guiding #driveControls #locate{position:static;display:flex;align-items:center;justify-content:center;width:46px;height:46px;min-width:46px;min-height:46px;flex-shrink:0;margin:0}body.guiding #driveControls .speed-chip{order:-1;min-height:54px;margin-bottom:4px;flex-direction:column;background:#fff;color:#153b48;border-color:#7a929d}body.guiding .speed-chip strong{font-size:24px}body.guiding .speed-chip small{font-size:10px}body.guiding .open-stops{bottom:calc(var(--nav-footer-height,160px) + 20px + env(safe-area-inset-bottom))}body.guiding .compact-credits{margin-bottom:calc(var(--nav-footer-height,160px) + 16px + env(safe-area-inset-bottom))!important}body.guiding.details-open aside{padding-bottom:calc(var(--nav-footer-height,160px) + 28px + env(safe-area-inset-bottom))}@media(min-width:761px){body.guiding.details-open aside{bottom:calc(var(--nav-footer-height,160px) + 20px + env(safe-area-inset-bottom));padding-bottom:20px}}@media(max-height:480px) and (orientation:landscape){body.guiding #driveControls{display:grid;grid-template-columns:repeat(3,46px);gap:8px;max-height:calc(100dvh - 24px - env(safe-area-inset-bottom));bottom:calc(12px + env(safe-area-inset-bottom));right:14px}body.guiding #driveControls .speed-chip{margin:0;min-height:46px}body.guiding .open-stops{left:calc(50% + 12px);bottom:calc(12px + env(safe-area-inset-bottom))}}
+#driveControls{display:contents}#driveControls>:not(#locate){display:none}body.guiding #driveControls{position:fixed;right:14px;bottom:calc(var(--nav-footer-height,160px) + 20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;max-height:calc(100dvh - var(--nav-footer-height,160px) - var(--nav-turn-bottom,84px) - 44px - env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding:2px 3px 3px;z-index:820}body.guiding #driveControls::-webkit-scrollbar{display:none}body.guiding #driveControls>:not(#locate){display:flex;align-items:center;justify-content:center;flex-shrink:0}body.guiding #driveControls #locate{position:static;display:flex;align-items:center;justify-content:center;width:46px;height:46px;min-width:46px;min-height:46px;flex-shrink:0;margin:0}body.guiding #driveControls .speed-chip{order:-1;min-height:54px;margin-bottom:4px;flex-direction:column;background:#fff;color:#153b48;border-color:#7a929d}body.guiding .speed-chip strong{font-size:24px}body.guiding .speed-chip small{font-size:10px}body.guiding .open-stops{bottom:calc(var(--nav-footer-height,160px) + 20px + env(safe-area-inset-bottom))}body.guiding .compact-credits{margin-bottom:calc(var(--nav-footer-height,160px) + 16px + env(safe-area-inset-bottom))!important}body.guiding.details-open aside{padding-bottom:calc(var(--nav-footer-height,160px) + 28px + env(safe-area-inset-bottom))}@media(min-width:761px){body.guiding.details-open aside{bottom:calc(var(--nav-footer-height,160px) + 20px + env(safe-area-inset-bottom));padding-bottom:20px}}@media(max-height:480px) and (orientation:landscape){body.guiding #driveControls{flex-direction:row;bottom:calc(12px + env(safe-area-inset-bottom));right:max(14px,calc(env(safe-area-inset-right) + 8px))}body.guiding #driveControls .speed-chip{margin:0;min-height:46px}body.guiding .open-stops{left:calc(50% + 12px);bottom:calc(12px + env(safe-area-inset-bottom))}}
 
 /* Keep provider credits available behind a compact info control. */
 body.guiding #driveMap .maplibregl-ctrl-bottom-right{bottom:auto!important;top:calc(var(--nav-turn-bottom,84px) + 10px);right:10px;z-index:855}body.guiding #driveMap .maplibregl-ctrl-attrib{max-width:min(320px,calc(100vw - 40px));font-size:10px;line-height:1.5;box-shadow:0 2px 8px #0002}body.guiding #driveMap .maplibregl-ctrl-attrib.maplibregl-compact{margin:0;min-height:24px;padding-right:24px;border-radius:12px}body.guiding #driveMap .maplibregl-ctrl-attrib-button{width:24px;height:24px;min-width:24px;min-height:24px;border-radius:12px;background-size:16px 16px}body.guiding #driveMap .maplibregl-ctrl-attrib.maplibregl-compact-show{padding:6px 34px 6px 10px}@media(orientation:landscape){body.guiding #driveMap .maplibregl-ctrl-bottom-right{top:calc(12px + env(safe-area-inset-top));right:14px}}
@@ -107,7 +107,7 @@ body.guiding #driveMap .maplibregl-ctrl-bottom-right{bottom:auto!important;top:c
 body.guiding #driveControls .speed-chip{box-sizing:border-box;width:60px;min-height:68px;padding:6px 2px;background:#142d40;color:#fff;border:2px solid #b8cbd5;border-radius:13px;box-shadow:0 2px 8px #0004;font-variant-numeric:tabular-nums}
 body.guiding #driveControls .speed-chip strong{font-size:32px;font-weight:800;line-height:1.1;color:#fff}
 body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;font-weight:600;color:#fff}
-@media(max-height:480px) and (orientation:landscape){body.guiding #driveControls{grid-template-columns:58px 46px 46px}body.guiding #driveControls .speed-chip{width:58px;min-height:58px;padding:4px 2px}body.guiding #driveControls .speed-chip strong{font-size:30px}}
+@media(max-height:480px) and (orientation:landscape){body.guiding #driveControls .speed-chip{width:58px;min-height:58px;padding:4px 2px}body.guiding #driveControls .speed-chip strong{font-size:30px}}
 
 /* Signed road and exit numbers stay readable on both day and night maps. */
 #nextturn .nav-road-badge{display:inline-block;vertical-align:baseline;white-space:nowrap;max-width:100%;box-sizing:border-box;padding:2px 6px;margin:1px 3px;border:1px solid #e1b324;border-radius:5px;background:#ffdf40;color:#172230;font-size:.88em;font-weight:800;line-height:1.25;letter-spacing:.02em;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px #0003}
@@ -134,6 +134,13 @@ body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;fo
 .menu-launch{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid #496457;border-radius:10px;background:#20382f;color:#b8f2ce;font-size:16px;font-weight:700}
 .menu-launch span{font-size:12px}
 .search-panel .map-place-actions{margin:4px 0 10px;gap:6px}
+.route-preference{min-width:0;margin:0 0 10px;padding:0;border:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.route-preference legend{padding:0;margin-bottom:5px;color:#b1c0ce;font-size:12px}
+.route-preference label{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:5px 8px;border:1px solid #425369;border-radius:10px;color:#edf5f0;background:#1d2b3a;font-size:13px;cursor:pointer}
+.route-preference label:has(input:checked){border-color:#96e9b7;background:#203b33}
+.route-preference label:has(input:focus-visible){outline:2px solid #96e9b7;outline-offset:2px}
+.route-preference input{width:16px;height:16px;margin:0;accent-color:#96e9b7}
+.route-preference:disabled{opacity:.65}
 .search-panel .map-place-actions button{min-height:36px;font-size:11px;background:transparent;border-color:#3a4d5e;color:#8fe0b4}
 .privacy-line{font-size:11px;line-height:1.4;color:#9bb0bd;margin:8px 2px 0;text-align:center}
 .search-panel .quick-stops,.search-panel .recent-settings{border:0;background:transparent;padding:0;margin:12px 0 0}
@@ -158,6 +165,14 @@ body.guiding .menu-launch{display:none}
 .search-panel .recent-settings:has(#recentCount:empty){display:none}
 .more-options details>summary{display:flex;align-items:center;min-height:44px}
 .more-options details{margin:8px 0}
+.menu-footer{border-top:1px solid #425369;padding:4px 0}
+.more-options .driving-disclaimer{margin:0;color:#edf5f0}
+.driving-disclaimer>summary,.facebook-link{min-height:44px;display:flex;align-items:center;font-size:13px}
+.driving-disclaimer>summary{cursor:pointer}
+.driving-disclaimer>summary::after{content:'⌄';margin-left:auto;color:#96e9b7}
+.driving-disclaimer[open]>summary::after{content:'⌃'}
+.driving-disclaimer p{margin:0 0 12px;font-size:13px;line-height:1.5}
+.menu-footer .facebook-link{color:#96e9b7}
 
 
 /* Recent locations keeps native keyboard/touch expand and collapse. */
@@ -256,3 +271,9 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 .saved-result:focus-visible,#savedSearch:focus-visible,#saveSaved:focus-visible{outline:3px solid #daf67a;outline-offset:2px}.saved-hint{white-space:normal!important}
 
 #savedMore{border-color:#39d48d;color:#a9f1ce;align-items:center}#savedMoreCredit[hidden]{display:none}
+
+/* Keep the expanded controls clear of the landscape speed readouts and trip bar. */
+@media(max-height:480px) and (orientation:landscape){
+ body.guiding #driveControls .limit-sign{margin-bottom:0}
+ body.guiding.drive-more #driveMore{right:0;bottom:calc(100% + 8px)}
+}

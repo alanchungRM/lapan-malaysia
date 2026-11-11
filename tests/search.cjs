@@ -4,7 +4,7 @@ function harness(){
  const elements={},events={},timers=[];class El{constructor(){this.value='';this.style={};this.children=[];this.events={};this.dataset={};this.disabled=false;this.open=false}addEventListener(n,f){(this.events[n]??=[]).push(f)}fire(n,e={}){for(const f of this.events[n]||[])f(e)}replaceChildren(){this.children=[]}append(...x){this.children.push(...x)}prepend(x){this.children.unshift(x)}setAttribute(){}focus(){this.fire('focus')}blur(){}click(){return this.onclick?.()}showModal(){this.open=true}close(){this.open=false;setImmediate(()=>this.fire('close'))}}
  const $=id=>elements[id]??=new El(),chosen={origin:null,destination:null},status=[];let prayerItems=[],calls=0,invalidations=0,response={features:[]},fail=false,fetcher;const mapHandlers={};let pinpos={lat:3.1,lng:101.6};const buttons=['origin','destination'].map(id=>{const b=new El();b.dataset.mapPlace=id;return b});
  const map={setView(){return this},getCenter(){return {lat:4.8,lng:102.9}},invalidateSize(){},on(n,f){mapHandlers[n]=f;return this}};const pin={addTo(){return this},setLatLng(p){pinpos=Array.isArray(p)?{lat:p[0],lng:p[1]}:p;return this},getLatLng(){return pinpos},on(){return this}};
- const context={console,URL,AbortController,DOMException,document:{getElementById:$,createElement:()=>new El(),querySelectorAll:()=>buttons},L:{map:()=>map,maplibreGL:()=>({addTo(){}}),tileLayer:()=>({addTo(){}}),marker:()=>pin},setTimeout(f){timers.push(f);return timers.length},clearTimeout(){},fetch:async(u,options)=>{if(String(u)==='/api/prayer-search')return {ok:true,json:async()=>({items:prayerItems})};calls++;if(fetcher)return fetcher(u,options);if(fail)throw Error('offline');return {ok:true,json:async()=>({items:[],...response})}},requestAnimationFrame:f=>f(),addEventListener(n,f){events[n]=f}};context.window=context;vm.createContext(context);vm.runInContext(source,context);const api=context.LapanSearch.init({get:id=>chosen[id],set:(id,p)=>chosen[id]=p,places:[['KL Sentral',3.134,101.686],['Genting Highlands',3.4238,101.7932]],status:t=>status.push(t),invalidate(){invalidations++}});
+ const context={console,URL,AbortController,DOMException,document:{getElementById:$,createElement:()=>new El(),createTextNode:text=>({textContent:text}),querySelectorAll:()=>buttons},L:{map:()=>map,maplibreGL:()=>({addTo(){}}),tileLayer:()=>({addTo(){}}),marker:()=>pin},setTimeout(f){timers.push(f);return timers.length},clearTimeout(){},fetch:async(u,options)=>{if(String(u)==='/api/prayer-search')return {ok:true,json:async()=>({items:prayerItems})};calls++;if(fetcher)return fetcher(u,options);if(fail)throw Error('offline');return {ok:true,json:async()=>({items:[],...response})}},requestAnimationFrame:f=>f(),addEventListener(n,f){events[n]=f}};context.window=context;vm.createContext(context);vm.runInContext(source,context);const api=context.LapanSearch.init({get:id=>chosen[id],set:(id,p)=>chosen[id]=p,places:[['KL Sentral',3.134,101.686],['Genting Highlands',3.4238,101.7932]],status:t=>status.push(t),invalidate(){invalidations++}});
  return {api,$,chosen,status,buttons,context,mapHandlers,timers,get calls(){return calls},get invalidations(){return invalidations},set prayerItems(v){prayerItems=v},set response(v){response=v},set fail(v){fail=v},set fetcher(v){fetcher=v}};
 }
 const feature=(name,lat=3.1,lon=101.6,city='Klang')=>({geometry:{coordinates:[lon,lat]},properties:{name,street:'Jalan Test',city,state:'Selangor',country:'Malaysia'}});
@@ -60,12 +60,41 @@ let completed=false;process.on('beforeExit',()=>{if(!completed){console.error('S
  let found=await search.search('Syarikat Perniagaan Lian Hong',[]);assert.equal(found.items[0][0],right[0]);assert.equal(secondary,1,'weak nonempty results trigger fallback');
  await search.search('Syarikat Perniagaan Lian Hong',[]);assert.equal(primary,1);assert.equal(secondary,1,'reuse recent provider results');
  h=harness();secondary=0;h.fetcher=async u=>{if(String(u)==='/api/place-search')secondary++;return {ok:true,json:async()=>({features:[feature('Exact Business')]})}};found=await h.context.LapanSearch.search('Exact Business',[]);assert.equal(secondary,0,'strong primary result avoids paid provider');
- h=harness();h.chosen.origin=['Start',3,101];h.$('destination').value='Missing Business';h.fetcher=async u=>String(u)==='/api/place-search'?{ok:true,json:async()=>({items:[]})}:{ok:true,json:async()=>({features:[feature('Different Business')]})};const weak=h.api.resolveAll();await new Promise(setImmediate);assert.equal(h.chosen.destination,null,'single weak result never selected automatically');assert.equal(h.$('placeDialog').open,true);assert.match(h.$('placeMatches').children[0].children[1].textContent,/Similar name/);h.$('closePlace').click();assert.equal(await weak,false);
+ h=harness();h.chosen.origin=['Start',3,101];h.$('destination').value='Missing Business';h.fetcher=async u=>String(u)==='/api/place-search'?{ok:true,json:async()=>({items:[]})}:{ok:true,json:async()=>({features:[feature('Different Business')]})};const weak=h.api.resolveAll();await new Promise(setImmediate);assert.equal(h.chosen.destination,null,'single weak result never selected automatically');assert.equal(h.$('placeDialog').open,true);assert.ok(h.$('placeMatches').children[0].children[2].children.some(child=>child.textContent==='Similar match'));h.$('closePlace').click();assert.equal(await weak,false);
  h=harness();secondary=0;h.fetcher=async u=>{if(String(u)==='/api/place-search'){secondary++;return {ok:false,json:async()=>({code:'SEARCH_ACCESS_DENIED'})}}return {ok:true,json:async()=>({features:[]})}};await h.context.LapanSearch.search('Missing first',[]);await h.context.LapanSearch.search('Missing next',[]);assert.equal(secondary,1,'pause denied provider across queries');
 
  h=harness();let secondaryCalls=0;h.fetcher=async u=>{if(String(u)==='/api/place-search'){secondaryCalls++;return {ok:true,json:async()=>({items:[]})}}return {ok:true,json:async()=>({features:[]})}};
  await h.context.LapanSearch.search('Unlisted shop',[],undefined,false);assert.equal(secondaryCalls,0,'typing searches never call secondary provider');
  await h.context.LapanSearch.search('Unlisted shop',[]);assert.equal(secondaryCalls,1,'submitted unresolved text can use secondary provider');
+ // Prefer nearby branches for short searches, but honour an explicit town and full house address.
+ const branches=[['Kopi, Jalan Jauh, Ipoh',4.6,101.1],['Kopi USJ, Jalan Dekat, Subang Jaya',3.025,101.58]];
+ assert.equal(search.rank(branches,'kopi',[3.02,101.58])[0][0],branches[1][0]);
+ assert.equal(search.rank(branches,'kopi ipoh',[3.02,101.58])[0][0],branches[0][0]);
+ const exactAddress=['12 Jalan Meranti 32/39, Shah Alam, Selangor',3.03,101.53];
+ const otherAddress=['12 Jalan Meranti 32/38, Shah Alam, Selangor',3.02,101.58];
+ const wrongHouse=['Jalan Meranti 32/39, Seksyen 12, Shah Alam',3.02,101.58];
+ assert.equal(search.match('No. 12 Jln Meranti 32/39',exactAddress).strong,true);
+ assert.equal(search.match('No. 12 Jln Meranti 32/39',wrongHouse).strong,false);
+ assert.equal(search.rank([otherAddress,wrongHouse,exactAddress],'12 Jln Meranti 32/39',[3.02,101.58])[0][0],exactAddress[0]);
+ assert.equal(search.features({features:[{geometry:{coordinates:[101.53,3.03]},properties:{street:'Jalan Meranti',housenumber:'12',city:'Shah Alam',countrycode:'MY'}}]})[0][0],'12 Jalan Meranti, Shah Alam');
+
+ h=harness();h.chosen.origin=['Start',3.023456,101.581234];h.$('destination').value='Kopi';
+ const biasedUrls=[];
+ h.fetcher=async u=>{biasedUrls.push(new URL(String(u)));return {ok:true,json:async()=>({features:[feature('Kopi',4.6,101.1,'Ipoh'),feature('Kopi USJ',3.025,101.58,'Subang Jaya')]})}};
+ const branchChoice=h.api.resolveAll();
+ await new Promise(setImmediate);
+ assert.equal(biasedUrls[0].searchParams.get('lat'),'3.02');
+ assert.equal(biasedUrls[0].searchParams.get('lon'),'101.58');
+ const firstBranch=h.$('placeMatches').children[0];
+ assert.equal(firstBranch.children[0].textContent,'Kopi USJ');
+ assert.equal(firstBranch.children[1].textContent,'Jalan Test, Subang Jaya, Selangor, Malaysia');
+ assert.match(firstBranch.children[2].children[0].textContent,/m away$/);
+ firstBranch.click();assert.equal(await branchChoice,true);
+ await h.context.LapanSearch.lookup('Kopi',undefined,[3.024,101.583]);
+ assert.equal(biasedUrls.length,1,'nearby requests within the same coarse area share a cached response');
+ await h.context.LapanSearch.lookup('Kopi',undefined,[4.60,101.10]);
+ assert.equal(biasedUrls.length,2,'changing areas fetches a different candidate set');
+
  // Prayer dataset participates in both main fields, even when Photon finds a similar place.
  for(const field of ['origin','destination']){
   h=harness();const other=field==='origin'?'destination':'origin';h.chosen[other]=['Other location',3.1,101.6];h.$(field).value='Masjid Sultan Abdul Aziz Pulau Indah';h.prayerItems=[['Masjid Sultan Abdul Aziz Pulau Indah, Pulau Indah, Selangor, Malaysia',2.923981,101.305960]];h.response={features:[feature('Masjid Sultan Abdul Aziz',3.09,101.65,'Petaling Jaya')]};const prayerChoice=h.api.resolveAll();await new Promise(setImmediate);assert.equal(h.$('placeDialog').open,true);assert.match(h.$('placeMatches').children[0].children[0].textContent,/Pulau Indah/);assert.equal(h.$('prayerSearchCredit').hidden,false);h.$('placeMatches').children[0].click();assert.equal(await prayerChoice,true);assert.equal(h.chosen[field][1],2.923981,'prayer match selected in '+field);assert.equal(h.chosen[field][2],101.305960);

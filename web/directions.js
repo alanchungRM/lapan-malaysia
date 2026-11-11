@@ -8,6 +8,7 @@ const fill=(text,vars)=>vars?text.replace(/\{(\w+)\}/g,(x,k)=>k in vars?vars[k]:
 function words(speech){const i=root.LapanI18n,on=!i?false:speech?i.speechLang()==='ms':i.lang()==='ms';return {on,T:(key,vars)=>on?i.t(key,vars):fill(key,vars)}}
 function format(step={},speech=false){const {on,T}=words(speech);if(!on&&clean(step.instruction))return clean(step.instruction);const m=step.maneuver||{},type=clean(m.type).replaceAll('_',' '),direction=clean(m.modifier),name=clean(step.name),ref=signs(step.ref),exit=signs(step.exits),toward=signs(step.destinations);let action='';
 if(type==='arrive')return T('Arrive at your destination');
+if(direction==='uturn'&&type==='continue')return T('Make a U-turn');
 if(type==='depart')action=T('Head onto');
 else if(type==='off ramp')action=exit?T('Take exit {n}',{n:exit}):T('Take the exit');
 else if(type==='on ramp')action=m.branch==='middle'?T('Take the middle ramp'):T('Take the ramp');
@@ -24,7 +25,39 @@ if(exit&&type!=='off ramp'&&!['roundabout','rotary','roundabout turn','exit roun
 const road=[ref,name&&name.toLowerCase()!==ref.toLowerCase()?name:''].filter(Boolean).join(' · ');if(road)action+=' · '+road;if(toward&&toward.toLowerCase()!==name.toLowerCase())action+=' '+T('toward {x}',{x:toward});return action;
 }
 // Speech uses structured manoeuvres and signed numbers, never long street names or destinations.
-function speech(step={}){const numbered=value=>clean(value).split(';').map(s=>s.trim()).filter(s=>/^(?:[A-Za-z]{0,3}\s*)?\d+[A-Za-z]?(?:[-/]\d+[A-Za-z]?)?$/.test(s)).slice(0,2).join(';');const ref=numbered(step.ref),exits=numbered(step.exits),short={...step,instruction:'',name:'',destinations:'',ref:'',exits};const {T}=words(true);let text=format(short,true);if(text===T('Head onto'))text=T('Continue');if(ref&&step.maneuver?.type!=='arrive')text+=', '+T('route {x}',{x:signs(ref)});return text.replaceAll(' · ', ', ')}
+function speech(step={}){
+ const number=value=>clean(value).split(';').map(s=>s.trim()).find(s=>/^(?:[A-Za-z]{0,3}\s*)?\d+[A-Za-z]?(?:[-/]\d+[A-Za-z]?)?$/.test(s))||'';
+ const ref=number(step.ref),exit=number(step.exits),m=step.maneuver||{},type=clean(m.type).replaceAll('_',' '),mod=clean(m.modifier),{T}=words(true);
+ const side=mod.endsWith('left')?'left':mod.endsWith('right')?'right':'';
+ let text=format({...step,instruction:'',name:'',destinations:'',ref:'',exits:exit},true);
+ if(type==='depart')text=T('Continue');
+ if(type==='off ramp'){
+  const action=exit?T('Take exit {n}',{n:exit}):T('Take the exit');
+  text=side?T('{action} on the {side}',{action,side:T(side)}):action;
+ }
+ if(type==='fork'&&side&&m.branch!=='middle')text=T('Keep')+' '+T(side);
+ if(type==='turn'||type==='end of road'){
+  if(side&&mod.startsWith('slight '))text=T('Bear {side}',{side:T(side)});
+  if(side&&mod.startsWith('sharp '))text=T('Make a sharp {side} turn',{side:T(side)});
+  if(mod==='straight')text=T('Continue straight');
+ }
+ if((type==='roundabout'||type==='rotary')&&Number.isInteger(m.exit)&&m.exit>0){
+  const spokenOrdinals=['first','second','third','fourth','fifth','sixth','seventh','eighth','ninth','tenth'];
+  text=T('At the roundabout, take the {ordinal} exit',{ordinal:spokenOrdinals[m.exit-1]||ordinal(m.exit),n:m.exit});
+ }
+ if(ref&&type!=='arrive')text+=', '+T('route {x}',{x:ref});
+ return text.replaceAll(' · ', ', ');
+}
+function prompt(step,metres){
+ const {T}=words(true),arriving=step?.maneuver?.type==='arrive';
+ const action=arriving?T('You’ll reach your destination'):speech(step);
+ if(!Number.isFinite(metres)||metres<25)return (arriving?T('Your destination is just ahead'):action)+'.';
+ const unit=metres<100?10:50;
+ const rounded=Math.round(metres/unit)*unit;
+ const n=rounded<1000?rounded:Math.round(rounded/100)/10;
+ const phrase=rounded<1000?'In {n} metres, {instruction}':n===1?'In {n} kilometre, {instruction}':'In {n} kilometres, {instruction}';
+ return T(phrase,{n,instruction:action.charAt(0).toLowerCase()+action.slice(1)})+'.';
+}
 // Highlight only route/exit references supplied by the selected route step.
 function badges(step={},message=format(step)){
  const type=clean(step.maneuver?.type).replaceAll('_',' ');
@@ -85,5 +118,5 @@ function render(node,step,message){
  const lead_nodes=[];if(icon){const holder=doc.createElement('span');holder.className='turn-icon';holder.innerHTML=ICONS[icon];lead_nodes.push(holder)}
  node.replaceChildren(...lead_nodes,...parts.map(part=>{if(!part.kind)return doc.createTextNode(part.text);if(part.kind==='dist'||part.kind==='sep'||part.kind==='action'){const piece=doc.createElement('span');piece.className='turn-'+part.kind;piece.textContent=part.text;return piece}const badge=doc.createElement('span');badge.className='nav-road-badge nav-road-badge--'+part.kind;badge.textContent=part.text;badge.title=words(false).T(part.kind==='exit'?'Signed exit number':'Signed road number');return badge}));badgeRenders.set(node,key);
 }
-root.LapanDirections={format,speech,badges,render,iconName,expressway,compact};if(typeof module==='object')module.exports={format,speech,badges,render,iconName,expressway,compact,ICONS};
+root.LapanDirections={format,speech,prompt,badges,render,iconName,expressway,compact};if(typeof module==='object')module.exports={format,speech,prompt,badges,render,iconName,expressway,compact,ICONS};
 })(typeof window==='object'?window:globalThis);

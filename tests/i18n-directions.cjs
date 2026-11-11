@@ -12,7 +12,7 @@ const step=(type,modifier,extra={})=>({maneuver:{type,modifier,...(extra.exit?{e
 let {D,C}=boot({lang:'en'});
 assert.equal(D.format(step('turn','left',{sentence:'Turn left onto Jalan Duta'})),'Turn left onto Jalan Duta');
 assert.equal(D.format(step('off ramp','right',{exits:'214',name:'Jalan Duta'})),'Take exit 214 right · Jalan Duta');
-assert.equal(D.speech(step('roundabout','right',{exit:2})),'At the roundabout, take the 2nd exit');
+assert.equal(D.speech(step('roundabout','right',{exit:2})),'At the roundabout, take the second exit');
 assert.equal(C.describe('speed',434,80,true).text,'Speed camera ahead · 434 m · mapped limit 80 km/h · Slow down');
 
 // Bahasa Malaysia on screen: built from the structured manoeuvre, so TomTom's English sentence is not shown.
@@ -35,9 +35,10 @@ const parts=D.badges(step('off ramp','right',{exits:'214'}),D.format(step('off r
 assert.ok(parts.some(p=>p.kind==='exit'&&p.text==='KELUAR 214'),JSON.stringify(parts));
 
 // Spoken directions follow the voice, not the page: Malay only if a Malay voice is installed.
-({D,C}=boot({lang:'ms'}));assert.equal(D.speech(step('off ramp','right',{exits:'214',ref:'E1'})),'Ambil keluar 214 kanan, laluan E1');
+({D,C}=boot({lang:'ms'}));assert.equal(D.speech(step('off ramp','right',{exits:'214',ref:'E1'})),'Ambil keluar 214 di sebelah kanan, laluan E1');
+assert.equal(D.prompt(step('turn','slight right'),290),'Dalam 300 meter, belok sedikit ke kanan.');
 assert.equal(D.speech(step('roundabout','left',{exit:3})),'Di bulatan, ambil jalan keluar ke-3');assert.equal(D.speech(step('depart','straight')),'Teruskan');
-({D,C}=boot({lang:'ms',voices:[{lang:'en-GB'}]}));assert.equal(D.speech(step('off ramp','right',{exits:'214',ref:'E1'})),'Take exit 214 right, route E1','no Malay voice, so the voice reads English');
+({D,C}=boot({lang:'ms',voices:[{lang:'en-GB'}]}));assert.equal(D.speech(step('off ramp','right',{exits:'214',ref:'E1'})),'Take exit 214 on the right, route E1','no Malay voice, so the voice reads English');
 assert.equal(D.format(step('turn','left')),'Belok kiri','the screen is still Malay');
 
 // Camera alerts: the banner follows the page language, the spoken line follows the voice.

@@ -3,15 +3,59 @@ const valid=(lat,lon)=>Number.isFinite(lat)&&Number.isFinite(lon)&&lat>=.8&&lat<
 const normal=s=>root.LapanPlaces?.normalize(s)??String(s).toLowerCase().replace(/æ/g,'ae').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[.,|]/g,' ').replace(/\s+/g,' ').trim();
 // Common business prefixes must not outweigh the actual business name.
 const generic=new Set(['syarikat','perniagaan','sdn','bhd','sendirian','berhad','enterprise','enterprises','trading','company','co','malaysia']);
-const words=s=>normal(s).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-function match(query,p){const tokens=words(query).filter(t=>!generic.has(t));if(!tokens.length)return {strong:false,score:0};const name=words(p[0].split(',')[0]),all=words(p[0]),hits=tokens.filter(t=>all.includes(t)).length,nameHits=tokens.filter(t=>name.includes(t)).length;return {strong:hits===tokens.length,score:hits/tokens.length*100+nameHits/tokens.length*20+(normal(p[0].split(',')[0])===normal(query)?20:0)}}
-function rank(items,query){return unique(items).sort((a,b)=>match(query,b).score-match(query,a).score)}
+const abbreviations={jln:'jalan',lrg:'lorong',tmn:'taman',bkt:'bukit'};
+const expand=s=>normal(s).replace(/\b(jln|lrg|tmn|bkt)\b/g,word=>abbreviations[word]);
+const words=s=>expand(s).match(/\d+(?:[/-]\d+)+[a-z]?|[\p{L}\p{N}]+/gu)||[];
+const houseNumber=/^(?:no\.?\s+)?(\d+[a-z]?)\s+(?:jalan|lorong|persiaran|lebuh|lebuhraya)\b/;
+function match(query,p){
+ const requestedHouse=expand(query).match(houseNumber)?.[1];
+ const tokens=[...new Set(words(query).filter(t=>!generic.has(t)&&!(requestedHouse&&t==='no')))];
+ if(!tokens.length)return {strong:false,score:0};
+ const [title,...details]=p[0].split(',');
+ const name=words(title),all=words(p[0]),last=tokens.at(-1);
+ const hits=tokens.filter(t=>all.includes(t)).length,nameHits=tokens.filter(t=>name.includes(t)).length;
+ const prefix=last.length>=3&&/^\p{L}+$/u.test(last)&&!all.includes(last)&&name.some(t=>t.startsWith(last));
+ const parts=[title,...details];
+ const houseMatches=!requestedHouse||parts.some((part,i)=>expand(part+' '+(parts[i+1]||'')).match(houseNumber)?.[1]===requestedHouse);
+ return {strong:hits===tokens.length&&houseMatches,score:(hits+Number(prefix)*.55)/tokens.length*100+nameHits/tokens.length*20-(houseMatches?0:45),exact:name.join(' ')===tokens.join(' ')};
+}
+function distanceKm(near,p){
+ const radians=Math.PI/180,dLat=(p[1]-near[0])*radians,dLon=(p[2]-near[1])*radians;
+ const h=Math.sin(dLat/2)**2+Math.cos(near[0]*radians)*Math.cos(p[1]*radians)*Math.sin(dLon/2)**2;
+ return 12742*Math.asin(Math.sqrt(Math.min(1,h)));
+}
+function rank(items,query,near){
+ const located=near&&valid(...near),tokens=words(query);
+ const short=located&&tokens.length<=2&&!tokens.some(t=>/\d/.test(t)||['jalan','lorong','persiaran','lebuh','lebuhraya'].includes(t));
+ return unique(items).map(place=>({place,...match(query,place),distance:located?distanceKm(near,place):0}))
+  .sort((a,b)=>Number(b.strong)-Number(a.strong)||((b.score+(!short&&b.exact?20:0))-(a.score+(!short&&a.exact?20:0)))||a.distance-b.distance)
+  .map(result=>result.place);
+}
 const searchCache=new Map();let additionalPauseUntil=0;
 function cached(provider,q){const x=searchCache.get(provider+':'+normal(q));return x&&Date.now()-x.at<300000?x.items:null}
 function save(provider,q,items){searchCache.set(provider+':'+normal(q),{at:Date.now(),items});if(searchCache.size>60)searchCache.delete(searchCache.keys().next().value);return items}
 function unique(items){return items.filter((p,i,a)=>valid(p[1],p[2])&&a.findIndex(x=>normal(x[0])===normal(p[0])&&Math.abs(x[1]-p[1])<.002&&Math.abs(x[2]-p[2])<.002)===i)}
-function features(data){return unique((data.features||[]).flatMap(f=>{const c=f.geometry?.coordinates,p=f.properties||{};if(!c||!valid(c[1],c[0])||(p.countrycode&&p.countrycode.toLowerCase()!=='my'))return [];const label=[p.name,p.housenumber,p.street,p.district,p.city,p.postcode,p.state,p.country].filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).join(', ').slice(0,300);return label?[[label,c[1],c[0]]]:[]}))}
-async function lookup(q,signal){if(signal?.aborted)throw new DOMException('Aborted','AbortError');const hit=cached('primary',q);if(hit)return hit;const u=new URL('https://photon.komoot.io/api/');u.searchParams.set('q',normal(q));u.searchParams.set('limit','12');u.searchParams.set('bbox','99,0.8,120,7.6');const controller=new AbortController(),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});const timeout=setTimeout(abort,12000);try{if(signal?.aborted)throw new DOMException('Aborted','AbortError');const r=await fetch(u,{signal:controller.signal});if(!r.ok)throw Error('Search unavailable');const d=await r.json();if(!Array.isArray(d.features))throw Error('Invalid search');return save('primary',q,features(d))}finally{clearTimeout(timeout);signal?.removeEventListener('abort',abort)}}
+function features(data){return unique((data.features||[]).flatMap(f=>{
+ const c=f.geometry?.coordinates,p=f.properties||{};
+ if(!c||!valid(c[1],c[0])||(p.countrycode&&p.countrycode.toLowerCase()!=='my'))return [];
+ const street=[p.housenumber,p.street].filter(Boolean).join(' ');
+ const name=p.housenumber&&normal(p.name||'')===normal(p.street||'')?street:p.name||street;
+ const parts=[name,street,p.district,p.city||p.county,p.postcode,p.state,p.country];
+ const label=parts.filter((x,i,a)=>typeof x==='string'&&x.trim()&&a.findIndex(v=>typeof v==='string'&&normal(v)===normal(x))===i).join(', ').slice(0,300);
+ return label?[[label,c[1],c[0]]]:[];
+}))}
+async function lookup(q,signal,near){
+ if(signal?.aborted)throw new DOMException('Aborted','AbortError');
+ // Send a coarse bias to Photon and use the precise reference only in memory.
+ const bias=near&&valid(...near)?near.map(n=>n.toFixed(2)):null;
+ const provider=bias?'primary:'+bias.join(','):'primary',hit=cached(provider,q);
+ if(hit)return hit;
+ const u=new URL('https://photon.komoot.io/api/');
+ u.searchParams.set('q',expand(q));u.searchParams.set('limit',bias?'20':'12');u.searchParams.set('bbox','99,0.8,120,7.6');
+ if(bias){u.searchParams.set('lat',bias[0]);u.searchParams.set('lon',bias[1]);u.searchParams.set('zoom','12')}
+ const controller=new AbortController(),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});const timeout=setTimeout(abort,12000);
+ try{if(signal?.aborted)throw new DOMException('Aborted','AbortError');const r=await fetch(u,{signal:controller.signal});if(!r.ok)throw Error('Search unavailable');const d=await r.json();if(!Array.isArray(d.features))throw Error('Invalid search');return save(provider,q,features(d))}finally{clearTimeout(timeout);signal?.removeEventListener('abort',abort)}
+}
 async function lookupMore(query,signal){if(signal?.aborted)throw new DOMException('Aborted','AbortError');const hit=cached('secondary',query);if(hit)return hit;if(Date.now()<additionalPauseUntil)throw Error('Additional search is temporarily unavailable. Try a full address or choose on map.');const controller=new AbortController(),abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});const timeout=setTimeout(abort,14000);try{if(signal?.aborted)throw new DOMException('Aborted','AbortError');const r=await fetch('/api/place-search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query}),signal:controller.signal});const d=await r.json();if(!r.ok||!Array.isArray(d.items)){if(d.code==='SEARCH_ACCESS_DENIED'||d.code==='SEARCH_QUOTA_REACHED')additionalPauseUntil=Date.now()+300000;throw Error(d.error||'Additional search is unavailable.')}return save('secondary',query,unique(d.items.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&p[0].length<=300&&valid(p[1],p[2]))))}finally{clearTimeout(timeout);signal?.removeEventListener('abort',abort)}}
 
 const prayerMatches=new Set(),prayerKey=p=>JSON.stringify(p.slice(0,3));
@@ -21,18 +65,41 @@ async function lookupPrayer(query,signal){
  try{const r=await fetch('/api/prayer-search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query}),signal:controller.signal}),d=await r.json();if(!r.ok||!Array.isArray(d.items))throw Error('Prayer-place search unavailable');const items=unique(d.items.filter(p=>Array.isArray(p)&&typeof p[0]==='string'&&p[0].length<=300&&valid(p[1],p[2])));for(const p of items){prayerMatches.add(prayerKey(p));if(prayerMatches.size>800)prayerMatches.delete(prayerMatches.values().next().value)}return save('prayer',query,items)}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort)}
 }
 
-async function search(query,localItems,signal,allowSecondary=true){let items=localItems,primaryFailed=false,extra=false,warning='';
- const results=await Promise.allSettled([lookup(query,signal),lookupPrayer(query,signal)]);if(signal?.aborted)throw new DOMException('Aborted','AbortError');
+async function search(query,localItems,signal,allowSecondary=true,near){let items=localItems,primaryFailed=false,extra=false,warning='';
+ const results=await Promise.allSettled([lookup(query,signal,near),lookupPrayer(query,signal)]);if(signal?.aborted)throw new DOMException('Aborted','AbortError');
  for(let i=0;i<results.length;i++){const result=results[i];if(result.status==='fulfilled')items=unique([...items,...result.value]);else if(i===0)primaryFailed=true}
 
 if(allowSecondary&&!items.some(p=>match(query,p).strong)){try{const more=await lookupMore(query,signal);extra=more.length>0;items=unique([...items,...more])}catch(e){if(signal?.aborted)throw e;warning=e.message;if(primaryFailed&&!items.length)throw e}}
-return {items:rank(items,query),extra,warning}}
-function init({get,set,places,status,invalidate}){
+return {items:rank(items,query,near),extra,warning}}
+function init({get,set,places,status,invalidate,nearby=()=>null}){
 const $=id=>document.getElementById(id),box=$('suggest'),dialog=$('placeDialog'),results=$('placeMatches');let target='destination',sequence=0,timer,controller,pending=null,mapView,pin,point,resolveBusy=false;
-const local=q=>unique([...(root.LapanPlaces?.search(q)||[]),...[...root.LapanHistory?.places()||[],...places].filter(p=>normal(p[0]).includes(normal(q)))]);
+function reference(id){
+ const origin=id==='destination'?get('origin'):null;
+ return origin&&valid(origin[1],origin[2])?origin.slice(1,3):nearby();
+}
+const local=(q,id)=>rank([...(root.LapanPlaces?.search(q)||[]),...[...root.LapanHistory?.places()||[],...places].filter(p=>expand(p[0]).includes(expand(q)))],q,reference(id));
 function cancelSearch(){sequence++;clearTimeout(timer);controller?.abort()}
 function choose(id,p){cancelSearch();const previous=get(id),same=previous&&previous[1]===p[1]&&previous[2]===p[2];if(!same)invalidate();set(id,p.slice());$(id).value=p[0];root.LapanHistory?.remember(p,'selected');box.replaceChildren();box.style.display='none';status((id==='origin'?'Starting point':'Destination')+' selected. Tap Find my route.');}
-function list(el,items,id,onSelect){el.replaceChildren();items.forEach(p=>{const b=document.createElement('button');b.type='button';const title=document.createElement('strong'),detail=document.createElement('small');title.textContent=p[0].split(',')[0];detail.textContent=(match($(id).value,p).strong?'':'Similar name — check carefully · ')+p[0]+' · '+p[1].toFixed(5)+', '+p[2].toFixed(5);b.append(title,detail);b.onclick=()=>onSelect(p);el.append(b)})}
+function list(el,items,id,onSelect){
+ el.replaceChildren();
+ const near=reference(id),located=near&&valid(...near),query=$(id).value.trim();
+ for(const p of items){
+  const b=document.createElement('button'),title=document.createElement('strong'),detail=document.createElement('small');
+  const [name,...parts]=p[0].split(',').map(x=>x.trim());
+  const address=parts.filter(x=>x&&normal(x)!==normal(name)).join(', ');
+  const km=located?distanceKm(near,p):null;
+  const distance=km===null?'':km<1?Math.round(km*1000/10)*10+' m away':km.toFixed(km<10?1:0)+' km away';
+  b.type='button';title.textContent=name;b.append(title);
+  if(address){detail.textContent=address;b.append(detail)}
+  const info=[distance,query.length>=3&&!match(query,p).strong?'Similar match':''].filter(Boolean);
+  if(info.length){
+   const context=document.createElement('small');
+   info.forEach((part,i)=>{if(i)context.append(document.createTextNode(' · '));const span=document.createElement('span');span.textContent=part;context.append(span)});
+   b.append(context);
+  }
+  b.onclick=()=>onSelect(p);el.append(b);
+ }
+}
 function inline(items,id,message){
 const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=!items.some(p=>prayerMatches.has(prayerKey(p)));
 list(box,items,id,p=>choose(id,p));const note=document.createElement('p');note.textContent=message;note.setAttribute('role','status');
@@ -46,11 +113,11 @@ if($('extraSearchCredit').hidden===false){const credit=document.createElement('s
 function settle(value){const done=pending;pending=null;done?.(value)}
 dialog.addEventListener('close',()=>{if(!dialog.open)settle(null)});dialog.addEventListener('cancel',()=>settle(null));$('closePlace').onclick=()=>dialog.close();
 function confirm(items,id,q,extra=false){const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=!items.some(p=>prayerMatches.has(prayerKey(p)));target=id;$('extraSearchCredit').hidden=!extra;$('placeTitle').textContent='Choose '+(id==='origin'?'starting point':'destination');$('placeQuery').textContent='Matches for “'+q+'”. Check the address and town before choosing.';list(results,items,id,p=>{choose(id,p);settle(p);dialog.close()});dialog.showModal();return new Promise(resolve=>pending=resolve)}
-async function moreMatches(id,q){cancelSearch();const rev=sequence;controller=new AbortController();inline([],id,'Searching additional business and address data…');status('Searching more places for “'+q+'”…');try{const items=rank(await lookupMore(q,controller.signal),q);if(rev!==sequence||$(id).value.trim()!==q)return;if(!items.length){inline([],id,'No additional matches. Try a full address, town or choose on map.');status('No additional matches for “'+q+'”.');return}box.style.display='none';await confirm(items,id,q,true)}catch(e){if(rev!==sequence)return;inline([],id,e.message+' You can still choose on map.');status(e.message)}}
+async function moreMatches(id,q){cancelSearch();const rev=sequence;controller=new AbortController();inline([],id,'Searching additional business and address data…');status('Searching more places for “'+q+'”…');try{const items=rank(await lookupMore(q,controller.signal),q,reference(id));if(rev!==sequence||$(id).value.trim()!==q)return;if(!items.length){inline([],id,'No additional matches. Try a full address, town or choose on map.');status('No additional matches for “'+q+'”.');return}box.style.display='none';await confirm(items,id,q,true)}catch(e){if(rev!==sequence)return;inline([],id,e.message+' You can still choose on map.');status(e.message)}}
 $('placeUseMap').onclick=()=>{dialog.close();openMap(target)};
 ['origin','destination'].forEach(id=>{
- const input=$(id);input.addEventListener('focus',()=>{cancelSearch();target=id;inline(local(input.value),id,'Choose a result, type a place or address, or choose on map.')} );
- input.addEventListener('input',()=>{cancelSearch();invalidate();set(id,null);target=id;const q=input.value.trim(),n=sequence;const items=local(q);if(q.length<3){inline(items,id,'Enter at least 3 characters, or choose on map.');return}inline(items,id,'Searching for matching places…');timer=setTimeout(async()=>{controller=new AbortController();try{const result=await search(q,items,controller.signal,false),found=result.items;if(n!==sequence)return;$('extraSearchCredit').hidden=!result.extra;inline(found,id,(found.some(p=>match(q,p).strong)?'Check the town and address, then select a place.':found.length?'Only similar names found. Add a town or choose on map.':'No matching places. Add a town or state, or choose on map.')+(result.warning?' Additional search is unavailable.':''))}catch(e){if(n===sequence)inline(items,id,'Online search is unavailable. Retry, use a listed place, or choose on map.')}},450)});
+ const input=$(id);input.addEventListener('focus',()=>{cancelSearch();target=id;inline(local(input.value,id),id,'Choose a result, type a place or address, or choose on map.')} );
+ input.addEventListener('input',()=>{cancelSearch();invalidate();set(id,null);target=id;const q=input.value.trim(),n=sequence;const items=local(q,id);if(q.length<3){inline(items,id,'Enter at least 3 characters, or choose on map.');return}inline(items,id,'Searching for matching places…');timer=setTimeout(async()=>{controller=new AbortController();try{const result=await search(q,items,controller.signal,false,reference(id)),found=result.items;if(n!==sequence)return;$('extraSearchCredit').hidden=!result.extra;inline(found,id,(found.some(p=>match(q,p).strong)?'Check the town and address, then select a place.':found.length?'Only similar names found. Add a town or choose on map.':'No matching places. Add a town or state, or choose on map.')+(result.warning?' Additional search is unavailable.':''))}catch(e){if(n===sequence)inline(items,id,'Online search is unavailable. Retry, use a listed place, or choose on map.')}},450)});
  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();$('plan').click()}})
 });
 const clearDestination=$('clearDestination');
@@ -61,8 +128,8 @@ if(clearDestination)clearDestination.onclick=()=>{
 };
 async function resolveAll(){if(resolveBusy)return false;resolveBusy=true;cancelSearch();box.style.display='none';try{for(const id of ['origin','destination']){
  if(get(id))continue;const q=$(id).value.trim();if(!q){if(id==='origin')continue;status('Enter a destination or choose it on the map.');$(id).focus();return false}
- const rev=sequence,exact=unique([...(root.LapanPlaces?.exact(q)||[]),...local(q).filter(p=>normal(p[0])===normal(q))]);let items,extra=false;
- if(exact.length===1)items=exact;else{status('Finding '+(id==='origin'?'starting point':'destination')+' for “'+q+'”…');controller=new AbortController();try{const result=await search(q,local(q),controller.signal);items=result.items;extra=result.extra}catch(e){if(rev!==sequence)return false;inline(local(q),id,e.message+' Retry or choose on map.');status('Could not search this '+(id==='origin'?'starting point':'destination')+'. '+e.message);return false}}
+ const rev=sequence,exact=unique([...(root.LapanPlaces?.exact(q)||[]),...local(q,id).filter(p=>normal(p[0])===normal(q))]);let items,extra=false;
+ if(exact.length===1)items=exact;else{status('Finding '+(id==='origin'?'starting point':'destination')+' for “'+q+'”…');controller=new AbortController();try{const result=await search(q,local(q,id),controller.signal,true,reference(id));items=result.items;extra=result.extra}catch(e){if(rev!==sequence)return false;inline(local(q,id),id,e.message+' Retry or choose on map.');status('Could not search this '+(id==='origin'?'starting point':'destination')+'. '+e.message);return false}}
  if(rev!==sequence||$(id).value.trim()!==q)return false;
  if(!items.length){inline([],id,'No matching places. Add a town or state, or choose on map.');status('No matching place for “'+q+'”. Try a fuller address or choose on map.');return false}
  if(items.length===1&&!extra&&(exact.length===1||match(q,items[0]).strong))choose(id,items[0]);else if(!await confirm(items,id,q,extra))return false;

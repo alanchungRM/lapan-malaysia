@@ -11,4 +11,23 @@ calls=[];global.fetch=async url=>{calls.push(url);if(url==='/api/route')throw Er
 const nativeTimeout=global.setTimeout;global.setTimeout=(fn,ms)=>ms===19000?nativeTimeout(fn,0):nativeTimeout(fn,ms);calls=[];global.fetch=async url=>{calls.push(url);return url==='/api/route'?new Promise(()=>{}):{ok:true,json:async()=>structuredClone(safe)}};assert.equal((await request([101,3],[101.01,3],false)).routes[0].provider,'OSRM');global.setTimeout=nativeTimeout;
 calls=[];const ctrl=new AbortController();ctrl.abort();global.fetch=async url=>{calls.push(url);throw Error('must not fetch')};await assert.rejects(request([101,3],[101.01,3],false,ctrl.signal),e=>e.name==='AbortError');assert.equal(calls.length,0);
 global.fetch=async()=>{throw Error('Offline')};await assert.rejects(request([101,3],[101.01,3],false),/Live and basic routing are unavailable/);
+const avoid=(purpose='planning')=>rawRequest([101,3],[101.01,3],false,undefined,false,purpose,false,'car',true);
+const requested=[];
+global.fetch=async (url,options)=>{
+ assert.equal(url,'/api/route');
+ requested.push(JSON.parse(options.body));
+ return Response.json({code:'Ok',source:'TomTom',checkedAt:new Date().toISOString(),routes:[{}]});
+};
+await rawRequest([101,3],[101.01,3],false);
+assert.equal((await avoid()).routes[0].avoidTolls,true);
+assert.equal((await avoid('rerouting')).routes[0].avoidTolls,true);
+assert.deepEqual(requested.map(r=>r.avoidTolls),[undefined,true,true],'avoidance uses a separate cache and stays on during rerouting');
+calls=[];global.fetch=async url=>{calls.push(url);return Response.json({allowBasic:true},{status:503})};
+await assert.rejects(avoid('rerouting'),/Toll avoidance is temporarily unavailable/);
+assert.deepEqual(calls,['/api/route'],'never fall back to unrestricted OSRM for Avoid Tolls');
+global.document={documentElement:{dataset:{routingProvider:'OSRM'}}};
+calls=[];
+await assert.rejects(avoid(),/unavailable with basic routing/);
+assert.deepEqual(calls,[]);
+delete global.document;
 global.fetch=original;console.log('PASS: primary live planning, automatic basic fallback, no-route rejection and explicit closure labels')})().catch(e=>{console.error(e);process.exitCode=1});

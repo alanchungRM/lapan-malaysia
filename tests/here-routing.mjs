@@ -5,6 +5,7 @@ const points=[[101,3],[101.005,3],[101.01,3]],section={type:'vehicle',polyline:e
 let current=structuredClone(section),calls=0;const urls=[],original=globalThis.fetch;globalThis.fetch=async(url)=>{calls++;urls.push(new URL(url));return Response.json({routes:[{routeHandle:'test_handle',sections:[current]}]})};const DB={prepare(){return {async first(){return {provider:'HERE',revision:1}}}}},env={DB,HERE_API_KEY:'not-a-real-here-key',TOMTOM_API_KEY:'not-a-real-tomtom-key'},req=(extra={})=>new Request('https://test/api/route',{method:'POST',headers:{origin:'https://test','cf-connecting-ip':extra.vehicle==='motorcycle'?'motorcycle-fixture':'car-fixture'},body:JSON.stringify({from:points[0],to:points.at(-1),alternatives:true,...extra})});
 try{
  let response=await worker.fetch(req(),env),data=await response.json();assert.equal(response.status,200);assert.equal(data.source,'HERE');assert.deepEqual(data.routes[0].geometry.coordinates,points);assert.equal(data.routes[0].legs[0].steps[1].maneuver.modifier,'right');assert.equal(data.routes[0].legs[0].steps[0].ref,'E1');assert.equal(data.routes[0].tollEstimate.status,'unavailable');assert.equal(data.routes[0].tollEstimate.amount,null);assert.deepEqual(data.routes[0].trafficSections.map(s=>s.severity),['heavy','moderate']);assert.ok(!JSON.stringify(data).includes(env.HERE_API_KEY));assert.equal(urls[0].hostname,'router.hereapi.com');assert.equal(urls[0].searchParams.get('return'),'polyline,summary,turnByTurnActions,routeHandle');await worker.fetch(req(),env);assert.equal(calls,1,'duplicate HERE planning reuses result');await worker.fetch(req({refresh:true}),env);assert.equal(calls,2,'forced refresh bypasses HERE cache');
+ await worker.fetch(req({purpose:'rerouting',refresh:true}),env);
  const traffic=new Request('https://test/api/traffic-eta',{method:'POST',headers:{origin:'https://test'},body:JSON.stringify({coordinates:[points[1],points[2]],provider:'HERE',hereRouteHandle:'test_handle'})});response=await worker.fetch(traffic,env);data=await response.json();assert.equal(response.status,200);assert.equal(data.source,'HERE');assert.equal(data.seconds,300,'route-handle refresh returns remaining-route time, not full-trip time');assert.equal(urls.at(-1).pathname,'/v8/routes/test_handle');assert.ok(urls.every(u=>u.hostname==='router.hereapi.com'),'HERE never calls TomTom');
  // Actual HERE responses use camel-case motorway and U-turn actions.
  for(const [action,type,modifier] of [['enterHighway','on ramp','right'],['continueHighway','continue','right'],['uTurn','turn','uturn']]){
@@ -17,6 +18,32 @@ try{
  current={...structuredClone(section),turnByTurnActions:[{action:'depart',offset:0,length:1100,duration:600},{action:'unknown-action',offset:2,length:0,duration:0}]};response=await worker.fetch(req({refresh:true}),env);assert.equal(response.status,502);assert.equal((await response.json()).code,'HERE_GUIDANCE');
  for(const [status,code]of [[400,'HERE_REQUEST'],[401,'HERE_AUTH'],[403,'HERE_ACCESS'],[503,'HERE_UNAVAILABLE']]){
   globalThis.fetch=async()=>new Response('private provider error '+env.HERE_API_KEY,{status});response=await worker.fetch(req({vehicle:'motorcycle',refresh:true}),env);data=await response.json();assert.equal(data.code,code);assert.equal(data.allowBasic,false);assert.ok(!JSON.stringify(data).includes(env.HERE_API_KEY));
+ }
+ globalThis.fetch=async(url)=>{calls++;urls.push(new URL(url));return Response.json({routes:[{routeHandle:'test_handle',sections:[current]}]})};
+ current=structuredClone(section);
+ response=await worker.fetch(req({avoidTolls:true}),env);
+ assert.equal(response.status,200);
+ assert.equal(urls.at(-1).searchParams.get('avoid[features]'),'tollRoad');
+ current.spans[0].carAttributes=['tollRoad'];
+ response=await worker.fetch(req({avoidTolls:true,refresh:true}),env);
+ assert.equal(response.status,422);
+ assert.equal((await response.json()).allowBasic,false);
+ current=structuredClone(section);
+ current.notices=[{severity:'warning',code:'violatedAvoidTollRoad'}];
+ response=await worker.fetch(req({avoidTolls:true,refresh:true}),env);
+ assert.equal(response.status,422);
+ const fallbackCalls=[];
+ const tomTomEnv={...env,DB:{prepare(sql){const stmt=DB.prepare(sql);stmt.first=async()=>({provider:'TomTom',revision:1});return stmt}}};
+ globalThis.fetch=async url=>{
+  fallbackCalls.push(new URL(url).hostname);
+  return new Response(null,{status:503});
+ };
+ for(const avoidTolls of [true,false]){
+  fallbackCalls.length=0;
+  response=await worker.fetch(req({avoidTolls,refresh:true}),tomTomEnv);
+  assert.equal(response.status,502);
+  assert.equal((await response.json()).allowBasic,true);
+  assert.deepEqual(fallbackCalls,['api.tomtom.com'],'TomTom failure must not trigger a HERE request');
  }
  globalThis.fetch=async(url)=>{calls++;urls.push(new URL(url));return Response.json({routes:[{routeHandle:'test_handle',sections:[current]}]})};
  console.log('PASS: HERE flexible polyline, guidance/signs, traffic colours, remaining-time refresh, caching, forced refresh, secret protection and rejection of restricted or unusable routes');
