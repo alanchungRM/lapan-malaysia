@@ -1,6 +1,6 @@
 // Keeps Lapan opening when the network or server is struggling. Network first, so a healthy server always wins.
 const VERSION='{{APP_VERSION}}',CACHE='lapan-shell-'+VERSION,SHELL=__SHELL__,TIMEOUT=4000;
-const ALLOWED=new Set([...SHELL,'/index.html','/maplibre.js','/signals.json','/speed-limits.json','/speed-cameras.json','/hot-fm-pointer.png']);
+const ALLOWED=new Set([...SHELL,'/ui2.css','/index.html','/maplibre.js','/signals.json','/speed-limits.json','/speed-cameras.json','/hot-fm-pointer.png']);
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>Promise.all(SHELL.map(url=>cache.add(new Request(url,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting()));
 });

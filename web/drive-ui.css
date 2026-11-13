@@ -14,6 +14,27 @@ html #nextturn .turn-dist{display:block;font-size:clamp(34px,9vw,40px);font-weig
 html #nextturn .turn-sep{display:none}
 html #nextturn .nav-road-badge{font-size:.78em;padding:1px 5px;margin:0 2px}
 html body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+/* Preview the following maneuver below the current instruction. */
+.nav-then:not([hidden]){
+ display:flex;
+ align-items:center;
+ gap:8px;
+ border-top:1px solid rgba(255,255,255,.3);
+ margin-top:8px;
+ padding-top:7px;
+ font-size:14px;
+ line-height:1.25;
+}
+.nav-then-label{font-weight:700}
+.nav-then-maneuver{display:flex;align-items:center;gap:6px;min-width:0}
+.nav-then-maneuver svg{display:block;width:18px;height:18px}
+html[data-ui="2"][data-theme="night"] .nav-then-label{color:var(--planner-mint)}
+/* The guidance card is informational except for its explicit actions. */
+html body.guiding #navpanel{pointer-events:none}
+html body.guiding #navpanel :is(button,a){pointer-events:auto;touch-action:manipulation}
+html body.guiding #navpanel #reportWarning{margin-top:10px}
+html body.guiding #navpanel #reportAsk{margin-top:10px}
+html body.guiding :is(#navBar,#driveControls) button{touch-action:manipulation}
 /* Alerts use the yellow warning-sign look */
 html #cameraWarning,html #hazardWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
 html #cameraWarning::before,html #hazardWarning::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}

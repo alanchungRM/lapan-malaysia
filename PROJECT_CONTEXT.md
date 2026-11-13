@@ -1,6 +1,6 @@
 # Lapan Malaysia project context
 
-Updated 12 November 2026. The public repository and [live app](https://lapan-malaysia.com) are at **v1.0.41**.
+Updated 13 November 2026. The public repository and [live app](https://lapan-malaysia.com) are at **v1.0.43**.
 
 ## What Lapan does
 
@@ -9,6 +9,8 @@ Lapan is a mobile-first browser navigation app for Malaysia. It combines 2D rout
 The planning map uses Leaflet and OpenFreeMap. The driving view uses MapLibre GL JS. The app is written in HTML, CSS and JavaScript and runs on a Cloudflare Worker. TomTom is the default routing provider. Valhalla is the secondary routing provider. OSRM provides basic routing for eligible car routes when both services are unavailable.
 
 ## Current features
+
+- The new look follows local sunrise and sunset in Auto mode. The star switches to Classic and the browser remembers the choice. The Then row previews the following navigation instruction.
 
 - **Anonymous road reports** cover crashes, stopped vehicles, objects on the road, flooding, potholes and police presence. Choose a category and confirm to submit. Tap a pin to see the remaining time or vote **Still there** or **Cleared**. Reports expire eight hours after submission.
 - **Share this place** creates a short destination link. **Share my drive** can include an estimated arrival time in the message. The link opens the shared destination.

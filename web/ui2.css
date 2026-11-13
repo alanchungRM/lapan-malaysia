@@ -1,0 +1,440 @@
+/* Lapan new look. Loaded only when ui2.js turns it on (?ui=2). The classic stylesheets stay underneath, so every rule here is scoped to
+   html[data-ui="2"] and overrides the classic theme and planner layout. Day and night come from html[data-theme] (see theme.js). */
+html[data-ui="2"]{--bg:#F4F8F6;--surface:#FFFFFF;--surface-2:#EEF3F0;--line:#DCE5E0;--control-border:#70867D;--ink:#0E1B16;--ink-2:#4B5E56;--brand:#0F7B5F;--on-brand:#FFFFFF;--lime:#DAF67A;--route:#1F6FEB;--warn:#F2A900;--on-warn:#2A1D00;--bad:#D92D20;--ok:#22A559;--bad-fill:#D92D20;--on-bad-fill:#FFFFFF;--turn:#0E5C47;--on-turn:#FFFFFF;--focus:#1F6FEB;--shadow:0 6px 24px rgba(14,27,22,.16);color-scheme:light}
+html[data-ui="2"][data-theme="night"]{--bg:#08130F;--surface:#0D1C16;--surface-2:#123328;--line:#295448;--control-border:#728B80;--ink:#F0F7F3;--ink-2:#ADC3B8;--brand:#1CCD90;--planner-mint:#65E6B9;--on-brand:#05261C;--route:#5B9BFF;--bad:#FF6B5E;--turn:#0E5C47;--focus:#7FB1FF;--shadow:0 6px 24px rgba(0,0,0,.5);color-scheme:dark}
+
+/* Base: system font (nothing to download), tabular numbers, visible focus, comfortable touch targets, calm motion. */
+html[data-ui="2"] body{background:var(--bg)!important;color:var(--ink)!important;font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif!important;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+html[data-ui="2"] button,html[data-ui="2"] input,html[data-ui="2"] select,html[data-ui="2"] summary,html[data-ui="2"] h1,html[data-ui="2"] h2,html[data-ui="2"] strong{font-family:inherit!important}
+html[data-ui="2"] :focus-visible{outline:3px solid var(--focus)!important;outline-offset:2px!important;border-radius:8px}
+html[data-ui="2"] button,html[data-ui="2"] summary,html[data-ui="2"] select{min-height:44px}
+html[data-ui="2"] a{color:var(--brand)}
+@media (prefers-reduced-motion:reduce){html[data-ui="2"] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Header */
+html[data-ui="2"] header{background:var(--surface)!important;border-bottom:1px solid var(--line)!important;color:var(--ink)!important}
+html[data-ui="2"] .brand{color:var(--ink)!important}
+html[data-ui="2"] .brand span{color:var(--ink-2)!important}
+html[data-ui="2"] a.app-version{color:var(--ink-2)!important;border:1px solid var(--line)!important;background:transparent!important}
+html[data-ui="2"] .menu-launch{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:14px!important;min-width:48px}
+
+html[data-ui="2"] #openMenu span{color:var(--ink)!important}
+html[data-ui="2"] .lang-switch{border-color:var(--brand)}
+html[data-ui="2"] .lang-switch button{
+  background:var(--surface-2);
+  color:var(--ink);
+}
+html[data-ui="2"] .lang-switch button[aria-pressed="true"]{
+  background:var(--brand);
+  color:var(--on-brand);
+}
+
+/* Sheet and text */
+html[data-ui="2"] aside{background:var(--surface)!important;color:var(--ink)!important;border:0!important;box-shadow:0 -8px 30px rgba(14,27,22,.16)!important;scrollbar-color:var(--line) transparent}
+html[data-ui="2"] aside p,html[data-ui="2"] aside small,html[data-ui="2"] aside label,html[data-ui="2"] .status,html[data-ui="2"] .privacy-line,html[data-ui="2"] #recentHint{color:var(--ink-2)!important}
+html[data-ui="2"] aside h1,html[data-ui="2"] aside h2,html[data-ui="2"] aside summary,html[data-ui="2"] aside strong,html[data-ui="2"] aside b{color:var(--ink)!important}
+html[data-ui="2"] .search-panel{border-bottom:0!important}
+html[data-ui="2"] .search-panel>summary{font-size:20px!important;font-weight:800!important}
+html[data-ui="2"] .search-panel>summary::after,html[data-ui="2"] .more-options>summary::after{color:var(--brand)!important}
+
+/* Search fields */
+html[data-ui="2"] .fields{background:var(--surface-2)!important;border:0!important;border-radius:20px!important;padding:2px 16px!important}
+html[data-ui="2"] .field:first-child{border-bottom:1px solid var(--line)!important}
+html[data-ui="2"] .field input{color:var(--ink)!important;font-size:18px!important;font-weight:600!important;background:transparent!important}
+html[data-ui="2"] .field input::placeholder{color:var(--ink-2)!important;opacity:1}
+html[data-ui="2"] .field label{color:var(--ink-2)!important;font-size:11px!important;font-weight:700!important;letter-spacing:.4px}
+html[data-ui="2"] .tiny{color:var(--brand)!important;min-width:44px;min-height:44px}
+html[data-ui="2"] .dot{border-color:var(--route)!important;background:transparent!important}
+html[data-ui="2"] .dot.dest{background:var(--bad)!important;border-color:var(--bad)!important}
+html[data-ui="2"] .suggest{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:var(--shadow)}
+html[data-ui="2"] .suggest button{background:transparent!important;color:var(--ink)!important;border-color:var(--line)!important}
+
+/* Buttons and chips */
+html[data-ui="2"] .primary{background:var(--brand)!important;color:var(--on-brand)!important;border-radius:16px!important;min-height:56px!important;font-size:18px!important;font-weight:700!important;box-shadow:none!important}
+html[data-ui="2"] .primary:disabled{opacity:.6}
+html[data-ui="2"] .link,html[data-ui="2"] .link:visited{color:var(--brand)!important;font-weight:700}
+html[data-ui="2"] .map-place-actions button{border:1px solid var(--line)!important;border-radius:14px!important;font-weight:600}
+html[data-ui="2"] .map-place-actions button,
+html[data-ui="2"][data-theme="day"] .route-preference label{
+  background:transparent!important;
+  color:var(--brand)!important;
+}
+html[data-ui="2"] .voice-launch,html[data-ui="2"] .toll-launch,html[data-ui="2"] .install-launch,html[data-ui="2"] .statistics-link{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:999px!important;font-weight:600}
+html[data-ui="2"] .install-launch,html[data-ui="2"] .statistics-link{border-radius:16px!important}
+html[data-ui="2"] .stop-categories button{
+  flex-direction:row;
+  min-height:48px;
+  padding:6px 8px;
+  background:var(--surface-2);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+html[data-ui="2"] .stop-categories button[aria-pressed="true"]{
+  background:var(--brand);
+  color:var(--on-brand);
+  border-color:var(--brand);
+}
+html[data-ui="2"] .voice-launch span{color:var(--brand)!important}
+html[data-ui="2"] select,html[data-ui="2"] input[type=number],html[data-ui="2"] input[type=text]{background:var(--surface-2)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:12px!important}
+html[data-ui="2"] .more-options,html[data-ui="2"] .awake-settings,html[data-ui="2"] .signal-settings,html[data-ui="2"] .recent-settings,html[data-ui="2"] .route-costs,html[data-ui="2"] .quick-stops{background:transparent!important;border-color:var(--line)!important;color:var(--ink)!important}
+html[data-ui="2"] .more-options{background:var(--surface-2)!important;border:0!important;border-radius:18px!important}
+html[data-ui="2"] .sos-link{background:#FDE7E4!important;color:#8F1D13!important;border:0!important;border-radius:12px!important}
+html[data-ui="2"][data-theme="night"] .sos-link{background:#4A1F1B!important;color:#FFB8B0!important}
+
+/* Recent places */
+html[data-ui="2"] #recentList{scrollbar-color:var(--control-border) var(--surface)}
+html[data-ui="2"] .recent-row{border-color:var(--line)}
+html[data-ui="2"] .recent-face{background:var(--surface)}
+html[data-ui="2"] .recent-place{background:transparent;color:var(--ink)}
+html[data-ui="2"] .recent-place small{color:var(--ink-2)}
+html[data-ui="2"] .recent-options{
+  flex-basis:44px;
+  align-self:center;
+  min-height:44px;
+  background:var(--surface-2);
+  color:var(--brand);
+  border-radius:12px;
+}
+html[data-ui="2"] .recent-delete{
+  background:var(--bad-fill);
+  color:var(--on-bad-fill);
+}
+
+/* Routes */
+html[data-ui="2"] .sectionhead h2{font-size:18px!important}
+html[data-ui="2"] .route{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;color:var(--ink)!important}
+html[data-ui="2"] .route.active{border:2px solid var(--brand)!important;background:var(--surface)!important}
+html[data-ui="2"] .route strong{font-size:30px!important;font-weight:800!important;color:var(--ink)!important}
+html[data-ui="2"] .route small,html[data-ui="2"] .route p{color:var(--ink-2)!important}
+html[data-ui="2"] .badge{background:var(--lime)!important;color:#14301F!important;border-radius:999px!important;padding:4px 9px!important}
+html[data-ui="2"] .route-basis{background:var(--surface-2)!important;color:var(--ink-2)!important;border:0!important;border-radius:14px!important}
+html[data-ui="2"] .steps *{color:var(--ink)!important;border-color:var(--line)!important}
+
+/* Driving: turn banner, ETA bar, signs, controls, alerts */
+html[data-ui="2"] .navpanel{background:var(--turn)!important;color:var(--on-turn)!important;border:0!important;border-radius:22px!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] .navpanel b,html[data-ui="2"] .navpanel p{color:var(--on-turn)!important}
+html[data-ui="2"] .navpanel #nextturn{font-size:20px!important;font-weight:700}
+html[data-ui="2"] .navpanel .link{color:#DAF67A!important}
+html[data-ui="2"] #cameraWarning,html[data-ui="2"] #limitWarning{background:var(--warn)!important;color:var(--on-warn)!important;border:0!important;border-radius:16px!important;font-weight:700}
+html[data-ui="2"] #navBar{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:24px!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] #navBar strong,html[data-ui="2"] #navBar small{color:var(--ink)!important}
+html[data-ui="2"] #navBar small{color:var(--ink-2)!important}
+html[data-ui="2"] #navBar button{background:var(--surface-2)!important;color:var(--ink)!important;border:0!important;border-radius:14px!important}
+html[data-ui="2"] #navBar #stop{background:transparent!important;color:var(--bad)!important}
+html[data-ui="2"] #driveControls button,html[data-ui="2"] .open-stops,html[data-ui="2"] .recenter{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:50%!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] .open-stops{border-radius:999px!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:16px!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip strong,html[data-ui="2"] body.guiding #driveControls .speed-chip small{color:var(--ink)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.over{background:var(--warn)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.over strong,html[data-ui="2"] body.guiding #driveControls .speed-chip.over small{color:var(--on-warn)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.fast{background:var(--bad-fill)!important}
+html[data-ui="2"] body.guiding #driveControls .speed-chip.fast strong,html[data-ui="2"] body.guiding #driveControls .speed-chip.fast small{color:var(--on-bad-fill)!important}
+html[data-ui="2"] .limit-sign{background:#fff!important;color:#111!important;border-color:#D92D20!important}
+html[data-ui="2"] .nav-sos{background:var(--bad-fill)!important;color:var(--on-bad-fill)!important;border:0!important;border-radius:50%!important}
+
+/* Map chrome and dialogs */
+html[data-ui="2"] .maptag,html[data-ui="2"] .mapbottom{background:var(--surface)!important;color:var(--ink)!important;border:0!important;box-shadow:var(--shadow)!important}
+html[data-ui="2"] .leaflet-bar a{background:var(--surface)!important;color:var(--ink)!important;border-color:var(--line)!important}
+html[data-ui="2"] dialog{background:var(--surface)!important;color:var(--ink)!important;border:0!important;border-radius:24px!important}
+html[data-ui="2"] dialog p,html[data-ui="2"] dialog label,html[data-ui="2"] dialog li{color:var(--ink)!important}
+
+/* Polish found in real-browser checks */
+html[data-ui="2"] .maptag,html[data-ui="2"] .maptag b{color:var(--ink)!important}
+html[data-ui="2"] .field input{font-size:17px!important;text-overflow:ellipsis}
+html[data-ui="2"] #driveControls{background:transparent!important;box-shadow:none!important;border:0!important;backdrop-filter:none!important;padding:10px!important}
+html[data-ui="2"] #driveControls button,html[data-ui="2"] #driveControls .speed-chip,html[data-ui="2"] #driveControls .limit-sign{box-shadow:0 2px 8px rgba(0,0,0,.3)!important}
+html[data-ui="2"] #navBar #navTrip{color:var(--ink)!important;font-size:22px!important;font-weight:800!important}
+html[data-ui="2"] #navBar #navDestination{color:var(--ink-2)!important;font-size:14px!important;font-weight:600!important}
+html[data-ui="2"] #navBar .traffic-basis{color:var(--ink-2)!important}
+html[data-ui="2"] .leaflet-bottom.leaflet-right{right:auto!important;left:0!important}
+html[data-ui="2"] .compact-credits summary{
+  width:24px;
+  height:24px;
+  min-height:24px;
+  padding:0;
+  border-radius:50%;
+  font-size:14px;
+}
+html[data-ui="2"] .compact-credits :is(summary,details>div){
+  background:var(--surface);
+  color:var(--ink);
+}
+html[data-ui="2"] .compact-credits a{color:var(--brand)}
+
+/* Planner appearance and shortcut controls */
+html[data-ui="2"] #uiAppearance summary::after{
+  inset:7px 1px;
+  border-color:var(--control-border);
+  border-radius:999px;
+}
+html[data-ui="2"] .saved-slot{gap:6px}
+html[data-ui="2"] .saved-chip{
+  min-height:44px;
+  gap:6px;
+  padding:5px 7px;
+  background:var(--surface-2);
+  border-color:var(--line);
+  border-radius:10px;
+  color:var(--ink);
+}
+html[data-ui="2"] .saved-chip.is-set{border-color:var(--brand)}
+html[data-ui="2"] .saved-icon svg{width:18px;height:18px}
+html[data-ui="2"] :is(.saved-edit,.plan-row .share-icon,.route-preference label){
+  background:#192C3A;
+  border-color:#526977;
+  color:#FFFFFF!important;
+}
+html[data-ui="2"] .saved-edit{
+  min-height:44px;
+  padding:0;
+  border-radius:10px;
+}
+html[data-ui="2"] :is(.route-preference label,#plan,.plan-row .share-icon){
+  min-height:48px!important;
+  padding-block:8px;
+  border-radius:12px!important;
+  font-size:14px!important;
+  line-height:1.25;
+}
+html[data-ui="2"] #plan{margin:0}
+html[data-ui="2"] .plan-row .share-icon{padding-inline:0}
+html[data-ui="2"] .share-mini{
+  background:var(--surface-2);
+  border-color:var(--line);
+  color:var(--ink);
+}
+html[data-ui="2"] .route-preference label:has(input:checked){
+  background:#103B2C;
+  border-color:#52D9AD;
+}
+html[data-ui="2"] .route-preference label:has(input:focus-visible){
+  outline-color:var(--focus);
+}
+html[data-ui="2"] .route-preference input{
+  flex:none;
+  color-scheme:light;
+  accent-color:#52D9AD;
+}
+html[data-ui="2"][data-theme="day"] .route-preference label{
+  border-color:var(--line);
+}
+html[data-ui="2"][data-theme="day"] .route-preference label:has(input:checked){
+  border-color:var(--brand);
+}
+html[data-ui="2"][data-theme="day"] .route-preference input{
+  accent-color:var(--brand);
+}
+html[data-ui="2"] :is(.saved-icon,.history-link,.menu-footer .facebook-link),
+html[data-ui="2"] .driving-disclaimer>summary::after,
+html[data-ui="2"] .search-panel details.recent-settings>summary::after{
+  color:var(--brand)!important;
+}
+html[data-ui="2"] :is(.route-preference legend,.more-options>summary span){
+  color:var(--ink-2);
+}
+/* Night planner uses mint outlines over deep green surfaces. */
+html[data-ui="2"][data-theme="night"] #uiAppearance summary{color:var(--planner-mint)}
+html[data-ui="2"][data-theme="night"] #uiAppearance summary::after{border-color:currentColor}
+html[data-ui="2"][data-theme="night"] .fields{
+  border:1px solid var(--line)!important;
+}
+html[data-ui="2"][data-theme="night"] .map-place-actions button{
+  background:var(--surface-2)!important;
+  border-color:var(--planner-mint)!important;
+  color:var(--ink)!important;
+}
+html[data-ui="2"][data-theme="night"] :is(.saved-edit,.plan-row .share-icon,.route-preference label){
+  background:#192D2B;
+}
+html[data-ui="2"][data-theme="night"] .route-preference label:has(input:checked){
+  background:#0D3929;
+  border-color:var(--planner-mint);
+}
+html[data-ui="2"][data-theme="night"] .search-panel .stop-categories button{
+  border-radius:999px;
+}
+html[data-ui="2"] .menu-footer{border-color:var(--line)}
+
+/* Report buttons use themed text; category icons retain their own contrasting badges. */
+html[data-ui="2"] dialog .stops-head small{color:var(--brand)}
+html[data-ui="2"] :is(#closeReport,#reportBack,#cancelReport,#reportNo,.report-kind,
+  .report-popup-close,.report-vote-actions button){
+  background:var(--surface-2)!important;
+  color:var(--ink)!important;
+  border-color:var(--line);
+}
+html[data-ui="2"] .report-kind svg{
+  background:var(--report-icon-surface);
+  border-radius:8px;
+  padding:3px;
+}
+html[data-ui="2"] #reportWarning{
+  background:var(--warn);
+  color:var(--on-warn)!important;
+}
+html[data-ui="2"] #reportAsk{
+  background:var(--surface);
+  color:var(--ink);
+}
+html[data-ui="2"] #reportAsk #reportAskKind{color:var(--ink-2)!important}
+html[data-ui="2"] :is(#reportYes,.report-vote-actions button:first-child){
+  background:var(--brand)!important;
+  color:var(--on-brand)!important;
+}
+html[data-ui="2"] #reportDialog .report-note{color:var(--ink-2)!important}
+html[data-ui="2"] .lapan-report-popup{
+  --report-surface:var(--surface);
+  --report-border:var(--line);
+  --report-text:var(--ink);
+  --report-muted:var(--ink-2);
+}
+html[data-ui="2"] #driveMore #navReport{
+  background:var(--surface-2)!important;
+}
+html[data-ui="2"] #navReport svg{color:var(--brand)}
+
+/* Quick stops, saved-place setup and the phone installation guide. */
+html[data-ui="2"] #openPlanningStops,
+html[data-ui="2"][data-theme="day"] .saved-edit{
+  background:var(--brand)!important;
+  color:var(--on-brand)!important;
+}
+html[data-ui="2"][data-theme="day"] .saved-edit{border-color:var(--brand)}
+html[data-ui="2"] .quick-stops summary>span,
+html[data-ui="2"] #stopsDialog :is(.stops-foot small,.stop-result small),
+html[data-ui="2"] #savedDialog :is(.saved-action small,.saved-result small,#savedSelection small,.saved-note),
+html[data-ui="2"] #installDialog :is(.install-step>span,.install-intro,.install-foot){
+  color:var(--ink-2)!important;
+}
+html[data-ui="2"] :is(#stopsDialog,#savedDialog,#installDialog,#pickMapDialog) .stops-head button,
+html[data-ui="2"] #savedDialog :is(.saved-action,.saved-result,#savedSearch,#savedSelection),
+html[data-ui="2"] #installDialog :is(.install-card,.install-visual,.mini-phone,.mini-url,.mini-action){
+  background:var(--surface-2);
+  color:var(--ink);
+  border-color:var(--line);
+}
+html[data-ui="2"] #savedDialog #savedSearch::placeholder{
+  color:var(--ink-2);
+  opacity:1;
+}
+html[data-ui="2"] #savedDialog #savedSelection{border-color:var(--brand)}
+html[data-ui="2"] #savedDialog .saved-footer{background:var(--surface)}
+html[data-ui="2"] #savedDialog .saved-action.saved-remove{
+  color:var(--bad);
+  border-color:var(--bad);
+}
+html[data-ui="2"] #stopsDialog .stop-result{border-color:var(--line)}
+html[data-ui="2"] #stopsDialog .stop-result button,
+html[data-ui="2"] #installDialog .step-number{
+  background:var(--brand);
+  color:var(--on-brand);
+}
+html[data-ui="2"] #installDialog :is(.install-platform,.install-card a,.install-card summary,.mini-share){
+  color:var(--brand);
+}
+html[data-ui="2"] #installDialog :is(.install-visual,.mini-phone){background:var(--surface)}
+
+/* Voice and sound */
+html[data-ui="2"] #voiceDialog .stops-head button,
+html[data-ui="2"] #voiceDialog .voice-mode{
+  background:var(--surface-2);
+  color:var(--ink)!important;
+  border-color:var(--line);
+}
+html[data-ui="2"] #voiceDialog .voice-mode strong{color:inherit}
+html[data-ui="2"] #voiceDialog .voice-mode{border-color:var(--control-border)}
+html[data-ui="2"] #voiceDialog #voiceNote,
+html[data-ui="2"] #voiceDialog :is(.voice-modes legend,.voice-mode small,.voice-alert-note,.voice-storage){
+  color:var(--ink-2)!important;
+}
+html[data-ui="2"] #voiceDialog .voice-mode:has(input:checked){
+  background:var(--brand);
+  color:var(--on-brand)!important;
+  border-color:var(--brand);
+}
+html[data-ui="2"] #voiceDialog .voice-mode:has(input:checked) :is(small,.voice-check){
+  color:var(--on-brand)!important;
+}
+html[data-ui="2"] #voiceDialog .voice-mode:has(input:focus-visible){outline-color:var(--focus)}
+html[data-ui="2"] #voiceDialog .voice-device{border-color:var(--line)}
+html[data-ui="2"] #voiceDialog .voice-device summary{color:var(--brand)}
+
+/* More options controls share a surface and a visible outline. */
+html[data-ui="2"] .more-options :is(#vehicle,.voice-launch,.toll-launch,.awake-settings,
+  .signal-settings,.statistics-link,.install-launch){
+  background:var(--surface)!important;
+  border:1px solid var(--control-border)!important;
+  border-radius:12px!important;
+}
+html[data-ui="2"] :is(#placeCard,#shareToast){
+  background:var(--surface);
+  color:var(--ink);
+  border-color:var(--control-border);
+  box-shadow:var(--shadow);
+}
+html[data-ui="2"] #placeCard small{color:var(--ink-2)}
+html[data-ui="2"] #placeCardSend{
+  background:var(--surface-2);
+  color:var(--ink);
+  border-color:var(--control-border);
+}
+html[data-ui="2"] #placeCardRoutes{border-color:var(--brand)}
+html[data-ui="2"] #stopsDialog .prayer-notice{
+  background:var(--surface-2);
+  color:var(--ink)!important;
+  border-color:var(--control-border);
+}
+
+/* The statistics iframe uses the same palette as the map. */
+html[data-ui="2"].statistics-page{
+  --panel:var(--surface);
+  --muted:var(--ink-2);
+  --green:var(--brand);
+}
+html[data-ui="2"].statistics-page :is(.stats-grid article,.stats-section){
+  background:var(--surface);
+  border-color:var(--line);
+}
+html[data-ui="2"].statistics-page :is(.stats-status,.stats-grid h2,.stats-grid small,.metric-note,.stats-section p,.stats-row,.optout,.brand small){
+  color:var(--ink-2)!important;
+}
+html[data-ui="2"].statistics-page :is(.stats-grid strong,.stats-row b){color:var(--brand)}
+html[data-ui="2"].statistics-page .stats-row{border-color:var(--line)}
+html[data-ui="2"].statistics-page .stats-status button{
+  background:var(--brand);
+  color:var(--on-brand);
+  border-color:var(--brand);
+}
+html[data-ui="2"].statistics-page .optout input{accent-color:var(--brand)}
+
+html[data-ui="2"].changelog-page{
+  --panel:var(--surface);
+  --muted:var(--ink-2);
+  --green:var(--brand);
+}
+html[data-ui="2"].changelog-page :is(.release ul,.intro-links strong){color:var(--ink)}
+html[data-ui="2"].changelog-page .brand small{color:var(--ink-2)}
+html[data-ui="2"].changelog-page .release:first-of-type{border-color:var(--brand)}
+html[data-ui="2"].changelog-page .source{
+  background:var(--surface-2);
+  border-color:var(--control-border);
+}
+html[data-ui="2"].changelog-page .latest{
+  background:var(--brand);
+  color:var(--on-brand);
+}
+html[data-ui="2"].changelog-page .release-notes{border-color:var(--control-border)}
+
+/* Standalone PLUS toll calculator */
+html[data-ui="2"] #tollDialog :is(.calculator-result,#closeToll){
+  background:var(--surface-2);
+  color:var(--ink);
+  border-color:var(--control-border);
+}
+html[data-ui="2"] #tollDialog :is(.calculator-result strong,.tolltitle strong,details>summary,a){
+  color:var(--brand);
+}
+html[data-ui="2"] #tollDialog .plaza-pickers select{
+  border-color:var(--control-border)!important;
+}

@@ -40,6 +40,9 @@ try{
 const prompted=new Set(),pendingVotes=new Set();
 const remember=id=>{voted.add(id);try{localStorage.setItem(SEEN,JSON.stringify([...voted].slice(-80)))}catch{}};
 const translate=(key,vars)=>root.LapanI18n?.t(key,vars)??key.replace(/\{(\w+)\}/g,(token,name)=>vars?.[name]??token);
+function setText(node,text){
+ if(node.textContent!==text)node.textContent=text;
+}
 const I18=()=>{const I=root.LapanI18n;return I&&{t:translate,s:(k,v)=>I.speechLang()==='ms'?I.t(k,v):k.replace(/\{(\w+)\}/g,(x,n)=>n in(v||{})?v[n]:x)}};
 function setAvailable(v){available=v;checkedAt=Date.now();$('navReport').hidden=!v}
 async function call(path,options){const r=await fetch(path,options);let body=null;try{body=await r.json()}catch{}return {status:r.status,body}}
@@ -84,9 +87,10 @@ function refreshDetails(){
  for(const report of raw){
   const entry=markers.get(report.id);
   if(!entry)continue;
-  entry.name.textContent=translate(LABELS[report.kind]);
-  entry.close.setAttribute('aria-label',translate('Close report'));
-  entry.time.textContent=remainingText(report.deadline-now,translate);
+  setText(entry.name,translate(LABELS[report.kind]));
+  const closeLabel=translate('Close report');
+  if(entry.close.getAttribute('aria-label')!==closeLabel)entry.close.setAttribute('aria-label',closeLabel);
+  setText(entry.time,remainingText(report.deadline-now,translate));
   paintVote(report.id);
  }
 }
@@ -112,10 +116,11 @@ function hideAll(){hideBanner();hideAsk()}
 function paintVote(id){
  const entry=markers.get(id);
  if(!entry)return;
- entry.still.textContent=translate('Still there');
- entry.cleared.textContent=translate('Cleared');
- entry.actions.hidden=voted.has(id);
- entry.still.disabled=entry.cleared.disabled=pendingVotes.has(id);
+ setText(entry.still,translate('Still there'));
+ setText(entry.cleared,translate('Cleared'));
+ const hidden=voted.has(id),disabled=pendingVotes.has(id);
+ if(entry.actions.hidden!==hidden)entry.actions.hidden=hidden;
+ if(entry.still.disabled!==disabled)entry.still.disabled=entry.cleared.disabled=disabled;
 }
 async function vote(id,still){
  if(voted.has(id)||pendingVotes.has(id)||!raw.some(report=>report.id===id&&report.deadline>Date.now()))return;

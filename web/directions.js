@@ -118,5 +118,22 @@ function render(node,step,message){
  const lead_nodes=[];if(icon){const holder=doc.createElement('span');holder.className='turn-icon';holder.innerHTML=ICONS[icon];lead_nodes.push(holder)}
  node.replaceChildren(...lead_nodes,...parts.map(part=>{if(!part.kind)return doc.createTextNode(part.text);if(part.kind==='dist'||part.kind==='sep'||part.kind==='action'){const piece=doc.createElement('span');piece.className='turn-'+part.kind;piece.textContent=part.text;return piece}const badge=doc.createElement('span');badge.className='nav-road-badge nav-road-badge--'+part.kind;badge.textContent=part.text;badge.title=words(false).T(part.kind==='exit'?'Signed exit number':'Signed road number');return badge}));badgeRenders.set(node,key);
 }
-root.LapanDirections={format,speech,prompt,badges,render,iconName,expressway,compact};if(typeof module==='object')module.exports={format,speech,prompt,badges,render,iconName,expressway,compact,ICONS};
+const thenRenders=new WeakMap();
+function renderThen(node,step){
+ if(!node)return;
+ const type=clean(step?.maneuver?.type);
+ const hidden=!type;
+ if(node.hidden!==hidden)node.hidden=hidden;
+ if(!type)return;
+ const icon=iconName(step);
+ const text=type==='arrive'?words(false).T('Arrive at your destination'):compact(step).action;
+ const key=JSON.stringify([icon,text]);
+ if(thenRenders.get(node)===key)return;
+ const doc=node.ownerDocument;
+ const arrow=doc.createElement('span');
+ arrow.innerHTML=ICONS[icon];
+ node.lastElementChild.replaceChildren(arrow,doc.createTextNode(text));
+ thenRenders.set(node,key);
+}
+root.LapanDirections={format,speech,prompt,badges,render,renderThen,iconName,expressway,compact};if(typeof module==='object')module.exports={format,speech,prompt,badges,render,renderThen,iconName,expressway,compact,ICONS};
 })(typeof window==='object'?window:globalThis);

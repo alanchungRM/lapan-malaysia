@@ -2,6 +2,51 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.43] — 2026-11-13
+
+Adaptive Day and Night themes and next-turn preview
+
+### Added
+
+- The new look is the default. Auto switches between Day and Night around local sunrise and sunset. Tap the star to switch to Classic. Lapan remembers your choice in the same browser.
+- A Then row previews the following maneuver or arrival during navigation.
+
+### Improved
+
+- Updated planner controls, saved-place buttons, Quick stops, menus and dialogs for clearer Day and Night contrast.
+- The toll calculator, release history and statistics panel follow the new look.
+
+### Fixed
+
+- Added spacing between the Then preview and road warnings and prevented the informational part of the guidance card from intercepting taps.
+
+> Thanks to Dandy Lau (@dandycrypto) for the adaptive Day and Night theme foundation in public GitHub PR #25.
+
+[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/d87494c0bf2fa34d7d7a2e9bbd1659981d22cb2b)
+
+## [1.0.42] — 2026-11-13
+
+Natural English voice and easier driving controls
+
+### Added
+
+- Lapan adds a new natural English navigation voice.
+- Saved Home and Work appear as pins on the planning map. Tap either pin to share the location.
+- Valhalla provides backup routing for cars and motorcycles when TomTom is unavailable. It supports mapped toll avoidance and partial Class 1 toll estimates where fare data is available.
+
+### Improved
+
+- Report and Share location are now icon buttons directly below Recenter.
+- Scheduled traffic checks run every 20 minutes on clear routes and every 10 minutes in congestion or when conditions are unknown. Checks are skipped near arrival.
+- The Find my route button uses a simpler text label. The official Lapan Malaysia Facebook link and driving disclaimer are available under More options.
+
+### Fixed
+
+- Driving controls stay in place and respond as you approach or reach your destination.
+- Route geometry and guidance now use the correct opening at a confirmed median U-turn.
+
+[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/1e00ceddb4e19374fbad532faca2659cf50a67a1)
+
 ## [1.0.41] — 2026-11-12
 
 Anonymous road reports and easier sharing
@@ -14,6 +59,10 @@ Anonymous road reports and easier sharing
 ### Improved
 
 - Road report categories use distinct symbols and colours in the report menu, on the map, and in the details popup.
+
+### Fixed
+
+- Fixed an issue that could prevent drivers from ending navigation near arrival. The End navigation button now stays aligned with Details in portrait and landscape and is available on the arrival screen.
 
 > Special thanks to Dandy (@dandycrypto) for the original contributions to anonymous road reports (PR #30) and place and ETA sharing (PR #32). Both features were adapted for Lapan and merged in PR #40.
 

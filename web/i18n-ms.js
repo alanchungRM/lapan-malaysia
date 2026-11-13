@@ -1,6 +1,7 @@
 // Bahasa Malaysia for Lapan. Each key is the exact English text; {name} marks a value that is kept. Entries equal to their key are intentionally the same in both languages.
 // Terms follow everyday Malaysian usage: laluan (route), had laju (speed limit), km/j, lebuh raya, Skrin Utama. A native speaker should review before release.
 window.LapanI18n.add({
+"Then":"Kemudian",
 "Auto · female device voice preferred":"Auto · Utamakan suara wanita peranti",
 "Malay voice credits":"Kredit suara Bahasa Melayu",
 "Preparing navigation voice…":"Menyediakan suara navigasi…",
@@ -63,7 +64,6 @@ window.LapanI18n.add({
 "Tools · Voice · Map · About":"Alat · Suara · Peta · Perihal",
 "Emergency · call 999":"Kecemasan · hubungi 999",
 "Report a problem":"Laporkan masalah",
-"Try the new look (beta)":"Cuba rupa baharu (beta)",
 "Toll calculator":"Kalkulator tol",
 "What’s new":"Apa yang baharu",
 "Take the middle ramp":"Ambil susur tengah",
@@ -83,6 +83,11 @@ window.LapanI18n.add({
 "Screen & navigation":"Skrin & navigasi",
 "Map appearance":"Rupa peta",
 "Auto · Device setting":"Auto · Tetapan peranti",
+"Auto · Sunrise and sunset":"Auto · Matahari terbit dan terbenam",
+"Saved in this browser. Auto follows sunrise and sunset where you are.":"Disimpan dalam pelayar ini. Mod auto mengikut waktu matahari terbit dan terbenam di lokasi anda.",
+"App appearance":"Rupa aplikasi",
+"Try the new look":"Cuba rupa baharu",
+"Back to the classic look":"Kembali kepada rupa klasik",
 "Day":"Siang",
 "Night":"Malam",
 "Automatic screen awake during navigation":"Skrin kekal hidup secara automatik semasa navigasi",

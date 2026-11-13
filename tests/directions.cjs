@@ -48,3 +48,19 @@ render(node,step,message);assert.equal(node.children.filter(c=>c.className?.incl
 render(node,{},'Checking your route…');assert.equal(node.children.filter(c=>c.className).length,0,'status updates clear signed badges');
 render(node,{ref:'E30'},'50 m · <b>untrusted road text</b> E30');assert.ok(node.textContent.includes('<b>untrusted road text</b>'),'provider text stays a text node');
 console.log('PASS: signed road/exit badges, plain distances and street numbers, roundabout handling, missing data, safe text rendering and stable GPS updates');
+
+const {renderThen,ICONS}=require('../web/directions.js');
+let previewWrites=0;
+const preview={ownerDocument:doc,hidden:true,lastElementChild:{replaceChildren(...children){previewWrites++;this.children=children}}};
+const following={maneuver:{type:'turn',modifier:'left'}};
+renderThen(preview,following);
+assert.equal(preview.hidden,false);
+assert.equal(preview.lastElementChild.children[0].innerHTML,ICONS.left);
+assert.equal(preview.lastElementChild.children[1].textContent,'Turn left');
+renderThen(preview,following);
+assert.equal(previewWrites,1);
+renderThen(preview,{maneuver:{type:'arrive'}});
+assert.equal(preview.lastElementChild.children[0].innerHTML,ICONS.arrive);
+assert.equal(preview.lastElementChild.children[1].textContent,'Arrive at your destination');
+renderThen(preview);
+assert.equal(preview.hidden,true);
