@@ -1,4 +1,4 @@
-// Home and Work shortcuts. Two saved places kept only in this browser (localStorage), shown as one-tap chips above Recent locations.
+// Home and Work shortcuts and planner map pins. Saved places stay in this browser.
 (function(root){
 const KEY='lapan-saved',KINDS=['home','work'],LABEL={home:'Home',work:'Work'};
 // A saved place is [name, lat, lon] inside Malaysia, the same bounds the app uses for GPS fixes.
@@ -21,7 +21,26 @@ let storage;try{storage=root.localStorage}catch{}
 const $=id=>document.getElementById(id),store=createStore(storage||{getItem:()=>null,setItem(){throw Error('unavailable')}}),dialog=$('savedDialog');
 let kind='home',destination=()=>null,pickMap=null,candidate=null,session=0,request=0,timer,controller,suspended=false,shown=[];
 const chip=k=>document.querySelector('[data-saved="'+k+'"]'),edit=k=>document.querySelector('[data-saved-edit="'+k+'"]');
-function render(){for(const k of KINDS){const place=store.get(k),c=chip(k);if(!c)continue;c.querySelector('.saved-name').textContent=place?chipLabel(place[0]):'';c.querySelector('.saved-name').hidden=!place;c.querySelector('.saved-hint').hidden=!!place;edit(k).hidden=!place;c.classList.toggle('is-set',!!place)}}
+let mapPins, openPin;
+function renderPins(){
+ if(!mapPins)return;
+ mapPins.clearLayers();
+ const home=store.get('home'),work=store.get('work');
+ const sameLocation=home&&work&&home[1]===work[1]&&home[2]===work[2];
+ for(const k of KINDS){
+  const place=store.get(k);
+  if(!place)continue;
+  const icon=chip(k).querySelector('svg').cloneNode(true);
+  const marker=root.L.marker([place[1],place[2]],{
+   icon:root.L.divIcon({className:'saved-map-pin saved-map-pin-'+k,html:icon,iconSize:[44,44],
+    iconAnchor:[sameLocation?(k==='home'?46:-2):22,44]}),
+   title:LABEL[k],zIndexOffset:1000
+  }).addTo(mapPins);
+  marker.getElement().setAttribute('aria-label',LABEL[k]);
+  marker.on('click',()=>openPin(k,place));
+ }
+}
+function render(){renderPins();for(const k of KINDS){const place=store.get(k),c=chip(k);if(!c)continue;c.querySelector('.saved-name').textContent=place?chipLabel(place[0]):'';c.querySelector('.saved-name').hidden=!place;c.querySelector('.saved-hint').hidden=!!place;edit(k).hidden=!place;c.classList.toggle('is-set',!!place)}}
 function stopPending(){request++;clearTimeout(timer);controller?.abort();controller=null;$('savedUseHere').disabled=false;$('savedMore').disabled=false}
 function message(text=''){$('savedStatus').textContent=text}
 function selection(place){candidate=clean(place);$('savedSelection').hidden=!candidate;$('savedSelectedName').textContent=candidate?candidate[0]:'';$('savedSelectedCoords').textContent=candidate?candidate[1].toFixed(5)+', '+candidate[2].toFixed(5):'';$('saveSaved').disabled=!candidate}
@@ -41,6 +60,12 @@ for(const k of KINDS){chip(k).onclick=()=>{const place=store.get(k);if(!place)re
 $('closeSaved').onclick=$('cancelSaved').onclick=()=>{suspended=false;stopPending();session++;dialog.close()};
 dialog.addEventListener('cancel',()=>{suspended=false;stopPending();session++});
 dialog.addEventListener('close',()=>{if(!dialog.open&&!suspended){stopPending();session++}});
-root.LapanSaved={get:k=>store.get(k),bind(options){destination=options.destination||destination;pickMap=options.pickMap||pickMap},render};
+root.LapanSaved={get:k=>store.get(k),bind(options){destination=options.destination||destination;pickMap=options.pickMap||pickMap;
+ if(options.map&&!mapPins){
+  openPin=options.openPin;
+  mapPins=root.L.layerGroup().addTo(options.map);
+  renderPins();
+ }
+},render};
 render();
 })(typeof window!=='undefined'?window:globalThis);

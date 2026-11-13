@@ -248,6 +248,11 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 .saved-places{display:flex;gap:8px;margin:4px 0 12px}.saved-slot{flex:1;min-width:0;display:flex;gap:4px}
 .saved-chip{flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 12px;border:1px solid #475d6e;border-radius:14px;background:#243546;color:#f5faf9;font-family:inherit;text-align:left;cursor:pointer}
 .saved-chip.is-set{border-color:#39d48d}.saved-icon{display:flex;color:#8ee6b5}
+.saved-map-pin{box-sizing:border-box;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#146448;color:#fff;box-shadow:0 2px 7px #0008;cursor:pointer}
+.saved-map-pin-work{background:#284f92}
+.saved-map-pin:focus-visible{outline:3px solid #daf67a;outline-offset:2px}
+.saved-map-pin svg{pointer-events:none}
+body.guiding .saved-map-pin{display:none}
 .saved-text{display:flex;flex-direction:column;min-width:0}.saved-text strong{font-size:14px}.saved-text small{font-size:11px;color:#b1c6cf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .saved-edit{flex:0 0 44px;width:44px;min-height:56px;border:1px solid #475d6e;border-radius:14px;background:#243546;color:#f5faf9;font-size:18px;cursor:pointer}
 #savedDialog{padding:0 0 18px;border:1px solid #526779;border-radius:24px 24px 16px 16px;background:#172738;color:#f4f9f8;width:min(440px,calc(100vw - 24px));max-height:88dvh;overflow:auto;box-shadow:0 12px 60px #0007;margin:auto auto max(12px,env(safe-area-inset-bottom))}#savedDialog::backdrop{background:#07131dcc;backdrop-filter:blur(3px)}
@@ -279,8 +284,6 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 }
 
 /* Community reports */
-#navReport{display:flex;align-items:center;justify-content:center;width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:#ffd27a;cursor:pointer}
-#navReport[hidden],body.guiding:not(.drive-more) #navReport{display:none!important}#driveControls #navReport{order:-3}
 #reportWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
 #cameraWarning:not(.hidden)~#reportWarning{display:none}
 #reportAsk{display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px 10px;border-radius:12px;background:#223143;color:#f4f9f8;font-weight:700}#reportAsk.hidden{display:none}#reportAsk span{flex:1}#reportAsk small{display:block;font-size:12px;font-weight:600;color:#ffd27a}
@@ -352,8 +355,8 @@ body.guiding #navigationProgress{top:calc(var(--nav-turn-bottom,100px) + 12px);m
 #placeCardClose{position:absolute;top:2px;right:2px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:22px;cursor:pointer}
 .place-card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.place-card-actions button{min-height:44px;border-radius:12px;border:1px solid #475d6e;background:#243546;color:#f5faf9;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}.place-card-actions .primary{background:#2bb88f;border-color:#2bb88f;color:#05261c}
 #shareToast{position:fixed;z-index:1300;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top));max-width:min(360px,calc(100vw - 24px));padding:8px 14px;border-radius:12px;background:#172738;color:#f4f9f8;border:1px solid #526779;box-shadow:0 4px 14px #0006;font-size:13px;font-weight:600;line-height:1.35;overflow-wrap:anywhere;text-align:center}
-body.guiding #shareToast{top:auto;bottom:calc(var(--nav-footer-height,80px) + 16px + env(safe-area-inset-bottom))}
+body.guiding #placeCard{display:none}
+body.guiding #shareToast{pointer-events:none;top:auto;bottom:calc(var(--nav-footer-height,80px) + 16px + env(safe-area-inset-bottom))}
 .share-icon:focus-visible,#placeCard button:focus-visible,#navShare:focus-visible{outline:3px solid #daf67a;outline-offset:2px}
 .sectionhead{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}.sectionhead small{margin-left:auto}.share-mini{flex:0 0 40px;width:40px;height:40px;min-height:40px;border-radius:12px}.share-mini svg{width:20px;height:20px}
-#navShare{min-height:44px;border:1px solid #526779;border-radius:12px;background:#243546;color:#fff;cursor:pointer}
 #shareLinkDialog{width:min(420px,calc(100vw - 24px));padding:18px;border:1px solid #526779;border-radius:16px;background:#172738;color:#fff}#shareLinkDialog textarea{box-sizing:border-box;width:100%;margin-bottom:12px}#shareLinkDialog::backdrop{background:#07131dcc}

@@ -36,14 +36,119 @@ if(!history.length){const p=document.createElement('p');p.textContent='Your sele
 root.LapanHistory={places:()=>history.map(x=>x.place),last:()=>history[0]?.place||null,remember(p,kind){history=recentList(history,p,kind);save();render()}};
 $('clearRecent').onclick=()=>{history=[];save();render()};render();
 let voices=[],current=null;const voiceSelector=createVoiceSelector();
-function sync(){const mode=voiceModes[settings.mode];$('voiceModeLabel').textContent=mode.label;$('navVoice').textContent=mode.icon;$('navVoice').setAttribute('aria-label','Voice and sound: '+mode.label);$('navVoice').title='Voice & sound · '+mode.label;document.querySelectorAll('input[name="voiceMode"]').forEach(input=>{input.checked=input.value===settings.mode});$('voice').value=settings.enabled?'en-MY':'off';if(!root.speechSynthesis){$('voiceNote').textContent='Voice guidance is unavailable in this browser.';$('voice').value='off';return}voices=root.speechSynthesis.getVoices();current=voiceSelector.get(voices,settings.voiceURI,root.LapanI18n?root.LapanI18n.speechLang():'en');const select=$('voiceChoice');select.replaceChildren();const auto=document.createElement('option');auto.value='';auto.textContent='Auto · female voice preferred';select.append(auto);voices.filter(v=>new RegExp('^'+(root.LapanI18n?root.LapanI18n.speechLang():'en'),'i').test(v.lang)).forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' · '+v.lang;select.append(o)});if(settings.voiceURI&&!voices.some(v=>v.voiceURI===settings.voiceURI)){const missing=document.createElement('option');missing.value=settings.voiceURI;missing.textContent='Saved voice · currently unavailable';select.append(missing)}select.value=settings.voiceURI;$('voiceNote').textContent=current?'Using '+current.name+'. Voice availability depends on your device.':'Waiting for the selected device voice. Lapan will not switch voices automatically during this session.'}
-const engine=root.LapanSpeech.createVoice({synth:root.speechSynthesis,Utterance:root.SpeechSynthesisUtterance,requireVoice:true,voice:()=>voiceSelector.get(root.speechSynthesis?.getVoices()||[],settings.voiceURI,root.LapanI18n?root.LapanI18n.speechLang():'en'),onStatus(state){const b=$('navRepeat');if(b){b.textContent=state==='blocked'?'↻ !':'↻';b.title=state==='blocked'?'Voice unavailable or interrupted · tap to retry, or choose a voice in Voice & sound':'Repeat current instruction';b.setAttribute('aria-label',b.title)}}});
+const AudioContext=root.AudioContext||root.webkitAudioContext;
+const voicePacks=root.LapanVoicePack?.voicePacks??{};
+const packs=new Map();
+const heartId='lapan-kokoro-heart';
+if(settings.voiceURI==='lapan-kokoro-emma'&&Object.hasOwn(voicePacks,heartId)){
+ settings.voiceURI=heartId;
+ save();
+}
+if(settings.voiceURI==='lapan-studio-en') settings.voiceURI='';
+const bundledVoice=uri=>Object.hasOwn(voicePacks,uri)?voicePacks[uri]:null;
+const appLanguage=()=>root.LapanI18n?.lang?.()||'en';
+const matchesLanguage=(language,tag)=>tag?.toLowerCase().split(/[-_]/)[0]===language;
+function pickerVoice(){
+ const language=appLanguage(), saved=settings.voiceURI, bundled=bundledVoice(saved);
+ const device=voices.find(voice=>voice.voiceURI===saved);
+ if(bundled&&(bundled.language||'en')!==language){
+  return AudioContext?Object.keys(voicePacks).find(id=>voicePacks[id].language===language)||'':'';
+ }
+ if(device&&!matchesLanguage(language,device.lang))return '';
+ return saved;
+}
+let tripVoice=null;
+const activeURI=()=>tripVoice?.uri??pickerVoice();
+const selectedVoice=()=>bundledVoice(activeURI());
+const usesBundledVoice=()=>!!selectedVoice();
+function currentPack(){
+ const config=selectedVoice();
+ if(!config)return null;
+ if(!packs.has(config)){
+  packs.set(config,root.LapanVoicePack.createVoicePack({...config,AudioContext,fetchAudio:(...args)=>root.fetch(...args)}));
+ }
+ return packs.get(config);
+}
+const guiding=()=>document.body.classList.contains('guiding');
+const speechLanguage=()=>usesBundledVoice()?'en':tripVoice?.language??root.LapanI18n?.deviceSpeechLang?.()??'en';
+const deviceVoice=()=>usesBundledVoice()?'':activeURI();
+function sync(){
+ const mode=voiceModes[settings.mode], select=$('voiceChoice');
+ voices=root.speechSynthesis?.getVoices()||[];
+ const language=appLanguage(), uri=pickerVoice(), bundled=bundledVoice(uri);
+ $('voiceModeLabel').textContent=mode.label;
+ $('navVoice').textContent=mode.icon;
+ $('navVoice').setAttribute('aria-label','Voice and sound: '+mode.label);
+ $('navVoice').title='Voice & sound · '+mode.label;
+ document.querySelectorAll('input[name="voiceMode"]').forEach(input=>{input.checked=input.value===settings.mode});
+ $('voice').value=settings.enabled&&(usesBundledVoice()?AudioContext:root.speechSynthesis)?'en-MY':'off';
+ const deviceLanguage=root.LapanI18n?.deviceSpeechLang?.()||'en';
+ current=tripVoice?chooseVoice(voices,uri,deviceLanguage):voiceSelector.get(voices,bundled?'':uri,deviceLanguage);
+ select.replaceChildren(new Option('Auto · female device voice preferred',''));
+ for(const [id,pack] of Object.entries(voicePacks)){
+  if((pack.language||'en')===language&&(AudioContext||id===uri))select.append(new Option(pack.label,id));
+ }
+ select.disabled=guiding();
+ $('malayVoiceCredits').hidden=bundled?.language!=='ms';
+ $('testVoice').disabled=guiding()&&activeURI()!==uri;
+ voices.filter(v=>matchesLanguage(language,v.lang)).forEach(v=>select.append(new Option(v.name+' · '+v.lang,v.voiceURI)));
+ if(uri&&!bundled&&!voices.some(v=>v.voiceURI===uri))select.append(new Option('Saved voice · currently unavailable',uri));
+ select.value=uri;
+ if(bundled){
+  $('voiceNote').textContent=AudioContext
+   ? bundled.note
+   : 'Bundled audio is unavailable in this browser.';
+ }else{
+  $('voiceNote').textContent=current?'Using '+current.name+'. Voice availability depends on your device.'
+   :root.speechSynthesis?'Waiting for the selected device voice.':'Device speech is unavailable in this browser.';
+ }
+}
+const engine=root.LapanSpeech.createVoice({
+ synth:root.speechSynthesis,Utterance:root.SpeechSynthesisUtterance,requireVoice:true,
+ voice:()=>voiceSelector.get(root.speechSynthesis?.getVoices()||[],deviceVoice(),speechLanguage()),
+ playClip:(text,events)=>currentPack()?.play(text,events),
+ useDeviceVoice:()=>!usesBundledVoice(),
+ onStatus(state){const b=$('navRepeat');if(b){b.textContent=state==='blocked'?'↻ !':'↻';b.title=state==='blocked'?'Voice unavailable or interrupted · tap to retry, or choose a voice in Voice & sound':'Repeat current instruction';b.setAttribute('aria-label',b.title)}}
+});
 let latestInstruction=null;
-function speak(text,preview=false,options={}){text=root.LapanI18n?root.LapanI18n.forSpeech(text):text;if(!root.speechSynthesis||(!preview&&!allowsVoice(settings.mode,options.kind||'alert',options.stage||0)))return false;return engine.speak(text,options)}
+function speak(text,preview=false,options={}){text=root.LapanI18n?root.LapanI18n.forSpeech(text):text;if((!root.speechSynthesis&&!usesBundledVoice())||(!preview&&!allowsVoice(settings.mode,options.kind||'alert',options.stage||0)))return false;return engine.speak(text,options)}
 function setMode(mode){if(!Object.hasOwn(voiceModes,mode))return;settings=normalizeVoice({...settings,mode});engine.cancel();save();sync();if(settings.enabled)root.dispatchEvent(new Event('lapan-voice-enabled'))}
-root.LapanI18n?.onChange(()=>{voiceSelector.reset();engine.cancel();sync()});root.LapanVoice={speak,cancel(){latestInstruction=null;engine.cancel()},unlock(){engine.resume();speak('Let’s get started.',false,{key:'startup',kind:'startup'})},instruction(text,key,stage=0){latestInstruction={text,key};if(!allowsVoice(settings.mode,'instruction',stage))return true;return speak(text,false,{key,kind:'instruction',stage})},repeat(){if(settings.enabled&&latestInstruction){engine.resume();engine.cancel();speak(latestInstruction.text,false,{key:'manual:'+latestInstruction.key,kind:'manual'})}else if(settings.enabled){engine.resume();engine.repeat()}}};
+root.LapanI18n?.onChange(()=>{
+ if(tripVoice){sync();return}
+ voiceSelector.reset();latestInstruction=null;engine.cancel();sync();
+ if(settings.enabled)root.dispatchEvent(new Event('lapan-voice-enabled'));
+});
+root.LapanVoice={
+ speak,usesBundledVoice,selectedVoice,speechLanguage,
+ endTrip(){tripVoice=null;voiceSelector.reset();sync()},
+ needsPreparation:()=>settings.enabled&&usesBundledVoice(),
+ prepare(){return currentPack()?.prepare()??Promise.resolve(true)},
+ cancel(){latestInstruction=null;engine.cancel()},
+ unlock(){
+  tripVoice={uri:pickerVoice(),language:speechLanguage()};
+  engine.resume();
+  if(!usesBundledVoice())speak('Let’s get started.',false,{key:'startup',kind:'startup'});
+ },
+ instruction(text,key,stage=0,fallback){
+  if(fallback&&currentPack()?.supports(text)===false)text=fallback();
+  latestInstruction={text,key};
+  if(!allowsVoice(settings.mode,'instruction',stage))return true;
+  return speak(text,false,{key,kind:'instruction',stage});
+ },
+ async repeat(){
+  if(!settings.enabled)return;
+  const pack=currentPack();
+  if(pack&&!await pack.prepare())return;
+  if(!settings.enabled||pack!==currentPack())return;
+  engine.resume();
+  if(latestInstruction){
+   engine.cancel();
+   speak(latestInstruction.text,false,{key:'manual:'+latestInstruction.key,kind:'manual'});
+  }else engine.repeat();
+ }
+};
 $('navRepeat').onclick=()=>root.LapanVoice.repeat();root.addEventListener('focus',()=>engine.resume());document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')engine.resume()});
-const dialog=$('voiceDialog');$('openVoice').onclick=$('navVoice').onclick=()=>dialog.showModal();$('closeVoice').onclick=$('doneVoice').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});
+const dialog=$('voiceDialog');$('openVoice').onclick=$('navVoice').onclick=()=>{sync();dialog.showModal()};$('closeVoice').onclick=$('doneVoice').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});
 document.querySelectorAll('input[name="voiceMode"]').forEach(input=>{input.onchange=()=>{if(input.checked)setMode(input.value)}});
-$('voice').onchange=()=>setMode($('voice').value==='off'?'off':'normal');$('voiceChoice').onchange=()=>{engine.cancel();voiceSelector.reset();settings.voiceURI=$('voiceChoice').value;save();sync()};$('testVoice').onclick=()=>{engine.cancel();speak(root.LapanDirections.prompt({maneuver:{type:'turn',modifier:'right'}},300),true,{key:'voice-preview'})};root.speechSynthesis?.addEventListener('voiceschanged',sync);sync();
+$('voice').onchange=()=>setMode($('voice').value==='off'?'off':'normal');$('voiceChoice').onchange=()=>{if(guiding())return sync();engine.cancel();voiceSelector.reset();settings.voiceURI=$('voiceChoice').value;latestInstruction=null;currentPack()?.prepare();save();sync();if(settings.enabled)root.dispatchEvent(new Event('lapan-voice-enabled'))};$('testVoice').onclick=async()=>{engine.cancel();const pack=currentPack();if(pack){$('voiceNote').textContent='Preparing navigation voice…';const ready=await pack.prepare();if(pack!==currentPack())return;if(!ready){$('voiceNote').textContent='The navigation voice could not load. Tap Test voice to retry.';return}sync()}speak(root.LapanDirections.prompt({maneuver:{type:'turn',modifier:'right'}},450),true,{key:'voice-preview'})};root.speechSynthesis?.addEventListener('voiceschanged',sync);sync();
 })(typeof window==='object'?window:globalThis);

@@ -69,7 +69,21 @@ $('shareLinkSend').onclick=async()=>{
  catch{$('shareLinkText').focus();$('shareLinkText').select()}
 };
 // Tap a point on the map: a card with its name, Send and Routes.
-function hideCard(){card=null;lookup?.abort();lookup=null;$('placeCard').classList.add('hidden');if(pin&&ctl?.map){ctl.map.removeLayer(pin);pin=null}}
+function showSaved(kind,[name,lat,lon]){
+ if(!valid(lat,lon)||document.body.classList.contains('guiding'))return;
+ hideCard();
+ card={name,lat,lon};
+ const title=document.createElement('span');
+ title.textContent=kind==='work'?'Work':'Home';
+ const placeName=document.createElement('span');
+ placeName.setAttribute('data-no-i18n','');
+ placeName.textContent=' · '+labelOf(card);
+ $('placeCardName').replaceChildren(title,placeName);
+ $('placeCardSub').textContent=coords(card);
+ $('placeCardSend').textContent='Share location';
+ $('placeCard').classList.remove('hidden');
+}
+function hideCard(){card=null;$('placeCardSend').textContent='Send';lookup?.abort();lookup=null;$('placeCard').classList.add('hidden');if(pin&&ctl?.map){ctl.map.removeLayer(pin);pin=null}}
 async function showCard(lat,lon){
  if(!valid(lat,lon)||document.body.classList.contains('guiding'))return;
  hideCard();card={name:'',lat:Math.round(lat*1e5)/1e5,lon:Math.round(lon*1e5)/1e5};
@@ -87,7 +101,7 @@ function apply(found){
  const go=()=>{if(ctl.destination()?.[1]===place.lat&&ctl.destination()?.[2]===place.lon)ctl.choose(place,true)};
  if(navigator.permissions&&navigator.permissions.query)navigator.permissions.query({name:'geolocation'}).then(s=>{if(s.state==='granted')go()}).catch(()=>{});
 }
-root.LapanShare={bind(options){
+root.LapanShare={showSaved,bind(options){
  ctl=options;
  if(ctl.map)ctl.map.on('click',e=>{if(e&&e.latlng)showCard(e.latlng.lat,e.latlng.lng)});
  apply(readShared(document));

@@ -6,7 +6,7 @@ Updated 12 November 2026. The public repository and [live app](https://lapan-mal
 
 Lapan is a mobile-first browser navigation app for Malaysia. It combines 2D route planning, a 3D driving view, GPS guidance in English and Bahasa Malaysia, and automatic car toll estimates where matching fare data is available. Drivers can choose **Faster** or **Avoid Tolls**. Toll and map coverage vary by route.
 
-The planning map uses Leaflet and OpenFreeMap. The driving view uses MapLibre GL JS. The app is written in HTML, CSS and JavaScript and runs on a Cloudflare Worker. TomTom is the default routing provider. OSRM is the fallback for eligible car routes and provides basic routing without live traffic or road-closure checks.
+The planning map uses Leaflet and OpenFreeMap. The driving view uses MapLibre GL JS. The app is written in HTML, CSS and JavaScript and runs on a Cloudflare Worker. TomTom is the default routing provider. Valhalla is the secondary routing provider. OSRM provides basic routing for eligible car routes when both services are unavailable.
 
 ## Current features
 

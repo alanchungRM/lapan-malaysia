@@ -1,0 +1,5 @@
+Kokoro Heart and Kokoro Emma navigation audio was generated locally with
+Kokoro-82M v1.0 (af_heart and bf_emma) and encoded as MP3.
+Model and upstream credits: https://huggingface.co/hexgrad/Kokoro-82M
+Model license: Apache-2.0, https://www.apache.org/licenses/LICENSE-2.0
+ONNX conversion: https://github.com/thewh1teagle/kokoro-onnx

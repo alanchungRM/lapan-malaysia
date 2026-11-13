@@ -6,7 +6,7 @@ Live app: https://lapan-malaysia.com
 
 ## Features
 
-- TomTom live route planning and alternative routes using current traffic and reported closures. Basic OSRM routing is available only as an explicit fallback when the live service is unavailable.
+- TomTom live route planning and alternative routes using current traffic and reported closures. Valhalla is the secondary provider when TomTom is unavailable. OSRM remains available for eligible basic car routes.
 - Place and address search using Photon, automatic typed-location resolution, clearer match selection, and a map pin picker for starting points and destinations. Recent places stay in the browser.
 - Full-screen navigation, a tilted MapLibre driving view, directional vehicle marker, smooth position transitions, and 2D fallback.
 - Device speech synthesis with a female voice preference, voice selection, test and mute controls.

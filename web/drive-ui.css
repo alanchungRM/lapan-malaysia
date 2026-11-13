@@ -17,11 +17,17 @@ html body.guiding .navpanel #nextturn{display:-webkit-box!important;-webkit-box-
 /* Alerts use the yellow warning-sign look */
 html #cameraWarning,html #hazardWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
 html #cameraWarning::before,html #hazardWarning::before,html #limitWarning::before{content:"";position:absolute;left:9px;top:50%;width:26px;height:26px;transform:translateY(-50%);background:currentColor;-webkit-mask:var(--i-warn) center/contain no-repeat;mask:var(--i-warn) center/contain no-repeat}
+/* Reserve the ETA space so switching to the arrival message keeps touch targets in place. */
+html body.guiding #navBar .nav-trip{min-block-size:86px}
+html body.guiding #navTrip .eta-time{white-space:nowrap}
+html body.guiding #navTrip :is(.eta-dur,.eta-dist){white-space:nowrap}
+
 /* Trip bar: arrival time first, then duration and distance, then two icon buttons */
 html body.guiding #navBar{display:grid!important;grid-template-columns:minmax(0,1fr) 44px 44px;grid-template-areas:"trip details stop";align-items:center;gap:0 8px;padding:8px 10px 8px 14px!important;border-radius:22px!important;min-height:0!important;flex-wrap:nowrap!important}
 html body.guiding #navBar .nav-trip{grid-area:trip;position:relative;min-width:0;flex:none!important}
 html body.guiding #navBar #navdetails{grid-area:details;margin:0!important}
-html body.guiding #navBar #endSlot{grid-area:stop}
+html body.guiding #navBar #stop{grid-area:stop}
+html body.guiding #exitArrival:not(.hidden){min-height:44px;margin-top:8px;padding:0 14px;border:0;border-radius:11px;background:var(--bad-fill);color:var(--on-bad-fill);font-weight:700}
 html #navBar #navDestination{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px!important;font-weight:600!important;padding-right:18px}
 html body.guiding #navBar #navTrip{display:flex!important;flex-wrap:wrap;align-items:baseline;margin-top:2px;font-size:16px!important;font-weight:700!important}
 html #navTrip .eta-label{display:none}
@@ -47,6 +53,49 @@ html #navVoice{--icon:var(--i-vol)}html #navVoice[data-mode="less"]{--icon:var(-
 html #navRepeat{--icon:var(--i-repeat)}html #navAwake{--icon:var(--i-sun)}
 html #navAwake[data-state="on"]{background:var(--green)!important;color:#04210f!important}
 html :is(#navAwake[data-state="failed"],#navRepeat[data-state="blocked"])::after{content:"!";position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--bad-fill);color:var(--on-bad-fill);font-size:11px;font-weight:800;line-height:16px;text-align:center}
+/* Keep the map actions in a single column, directly below recenter. */
+html body.guiding #driveControls{
+  --drive-map-button-size:46px;
+  --drive-map-button-gap:8px;
+  flex-direction:column;
+  gap:var(--drive-map-button-gap);
+}
+html body.guiding #driveControls :is(#locate,#navMore,#driveShortcuts button){
+  box-sizing:border-box;
+  width:var(--drive-map-button-size);min-width:var(--drive-map-button-size);
+  height:var(--drive-map-button-size);min-height:var(--drive-map-button-size);
+  padding:0;
+}
+html body.guiding #driveControls > #driveShortcuts{display:contents}
+#driveShortcuts button{
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid #607385;border-radius:13px;background:#162b3bed;
+  color:#fff;cursor:pointer;
+}
+html body.guiding #driveShortcuts button[hidden]{visibility:hidden}
+html body.guiding.details-open #driveControls{visibility:hidden}
+#navReport svg{color:#ffd27a}
+html body.guiding.drive-more #driveMore{right:calc(100% + 6px);bottom:0}
+@media (max-height:480px) and (orientation:landscape){
+  html body.guiding #driveControls{
+    --drive-speed-chip-width:58px;
+    --drive-side-gap:8px;
+  }
+  html body.guiding #driveControls :is(.speed-chip,.limit-sign){
+    position:absolute;bottom:3px;margin:0;
+  }
+  html body.guiding #driveControls .speed-chip{
+    width:var(--drive-speed-chip-width);
+    right:calc(100% + var(--drive-side-gap));
+  }
+  html body.guiding #driveControls .limit-sign{
+    right:calc(100% + var(--drive-speed-chip-width) + var(--drive-side-gap) * 2);
+  }
+  html body.guiding.drive-more #driveMore{
+    bottom:calc(3px + (var(--drive-map-button-size) + var(--drive-map-button-gap)) * 2);
+  }
+}
+
 /* The shortcut tray */
 html body.guiding.drive-more #driveMore{background:#172232;border:0;box-shadow:0 6px 20px #0006;padding:8px;gap:6px;grid-template-columns:repeat(3,44px)}
 html #driveMore>*{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;font-size:14px}

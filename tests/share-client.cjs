@@ -34,12 +34,35 @@ assert.deepEqual(S.readShared(doc({'lapan-share-error':'expired'})),{error:'expi
  let sent;await S.makeLink({name:'Map pin 3.10000, 101.70000',lat:3.1,lon:101.7},async(u,o)=>{sent=JSON.parse(o.body);return {ok:false}},O);assert.deepEqual(sent,{name:'',lat:3.1,lon:101.7},'only the place is sent to the service');
  // Page wiring and strings.
  const html=fs.readFileSync('web/index.html','utf8');for(const id of ['sharePlace','navShare','placeCard','placeCardName','placeCardSub','placeCardSend','placeCardRoutes','placeCardClose','shareToast'])assert.ok(html.includes('id="'+id+'"'),id);
- assert.ok(html.indexOf('drive-ui.js')<html.indexOf('share.js')&&html.indexOf('share.js')<html.indexOf('src="app.js"'));assert.match(html,/<div id="driveMore"[^>]*>(?:(?!<\/div>).)*id="navShare"(?:(?!<\/div>).)*id="navReport"/s,'the drive share button is in the tray');
+ assert.ok(html.indexOf('drive-ui.js')<html.indexOf('share.js')&&html.indexOf('share.js')<html.indexOf('src="app.js"'));assert.match(html,/<div id="driveShortcuts">(?:(?!<\/div>).)*id="navReport"(?:(?!<\/div>).)*id="navShare"/s,'report and share are grouped outside the tray');
+ assert.match(html,/<button id="navReport" aria-label="Report on the road"[^>]*><svg[^>]*>.*?<\/svg><\/button>/s,'Report is an icon-only button with an accessible name');
+ assert.match(html,/<button id="navShare" aria-label="Share location"[^>]*><svg[^>]*>.*?<\/svg><\/button>/s,'Share is an icon-only button with an accessible name');
+ assert.match(html,/<button id="locate"[^>]*>[^<]*<\/button><div id="driveShortcuts">.*?<\/div><button id="navMore"/s,'the shortcuts sit below recenter and before More');
+ assert.doesNotMatch(html,/<div id="driveMore"[^>]*>(?:(?!<\/div>).)*id="nav(?:Share|Report)"/s);
  assert.match(html,/<div class="plan-row"><button id="plan"[^>]*>(?:(?!<\/div>).)*id="sharePlace"[^>]*class="share-icon"/s,'Share is a small icon beside Find my route, not a block of its own');assert.ok(!html.includes('share-note'),'no extra paragraph in the planner');assert.match(html,/<p>Anyone with a share link can see the destination\..*?<\/p>/,'the promise lives in About and privacy');
  const mobile=fs.readFileSync('web/mobile.css','utf8');for(const [what,re,max] of [['place name',/#placeCard strong\{[^}]*font-size:(\d+)px/,17],['place detail',/#placeCard small\{[^}]*font-size:(\d+)px/,13],['toast',/#shareToast\{[^}]*font-size:(\d+)px/,14]])assert.ok(Number(mobile.match(re)[1])<=max,what+' stays small');assert.match(mobile,/\.place-card-actions button\{min-height:44px/,'buttons are 44 px');assert.match(mobile,/#placeCard strong\{[^}]*-webkit-line-clamp:2/,'long names are cut at two lines');
  const js=fs.readFileSync('web/share.js','utf8');for(const m of js.matchAll(/\b(?:tr|say)\('([^']+)'/g))assert.ok(entries[m[1]],'untranslated: '+m[1]);for(const m of js.matchAll(/\bt\("([^"]+)"|\bt\('([^']+)'/g)){const k=m[1]||m[2];assert.ok(entries[k],'untranslated: '+k)}
- for(const k of ['Meet me at {name}. Open in Lapan: {url}',"I'm on my way to {name}, arriving about {time}. Open in Lapan: {url}",'Send','Routes','Share this place','Share my drive','Unnamed road','Looking up the place…'])assert.ok(entries[k]&&(entries[k]!==k||k==='Lapan: {name}'),'untranslated: '+k);
+ for(const k of ['Meet me at {name}. Open in Lapan: {url}',"I'm on my way to {name}, arriving about {time}. Open in Lapan: {url}",'Send','Routes','Share this place','Share my drive','Share location','Share destination and ETA','Report on the road','Unnamed road','Looking up the place…'])assert.ok(entries[k]&&(entries[k]!==k||k==='Lapan: {name}'),'untranslated: '+k);
  assert.ok(!/innerHTML/.test(js),'names are shown as text only');
  const app=fs.readFileSync('web/app.js','utf8');assert.ok(app.includes('LapanShare?.bind'));const sw=fs.readFileSync('web/sw.js','utf8');assert.match(sw,/\^\\\/\[sl\]\\\//,'shared pages are not stored on the device');
  console.log('PASS: link format, messages in both languages, reverse-lookup names, shared-page parsing, short-link fallback and safety, markup and strings');
 })().catch(e=>{console.error(e);process.exit(1)});
+
+// Opening a saved pin only displays its card. Sharing sends the saved place, without ETA.
+(async()=>{
+ const nodes=new Map(),requests=[];
+ const node=()=>({textContent:'',value:'',classList:{add(){},remove(){}},setAttribute(){},replaceChildren(...children){this.children=children},focus(){},select(){},showModal(){this.open=true}});
+ const document={body:{classList:{contains:()=>false}},getElementById(id){if(!nodes.has(id))nodes.set(id,node());return nodes.get(id)},createElement:node,querySelectorAll:()=>[],addEventListener(){}};
+ const window={document};
+ vm.runInNewContext(fs.readFileSync('web/share.js','utf8'),{window,document,MutationObserver:class{observe(){}},location:{origin:'https://lapan.test'},navigator:{},AbortSignal,clearTimeout,setTimeout:()=>0,
+  fetch:async(url,options)=>{requests.push([url,JSON.parse(options.body)]);return {ok:true,json:async()=>({url:'https://lapan.test/s/Ab3dEfG'})}}});
+ window.LapanShare.showSaved('home',['Saved address',3.12345,101.65432]);
+ assert.equal(requests.length,0);
+ assert.equal(nodes.get('placeCardName').children[0].textContent,'Home');
+ assert.equal(nodes.get('placeCardSend').textContent,'Share location');
+ nodes.get('placeCardSend').onclick();
+ await new Promise(setImmediate);
+ assert.deepEqual(requests,[['/api/share',{name:'Saved address',lat:3.12345,lon:101.65432}]]);
+ assert.equal(nodes.get('shareLinkDialog').open,true);
+ assert.equal(nodes.get('shareLinkText').value,'Meet me at Saved address. Open in Lapan: https://lapan.test/s/Ab3dEfG');
+})().catch(error=>{console.error(error);process.exitCode=1});

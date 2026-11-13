@@ -2,7 +2,7 @@
 (function(root){
 const KINDS=['crash','stopped','object','flood','pothole','police-hidden'],RANGE=500,ASK=120,REFRESH_MS=60000,REFRESH_M=1000,FIX_MAX_MS=30000;
 const {project}=typeof module==='object'?require('./cameras.js'):root.LapanCameras;
-const LABELS={crash:'Crash',stopped:'Stopped vehicle',object:'Object on road',flood:'Flooding',pothole:'Pothole','police-hidden':'Police | Hidden'};
+const LABELS={crash:'Crash',stopped:'Stopped vehicle',object:'Object on road',flood:'Flooding',pothole:'Pothole','police-hidden':'Police Hidden'};
 const NAMES={crash:'Crash reported ahead',stopped:'Stopped vehicle reported ahead',object:'Object on the road reported ahead',flood:'Flooding reported ahead',pothole:'Pothole reported ahead','police-hidden':'Police reported ahead'};
 const VOICE={crash:'Crash reported ahead, in {m} metres.',stopped:'Stopped vehicle reported ahead, in {m} metres.',object:'Object on the road reported ahead, in {m} metres.',flood:'Flooding reported ahead, in {m} metres.',pothole:'Pothole reported ahead, in {m} metres.','police-hidden':'Police reported ahead, in {m} metres.'};
 // Reports that sit on the planned route, with their distance along it.
@@ -133,10 +133,14 @@ async function vote(id,still){
  finally{pendingVotes.delete(id);paintVote(id);last=null}
 }
 $('reportYes').onclick=()=>askFor&&vote(askFor,true);$('reportNo').onclick=()=>askFor&&vote(askFor,false);
-function stop(){
- inflight?.abort();inflight=null;hideAll();fix=null;route=null;items=[];raw=[];last=null;
+function stop({keepFix=false}={}){
+ inflight?.abort();inflight=null;hideAll();route=null;items=[];raw=[];last=null;
  clearInterval(ticker);ticker=0;spoken.clear();prompted.clear();clearMarkers();
- if(dialog.open)dialog.close();
+ // Arrival stops background reports, but a fresh fix can still be used in the report dialog.
+ if(!keepFix){
+  fix=null;fixAt=0;
+  if(dialog.open)dialog.close();
+ }
 }
 function renderAhead(announce){
  const coords=route?.geometry?.coordinates;

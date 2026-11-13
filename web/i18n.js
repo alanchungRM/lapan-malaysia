@@ -30,8 +30,9 @@ function createI18n(env){
   if(lang==='ms'){const key=norm(en);if(Object.hasOwn(dict,key)){const out=fill(dict[key],vars);produced.add(norm(out));return out}}
   return fill(en,vars);
  }
- const speechLang=()=>lang==='ms'&&Object.keys(dict).length>0&&(voices()||[]).some(v=>/^ms(-|_|$)/i.test(v.lang))?'ms':'en';
+ const deviceSpeechLang=()=>lang==='ms'&&Object.keys(dict).length>0&&(voices()||[]).some(v=>/^ms(-|_|$)/i.test(v.lang))?'ms':'en';
  // Spoken text is translated only when a Malay voice exists, otherwise English is spoken so the device voice stays understandable.
+ const speechLang=()=>env.speechLanguage?.()??deviceSpeechLang();
  const forSpeech=text=>speechLang()==='ms'?(lookup(text)??text):text;
  function visit(node,fn){
   if(node.nodeType===3){fn.text(node);return}
@@ -93,13 +94,13 @@ function createI18n(env){
   return lang;
  }
  const init=()=>{lang=stored()||detect();return lang};
- return {add,lookup,t,set,init,apply,restore,forSpeech,speechLang,lang:()=>lang,onChange:fn=>listeners.add(fn),// Listing English left over in Malay is for tests only. It stays off in the real app because texts such as arrival times change every minute.
+ return {add,lookup,t,set,init,apply,restore,forSpeech,speechLang,deviceSpeechLang,lang:()=>lang,onChange:fn=>listeners.add(fn),// Listing English left over in Malay is for tests only. It stays off in the real app because texts such as arrival times change every minute.
   trackMissing:on=>{track=!!on;if(!track)seenMissing.clear()},missing:()=>[...seenMissing],clearMissing:()=>seenMissing.clear(),identity:()=>[...identity],entries:()=>({...dict}),detect,stored};
 }
 if(typeof module==='object')module.exports={createI18n,norm};
 if(typeof window!=='object')return;
 // Browser wiring: choose the language before first paint, load the Malay dictionary only if needed, keep new text translated.
-const i18n=createI18n({storage:localStorage,doc:document,languages:navigator.languages||[navigator.language],voices:()=>root.speechSynthesis?.getVoices?.()});
+const i18n=createI18n({storage:localStorage,doc:document,languages:navigator.languages||[navigator.language],voices:()=>root.speechSynthesis?.getVoices?.(),speechLanguage:()=>root.LapanVoice?.speechLanguage?.()});
 root.LapanI18n=i18n;
 const want=i18n.init(),html=document.documentElement;
 html.lang=want==='ms'?'ms':'en';

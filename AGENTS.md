@@ -16,3 +16,6 @@ Record all routine changes in `UNRELEASED.md` until the owner authorizes a relea
 ## Location additions and release privacy
 
 Keep individual requested POI names and the owner’s search examples out of public changelogs and pending release notes. Describe place coverage and matching improvements generically. Public business listings may remain in the searchable place directory as required for the feature.
+
+## Private report source
+Never sync the `private/` directory, report credentials, or the private report build integration to the public GitHub repository. Keep the public build independent of the private report. No public release notes for the private report.

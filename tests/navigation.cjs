@@ -15,7 +15,8 @@ h=harness();h.context.fetch=async()=>{throw Error('offline')};h.$('start').oncli
 let h=harness();h.$('start').onclick();h.first({coords:{latitude:3,longitude:101.05,accuracy:10}});assert.ok(h.bodyClasses.has('guiding'));const cleaned=[];
 for(const [module,method]of [['LapanETA','stop'],['LapanAwake','stop'],['LapanDrive','stop'],['LapanVoice','cancel']])h.context.window[module]={[method](){cleaned.push(module);throw Error('simulated browser cleanup failure')}};
 h.context.navigator.geolocation.clearWatch=()=>{cleaned.push('GPS');throw Error('GPS release failure')};assert.doesNotThrow(()=>h.$('stop').onclick());assert.ok(!h.bodyClasses.has('guiding'));assert.equal(h.$('start').disabled,false);assert.deepEqual(cleaned,['GPS','LapanETA','LapanAwake','LapanDrive','LapanVoice']);assert.doesNotThrow(()=>h.$('stop').onclick());h.updates({coords:{latitude:3,longitude:101.1,accuracy:10}});assert.ok(!h.bodyClasses.has('guiding'),'late GPS cannot restore guidance');
-h=harness();h.$('start').onclick();h.first({coords:{latitude:3,longitude:101.05,accuracy:10}});h.context.map.distance=()=>5;h.updates({coords:{latitude:3,longitude:101.15,accuracy:10}});assert.equal(h.$('title').textContent,'You have arrived');const arrivedTitle=h.$('title').textContent;h.updates({coords:{latitude:3,longitude:101.05,accuracy:10}});assert.equal(h.$('title').textContent,arrivedTitle,'buffered fix after arrival ignored');h.context.window.LapanDrive={stop(){throw Error('map already stopped')}};assert.doesNotThrow(()=>h.$('stop').onclick());assert.ok(!h.bodyClasses.has('guiding'));
+h=harness();h.$('start').onclick();h.first({coords:{latitude:3,longitude:101.05,accuracy:10}});const reportStops=[];h.context.window.LapanReports={update(){},stop:options=>reportStops.push(options?.keepFix??false)};
+h.context.map.distance=()=>5;h.updates({coords:{latitude:3,longitude:101.15,accuracy:10}});assert.equal(h.$('title').textContent,'You have arrived');assert.deepEqual(reportStops,[true],'arrival preserves the latest fix for a report');assert.equal(h.$('navigationProgress').hidden,true);assert.equal(h.$('exitArrival').onclick,h.$('stop').onclick,'arrival and footer exit share navigation teardown');const arrivedTitle=h.$('title').textContent;h.updates({coords:{latitude:3,longitude:101.05,accuracy:10}});assert.equal(h.$('title').textContent,arrivedTitle,'buffered fix after arrival ignored');h.context.window.LapanDrive={stop(){throw Error('map already stopped')}};assert.doesNotThrow(()=>h.$('exitArrival').onclick());assert.ok(!h.bodyClasses.has('guiding'));assert.deepEqual(reportStops,[true,false],'exit fully clears the report session');
 h=harness();let finish,signal;h.context.window.LapanRouting.request=(a,b,c,s)=>{signal=s;return new Promise(r=>finish=r)};h.$('start').onclick();h.first({coords:{latitude:3.02,longitude:101.44,accuracy:10}});assert.ok(!signal.aborted);h.$('stop').onclick();assert.ok(signal.aborted,'End aborts pending reroute');finish({routes:[{}]});await new Promise(setImmediate);assert.ok(!h.bodyClasses.has('guiding'));assert.notEqual(h.$('title').textContent,'Route updated');
 h=harness();h.$('start').onclick();h.context.window.LapanAwake={stop:()=>Promise.reject(Error('async release failure'))};h.$('stop').onclick();await new Promise(setImmediate);assert.ok(!h.bodyClasses.has('guiding'));console.log('PASS: end guidance survives independent cleanup failures, repeated taps, arrival, late GPS, aborted reroutes and async release rejection');
 })().catch(e=>{console.error(e);process.exitCode=1});
@@ -66,3 +67,25 @@ h=harness();let calls=0;h.context.window.LapanRouting.request=()=>{calls++;retur
  h.$('stop').onclick();assert.ok(requests[1].signal.aborted);requests[1].resolve({routes:[]});await new Promise(setImmediate);
  console.log('PASS: hidden/pagehide/GPS failure/End cancel reroutes without retries, and late cleanup cannot overwrite a resumed request');
 })().catch(e=>{console.error(e);process.exitCode=1});
+
+(async()=>{
+ const h=harness();
+ let complete;
+ h.context.window.LapanVoice={
+  needsPreparation:()=>true,
+  selectedVoice:()=>null,
+  unlock(){},
+  prepare:()=>new Promise(resolve=>{complete=resolve})
+ };
+ const firstStart=h.$('start').onclick();
+ assert.match(h.$('start').textContent,/Preparing navigation voice/);
+ assert.equal(h.first,undefined,'GPS guidance must wait for the voice');
+ complete(false);
+ await firstStart;
+ assert.equal(h.first,undefined,'a failed pack cannot start guidance with device speech');
+ assert.equal(h.$('start').disabled,false);
+ const retry=h.$('start').onclick();
+ complete(true);
+ await retry;
+ assert.equal(typeof h.first,'function');
+})().catch(error=>{console.error(error);process.exitCode=1});

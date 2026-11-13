@@ -42,12 +42,12 @@ export function serveAsset(request,assets,env={}){
   const provider=env.LAPAN_SELECTED_PROVIDER||(env.TOMTOM_ROUTING_DISABLED==='true'?'OSRM':'TomTom');
   const staging=env.LAPAN_ENVIRONMENT==='staging'||env.TOMTOM_ROUTING_DISABLED==='true';
   const baseline=env.LAPAN_ENVIRONMENT==='staging'?' · Production live baseline':'';
-  const status=provider==='OSRM'?'OSRM ONLY · TomTom routing OFF · HERE routing OFF':provider==='HERE'?'HERE PRIMARY · OSRM fallback · TomTom routing OFF':'TomTom PRIMARY · OSRM fallback · HERE routing OFF';
+  const status=provider==='Valhalla'?'VALHALLA PRIMARY · OSRM car fallback · no live traffic':provider==='OSRM'?'OSRM ONLY · TomTom routing OFF · HERE routing OFF':provider==='HERE'?'HERE PRIMARY · OSRM fallback · TomTom routing OFF':'TomTom PRIMARY · Valhalla fallback · HERE routing OFF';
   file={...file,body:file.body.replace('data-routing-provider="AUTO"','data-routing-provider="'+(provider==='TomTom'?'AUTO':provider)+'"').replace(/<!-- STAGING_STATUS v([^ ]+) -->/,staging?'<div class="staging-build" data-no-i18n role="note">STAGING · v$1'+baseline+' · '+status+'</div>':'<!-- STAGING_STATUS v$1 -->'),etag:file.etag?.replace(/"$/,'-'+provider+(staging?(baseline?'-production-baseline':'-staging'):'')+'"')};
  }
 
  if(!file)return withSecurityHeaders(new Response('Not found',{status:404}));
- const headers={'Content-Type':file.type+'; charset=utf-8','Cache-Control':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
+ const headers={'Content-Type':file.type+'; charset=utf-8','Cache-Control':/^\/voice-pack-[a-f0-9]{16}\.bin$/.test(path)?'private, max-age=31536000, immutable':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
  if(file.etag){headers.ETag=file.etag;if(etagMatches(request.headers.get('If-None-Match'),file.etag))return withSecurityHeaders(new Response(null,{status:304,headers}))}
  if(request.method==='HEAD')return withSecurityHeaders(new Response(null,{headers}));
  let body=file.body;

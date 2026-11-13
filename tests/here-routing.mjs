@@ -43,7 +43,7 @@ try{
   response=await worker.fetch(req({avoidTolls,refresh:true}),tomTomEnv);
   assert.equal(response.status,502);
   assert.equal((await response.json()).allowBasic,true);
-  assert.deepEqual(fallbackCalls,['api.tomtom.com'],'TomTom failure must not trigger a HERE request');
+  assert.deepEqual(fallbackCalls,['api.tomtom.com','valhalla1.openstreetmap.de'],'TomTom failure tries Valhalla without calling HERE');
  }
  globalThis.fetch=async(url)=>{calls++;urls.push(new URL(url));return Response.json({routes:[{routeHandle:'test_handle',sections:[current]}]})};
  console.log('PASS: HERE flexible polyline, guidance/signs, traffic colours, remaining-time refresh, caching, forced refresh, secret protection and rejection of restricted or unusable routes');

@@ -9,7 +9,7 @@ function rateRoute(route){
  const offsets=[0];for(let i=1;i<points.length;i++)offsets.push(offsets[i-1]+Math.hypot(...rateXY(points[i],points[i-1])));
  const raw=(route.sections||[]).filter(s=>s.sectionType==='TOLL'&&Number.isInteger(s.startPointIndex)&&Number.isInteger(s.endPointIndex)&&s.startPointIndex>=0&&s.endPointIndex<points.length&&s.startPointIndex<s.endPointIndex).map(s=>({start:offsets[s.startPointIndex],end:offsets[s.endPointIndex]})).sort((a,b)=>a.start-b.start);
  const sections=[];for(const s of raw){const last=sections.at(-1);if(last&&s.start<=last.end+50)last.end=Math.max(last.end,s.end);else sections.push({...s})}
- return {points,offsets,sections,conservative:route.provider==='HERE'};
+ return {points,offsets,sections,conservative:['HERE','Valhalla'].includes(route.provider)};
 }
 // Nearest approach of a plaza to the route, only along stretches that are on or beside a toll section.
 function rateNearest(r,point){

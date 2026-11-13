@@ -1,5 +1,5 @@
 // Server-side provider selection. Each Site has its own database and default.
-const routingProviders=['TomTom','OSRM','HERE'];
+const routingProviders=['TomTom','OSRM','HERE','Valhalla'];
 export async function routingSetting(env={}){
  const fallback=env.TOMTOM_ROUTING_DISABLED==='true'?'OSRM':'TomTom';
  if(!env.DB)return {provider:fallback,revision:0,updatedAt:null};
@@ -11,7 +11,7 @@ export async function routingSetting(env={}){
   await env.DB.prepare('INSERT INTO routing_settings(id,provider,revision,updated_at) VALUES(1,?,1,?) ON CONFLICT(id) DO UPDATE SET provider=excluded.provider,revision=routing_settings.revision+1,updated_at=excluded.updated_at WHERE routing_settings.revision=? AND routing_settings.updated_at=?').bind('TomTom',new Date(reset).toISOString(),row?.revision??-1,row?.updated_at??'').run();
   row=await env.DB.prepare("SELECT provider,revision,updated_at FROM routing_settings WHERE id=1").first();
  }
- return row&&routingProviders.includes(row.provider)?{provider:row.provider,revision:row.revision,updatedAt:row.updated_at}:{provider:fallback,revision:0,updatedAt:null}}
+ return row&&routingProviders.includes(row.provider)&&(row.provider!=='Valhalla'||valhallaEndpoint(env))?{provider:row.provider,revision:row.revision,updatedAt:row.updated_at}:{provider:fallback,revision:0,updatedAt:null}}
  catch{return {provider:'OSRM',revision:0,updatedAt:null,unavailable:true}}
 }
 export async function routingConfiguration(request,env){
@@ -26,14 +26,23 @@ export async function dispatchRoute(request,env,estimateTolls){
  const setting=await routingSetting(env);
  if(setting.provider==='OSRM'&&body.avoidTolls)return Response.json({error:'Toll avoidance is unavailable with basic routing. Choose Faster or try again later.',allowBasic:false},{status:422,headers:{'Cache-Control':'private, no-store'}});
  if(setting.provider==='OSRM')return Response.json({error:body.vehicle==='motorcycle'?'Motorcycle routing requires TomTom or HERE.':'Paid routing is disabled. OSRM is selected.',allowBasic:body.vehicle!=='motorcycle'},{status:503,headers:{'Cache-Control':'private, no-store'}});
- const response=setting.provider==='HERE'
+ if(setting.provider==='Valhalla')return planValhallaRoute(env,body,estimateTolls);
+ let response=setting.provider==='HERE'
   ?await planHereRoute(request,env,body,estimateTolls)
   :await planLiveRoute(request,{...env,TOMTOM_ROUTING_DISABLED:'false'},estimateTolls);
+ if(setting.provider==='TomTom'&&!response.ok&&valhallaEndpoint(env)){
+  const failure=await response.clone().json();
+  if(failure.allowBasic===true){
+   const secondary=await planValhallaRoute(env,body,estimateTolls);
+   if(secondary.ok||secondary.status===422)response=secondary;
+  }
+ }
  if(body.vehicle==='motorcycle'&&!response.ok){const data=await response.json();return Response.json({...data,allowBasic:false},{status:response.status,headers:response.headers})}
  return response;
 }
 export async function dispatchTraffic(request,env){
  const setting=await routingSetting(env);
+ if(setting.provider==='Valhalla')return Response.json({error:'Valhalla does not supply live traffic.'},{status:503});
  if(setting.provider==='OSRM')return Response.json({error:'Paid traffic refresh is disabled. OSRM is selected.'},{status:503});
  let body;try{const raw=await request.clone().text();if(raw.length>1000000)throw Error();body=JSON.parse(raw)}catch{return Response.json({error:'Invalid traffic request'},{status:400})}
  if(body.vehicle!==undefined&&!['car','motorcycle'].includes(body.vehicle))return Response.json({error:'Invalid vehicle'},{status:400});

@@ -3,4 +3,14 @@ function dailyBrowser(){if(disabled())return null;try{const day=new Intl.DateTim
 // Web Locks serialises first-use creation across tabs where supported.
 
 async function send(kind){if(disabled()||document.visibilityState==='hidden'&&kind!=='leave')return;try{const browserId=kind==='leave'?null:await(navigator.locks?.request?navigator.locks.request('lapan-daily-browser',()=>dailyBrowser()):Promise.resolve(dailyBrowser()));if(disabled())return;const r=await fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,kind,device,browser,...(browserId?{browserId}:{})}),keepalive:kind==='leave'});if(r.ok&&kind==='page')started=true}catch{}}
+let countedDay=null,inflight=false,retryAt=0;
+window.LapanAnalytics={async navigation(position){
+ if(disabled()||document.visibilityState==='hidden'||inflight)return;
+ const day=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kuala_Lumpur',year:'numeric',month:'2-digit',day:'2-digit'}).format(Date.now());
+ if(countedDay===day||Date.now()<retryAt)return;
+ const region=window.LapanNavigationRegion?.classify(position);if(!region)return;
+ inflight=true;retryAt=Date.now()+30000;try{const browserId=await(navigator.locks?.request?navigator.locks.request('lapan-daily-browser',()=>dailyBrowser()):Promise.resolve(dailyBrowser()));if(!browserId||disabled())return;
+ const r=await fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,kind:'navigation',device,browser,browserId,navigationRegion:region})});if(r.ok)countedDay=day;
+ }catch{}finally{inflight=false}
+}};
 send('page');setInterval(()=>send(started?'heartbeat':'page'),30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')send(started?'heartbeat':'page')});window.addEventListener('pagehide',()=>send('leave'));window.addEventListener('storage',e=>{if(e.key==='lapan-analytics-disabled'&&disabled())fetch('/api/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,kind:'leave',device,browser}),keepalive:true}).catch(()=>{})});})();

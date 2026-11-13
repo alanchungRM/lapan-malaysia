@@ -2,6 +2,11 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const html=fs.readFileSync('web/index.html','utf8'),css=fs.readFileSync('web/mobile.css','utf8'),menu=fs.readFileSync('web/menu.js','utf8');
 
 // Markup: the More button lives in the controls column next to recentre, and the secondary controls it reveals still exist.
+const footer=html.slice(html.indexOf('id="navBar"'),html.indexOf('id="navpanel"'));
+assert.match(footer,/<button id="stop" type="button">End navigation<\/button>/);
+assert.match(html,/<button id="exitArrival"[^>]*class="link hidden">End navigation<\/button>/);
+const driveCss=fs.readFileSync('web/drive-ui.css','utf8');
+assert.match(driveCss,/#navBar #stop\{grid-area:stop\}/);
 const controls=html.slice(html.indexOf('id="driveControls"'),html.indexOf('class="maptop"'));
 for(const id of ['navVoice','locate','navMore','navLang','driveMode','navRepeat','navAwake','driveLimit','speedChip'])assert.ok(controls.includes('id="'+id+'"'),id+' in driving controls');
 assert.match(controls,/id="navMore"[^>]*aria-expanded="false"[^>]*aria-label="More driving controls"/);

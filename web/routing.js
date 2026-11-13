@@ -138,7 +138,7 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
  if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');
  let provider=root.document?.documentElement?.dataset?.routingProvider||'TomTom',revision=0;
  if(root.document?.documentElement?.dataset?.routingConfig==='server'){
-  try{const {r,d}=await getJSON('/api/routing-config',{cache:'no-store'},signal,4000);if(!r.ok||!['TomTom','OSRM','HERE'].includes(d.provider))throw Error();provider=d.provider;revision=d.revision||0}
+  try{const {r,d}=await getJSON('/api/routing-config',{cache:'no-store'},signal,4000);if(!r.ok||!['TomTom','OSRM','HERE','Valhalla'].includes(d.provider))throw Error();provider=d.provider;revision=d.revision||0}
   catch(e){if(signal?.aborted)throw new DOMException('Routing cancelled','AbortError');provider='OSRM'}
  }
  if(!['car','motorcycle'].includes(vehicle))throw Error('Choose Car or Motorcycle.');
@@ -161,10 +161,10 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
  if(osrmOnly)error={allowBasic:true,retryAfterMs:0};
  if(!osrmOnly){
  try{
-  const {r,d}=await getJSON('/api/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to,alternatives,purpose,vehicle,...(refresh?{refresh:true}:{}),...(avoidTolls?{avoidTolls:true}:{})})},signal,avoidTolls?29000:19000);
+  const {r,d}=await getJSON('/api/route',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,to,alternatives,purpose,vehicle,...(refresh?{refresh:true}:{}),...(avoidTolls?{avoidTolls:true}:{})})},signal,provider==='TomTom'?32000:avoidTolls?29000:19000);
   if(r.ok&&d.code==='Ok'&&d.routes?.length){
    d.routes.forEach(route=>route.vehicle=vehicle);
-   if(vehicle==='car'&&!avoidTolls)await preferBayuCrossover(d,from,to,alternatives,signal,refresh);
+   if(d.source==='HERE'&&vehicle==='car'&&!avoidTolls)await preferBayuCrossover(d,from,to,alternatives,signal,refresh);
    return remember(d);
   }
   // Never bypass input errors, no-route decisions or rejected restricted routes.
@@ -186,6 +186,6 @@ async function request(from,to,alternatives,signal,_allowBasic,purpose='planning
  if(!d.routes.length)throw Error('No basic route avoiding the reported restriction is available.');
  d.routes.forEach(markBasic);return remember(d);
 }
-function label(route){const provider=route?.provider;if(route?.vehicle==='motorcycle')return provider+' motorcycle route · '+(provider==='TomTom'?'beta · ':'')+'restrictions and dedicated lanes may be incomplete · obey road signs';if(['TomTom','HERE'].includes(provider))return provider+' live route · closures checked at '+new Date(route.closureCheckedAt).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})+' · reported closures only';return 'OSRM basic route · no live traffic · road closures NOT checked'}
+function label(route){const provider=route?.provider;if(provider==='Valhalla')return 'Valhalla '+(route.vehicle==='motorcycle'?'motorcycle ':'')+'route · OpenStreetMap · no live traffic or closure checks';if(route?.vehicle==='motorcycle')return provider+' motorcycle route · '+(provider==='TomTom'?'beta · ':'')+'restrictions and dedicated lanes may be incomplete · obey road signs';if(route?.bayuCrossover)return 'TomTom route · Bayu Impian U-turn adjusted · estimated ETA';if(['TomTom','HERE'].includes(provider))return provider+' live route · closures checked at '+new Date(route.closureCheckedAt).toLocaleTimeString('en-MY',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Kuala_Lumpur'})+' · reported closures only';return 'OSRM basic route · no live traffic · road closures NOT checked'}
 root.LapanRouting={request,label};if(typeof module==='object')module.exports={request,label};
 })(typeof window==='object'?window:globalThis);

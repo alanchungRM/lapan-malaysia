@@ -41,3 +41,9 @@ Tests: `tests/route-tolls.mjs` covers crossing, direction, unknown metadata, ord
 - **Source confidence** (`official-api` > `official-page` > `official-form` > `official-image` > `secondary`) is kept per highway; the weakest source on a route is reported as `confidence`.
 
 Tests: `tests/toll-rates.mjs` (data integrity, agreement with the independently checked LDP and KESAS fares, closed and open pricing, tolerance, completeness, no double charging, real fares at real plaza positions, and the full Worker path).
+
+## Valhalla staging trial
+
+Valhalla marks maneuvers that include mapped toll road. Lapan checks those spans against the existing Class 1 fare and plaza dataset, with the tighter crossing checks used for HERE. A match is shown as a partial subtotal. Missing or ambiguous fares remain unavailable. The staging trial does not make a live fare request.
+
+LLM publishes plaza locations through its [GIS layer](https://gis02.llm.gov.my/llmsmpt/rest/services/GIS_LLM/PLAZA_TOL/MapServer/0). Its [public toll calculator](https://www.llm.gov.my/pages/view/) is a separate fare reference. The plaza layer returned coordinates and names in a sample query, with no fare fields. Use the calculator and official operator rates to verify changes before refreshing the bundled data.
