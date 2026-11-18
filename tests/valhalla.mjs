@@ -50,6 +50,14 @@ const originalFetch = globalThis.fetch;
 let calls = 0;
 let mode = 'alternates';
 globalThis.fetch = async (url, options) => {
+  if(new URL(url).hostname==='api.tomtom.com'){
+    const coords=[[101.45543,2.9756],[101.45546,2.97467],[101.455,2.97467]];
+    const points=coords.map(([longitude,latitude])=>({longitude,latitude}));
+    return Response.json({routes:[{
+      summary:{travelTimeInSeconds:60,lengthInMeters:500},legs:[{points}],
+      guidance:{instructions:[0,2].map((pointIndex,i)=>({pointIndex,point:points[pointIndex],routeOffsetInMeters:i*500,travelTimeInSeconds:i*60,maneuver:i?'ARRIVE':'DEPART'}))}
+    }]});
+  }
   calls++;
   assert.equal(url,'https://valhalla1.openstreetmap.de/route');
   assert.equal(options.method,'POST');
@@ -57,7 +65,10 @@ globalThis.fetch = async (url, options) => {
   assert.equal(options.headers['X-Client-Id'],'lapan-malaysia-staging.alanchungcl.chatgpt.site');
   const {costing,costing_options} = JSON.parse(options.body);
   if (mode==='redirect') return Response.redirect('https://other.example/route',307);
-  if (costing==='motorcycle') assert.equal(costing_options.motorcycle.use_tolls,0);
+  const avoidTolls=costing_options[costing].use_tolls===0;
+  assert.equal(costing_options[costing].exclude_tolls,avoidTolls?true:undefined,
+    'only Avoid Tolls requests hard-exclude toll roads');
+  if (costing==='motorcycle') assert.equal(avoidTolls,true);
   const vehicle = costing==='auto' ? 'car' : costing;
   return Response.json({
     trip:trip(vehicle,true),
@@ -72,6 +83,9 @@ try {
   const automatic = await request('/api/route', {...inputs,refresh:true}, {LAPAN_ENVIRONMENT:'staging'});
   assert.equal(automatic.status,200);
   assert.equal((await automatic.json()).source,'Valhalla','TomTom unavailability falls back to Valhalla');
+  const restricted=await request('/api/route',{...inputs,refresh:true},{LAPAN_ENVIRONMENT:'staging',TOMTOM_API_KEY:'test'});
+  assert.equal(restricted.status,200);
+  assert.equal((await restricted.json()).source,'Valhalla','a blocked TomTom crossing falls back to a validated route');
   calls=0;
   const normal = await request('/api/route',{...inputs,refresh:true});
   assert.equal(normal.status,200);
