@@ -24,10 +24,22 @@ const route = next => ({
   legs: [{ steps: [approach, next] }],
 });
 
+// Route 181 frontage-lane crossover near Jalan Pandamaran. A wider sweep can
+// exceed the generic divided-road tolerance before the direction reverses.
+const pulauPoint = [101.41979, 2.98343];
+const atPulau = part => {
+  const coordinates = part.geometry.coordinates.map(([lon,lat]) =>
+    [pulauPoint[0]+lon-101.42,pulauPoint[1]+lat-2.98]);
+  return {...part,geometry:{...part.geometry,coordinates},
+    maneuver:{...part.maneuver,location:coordinates[0]}};
+};
+const wide = step([[0,0],[5,6],[50,6],[51,0],[51,-120]],'fork','right');
+const pulau = {legs:[{steps:[atPulau(approach),atPulau(wide)]}]};
+
 (async () => {
   const originalFetch = global.fetch;
   try {
-    const routes = [candidate, through, right, distant, unrelated, roundabout].map(route);
+    const routes = [...([candidate, through, right, distant, unrelated, roundabout, wide].map(route)),pulau];
     const from = [101.42, 2.978], to = [101.421, 2.977];
     global.fetch = async () => Response.json(structuredClone({ code: 'Ok', routes, source: 'TomTom' }));
     const result = await request(from, to, true, undefined, true, 'rerouting');
@@ -39,7 +51,12 @@ const route = next => ({
     assert.equal(iconName(corrected), 'uturn');
     assert.match(format(corrected), /^Make a U-turn/);
     assert.equal(speech(corrected), 'Make a U-turn, route 181');
-    for (let i = 1; i < routes.length; i++) assert.deepEqual(result.routes[i].legs, routes[i].legs);
+    for (let i = 1; i < routes.length - 1; i++) assert.deepEqual(result.routes[i].legs, routes[i].legs);
+
+    const pulauTurn = result.routes.at(-1).legs[0].steps[1];
+    assert.equal(iconName(pulauTurn),'uturn');
+    assert.deepEqual(compact(pulauTurn),{action:'U-turn',detail:'181 · Lebuhraya Pulau Indah'});
+    assert.match(speech(pulauTurn),/^Make a U-turn/);
 
     global.fetch = async url => url === '/api/route'
       ? Response.json({ allowBasic: true }, { status: 503 })
