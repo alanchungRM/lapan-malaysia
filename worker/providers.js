@@ -32,9 +32,9 @@ export async function dispatchRoute(request,env,estimateTolls){
   :await planLiveRoute(request,{...env,TOMTOM_ROUTING_DISABLED:'false'},estimateTolls);
  if(setting.provider==='TomTom'&&!response.ok&&valhallaEndpoint(env)){
   const failure=await response.clone().json();
-  if(failure.allowBasic===true){
+  if(failure.allowBasic===true||failure.code==='restricted-route'){
    const secondary=await planValhallaRoute(env,body,estimateTolls);
-   if(secondary.ok||secondary.status===422)response=secondary;
+   if(secondary.ok||(failure.allowBasic===true&&secondary.status===422))response=secondary;
   }
  }
  if(body.vehicle==='motorcycle'&&!response.ok){const data=await response.json();return Response.json({...data,allowBasic:false},{status:response.status,headers:response.headers})}
