@@ -140,7 +140,7 @@ export async function planValhallaRoute(env, body, estimateTolls) {
   const payload = {
     locations:[body.from,body.to].map(([lon,lat]) => ({lat,lon})),
     costing, units:'kilometers', alternates:body.alternatives ? 2 : 0,
-    costing_options:{[costing]:{use_ferry:0,...(body.avoidTolls ? {use_tolls:0} : {})}},
+    costing_options:{[costing]:{use_ferry:0,...(body.avoidTolls ? {use_tolls:0,exclude_tolls:true} : {})}},
     ...(obstacles.length ? {exclude_polygons:obstacles.map(({west,east,south,north}) =>
       [[west,south],[east,south],[east,north],[west,north],[west,south]])} : {}),
   };
