@@ -1,6 +1,8 @@
 # Pending website release notes
 
-- Enable configurable nationwide additional-place search with common-word intersection fixes and an immediate, cancellable loading dialog.
+Nationwide POI coverage and the 878,679-listing total were incorporated into the existing v1.0.43 notes on 18 November 2026. Other maintenance items remain pending.
+
+- Additional-place search maintenance: common-word intersection fixes and an immediate, cancellable loading dialog.
 
 - Document contributor-owned POI hosting and keep deployment-specific account and origin settings out of public source.
 

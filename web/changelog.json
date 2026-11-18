@@ -2,11 +2,12 @@
   {
     "version": "1.0.43",
     "date": "2026-11-13",
-    "title": "Adaptive Day and Night themes and next-turn preview",
+    "title": "Adaptive themes, next-turn preview and nationwide POI search",
     "changes": {
       "Added": [
         "The new look is the default. Auto switches between Day and Night around local sunrise and sunset. Tap the star to switch to Classic. Lapan remembers your choice in the same browser.",
-        "A Then row previews the following maneuver or arrival during navigation."
+        "A Then row previews the following maneuver or arrival during navigation.",
+        "Search more places now searches a directory of 878,679 POI listings across Malaysia, including Peninsular Malaysia, Sabah, Sarawak and Labuan, using Overture Maps contributor data. Coverage varies; some places may be missing or outdated."
       ],
       "Improved": [
         "Updated planner controls, saved-place buttons, Quick stops, menus and dialogs for clearer Day and Night contrast.",
@@ -17,13 +18,15 @@
       ]
     },
     "notes": [
-      "Thanks to Dandy Lau (@dandycrypto) for the adaptive Day and Night theme foundation in public GitHub PR #25."
+      "Thanks to Dandy Lau (@dandycrypto) for the adaptive Day and Night theme foundation in public GitHub PR #25.",
+      "Nationwide POI coverage added on 18 November 2026. The POI total reflects the currently deployed directory snapshot."
     ],
     "commits": [
-      "d87494c0bf2fa34d7d7a2e9bbd1659981d22cb2b"
+      "d87494c0bf2fa34d7d7a2e9bbd1659981d22cb2b",
+      "4826ba7fe8c9804da6fae8cb93b1242588a17a90"
     ]
   },
-{
+  {
     "version": "1.0.42",
     "date": "2026-11-13",
     "title": "Natural English voice and easier driving controls",
@@ -44,7 +47,9 @@
       ]
     },
     "notes": [],
-    "commits": ["1e00ceddb4e19374fbad532faca2659cf50a67a1"]
+    "commits": [
+      "1e00ceddb4e19374fbad532faca2659cf50a67a1"
+    ]
   },
   {
     "version": "1.0.41",

@@ -4,12 +4,13 @@ Public feature updates and fixes. Dates use Malaysia time.
 
 ## [1.0.43] — 2026-11-13
 
-Adaptive Day and Night themes and next-turn preview
+Adaptive themes, next-turn preview and nationwide POI search
 
 ### Added
 
 - The new look is the default. Auto switches between Day and Night around local sunrise and sunset. Tap the star to switch to Classic. Lapan remembers your choice in the same browser.
 - A Then row previews the following maneuver or arrival during navigation.
+- Search more places now searches a directory of 878,679 POI listings across Malaysia, including Peninsular Malaysia, Sabah, Sarawak and Labuan, using Overture Maps contributor data. Coverage varies; some places may be missing or outdated.
 
 ### Improved
 
@@ -21,8 +22,10 @@ Adaptive Day and Night themes and next-turn preview
 - Added spacing between the Then preview and road warnings and prevented the informational part of the guidance card from intercepting taps.
 
 > Thanks to Dandy Lau (@dandycrypto) for the adaptive Day and Night theme foundation in public GitHub PR #25.
+>
+> Nationwide POI coverage added on 18 November 2026. The POI total reflects the currently deployed directory snapshot.
 
-[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/d87494c0bf2fa34d7d7a2e9bbd1659981d22cb2b)
+[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/d87494c0bf2fa34d7d7a2e9bbd1659981d22cb2b) · [GitHub change 2](https://github.com/alanchungRM/lapan-malaysia/commit/4826ba7fe8c9804da6fae8cb93b1242588a17a90)
 
 ## [1.0.42] — 2026-11-13
 
