@@ -24,3 +24,9 @@ assert.equal(night['bad-fill'],day['bad-fill'],'the filled red does not lighten 
 // Universal design basics are present in the stylesheet itself.
 assert.match(css,/:focus-visible\{outline:3px solid var\(--focus\)/);assert.match(css,/min-height:44px/);assert.match(css,/prefers-reduced-motion:reduce/);assert.match(css,/color-scheme:light/);assert.match(css,/color-scheme:dark/);
 console.log('PASS: WCAG contrast for text, buttons, banners and the route line in both themes, plus focus ring, 44 px targets, reduced motion and colour-scheme hints');
+
+// Place-result cards and close controls follow the same accessible skin tokens.
+assert.match(css,/html\[data-ui="2"\] #placeMatches button,\s*html\[data-ui="2"\] #placeDialog #closePlace\{\s*background:var\(--surface-2\);\s*color:var\(--ink\);\s*border-color:var\(--control-border\)/);
+assert.match(css,/#placeMatches button strong\{color:var\(--ink\)\}/);
+assert.match(css,/#placeMatches button small\{color:var\(--ink-2\)\}/);
+console.log('PASS: place popup cards, labels, addresses and close icon inherit day/night skin colours');
