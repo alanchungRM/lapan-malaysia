@@ -1,5 +1,12 @@
 # Pending website release notes
 
+- Preserve production homepage and changelog indexability with canonical URLs, crawlable robots and sitemap, and SEO regression checks.
+- Show report confirmation within 300 m with a visible 15-second countdown and automatic dismissal.
+- Match additional-place selection and close controls to the active skin.
+- Improve three-digit speedometer spacing and allow clearing the starting point independently.
+- Use English Kokoro Heart by default while preserving saved voice choices, and improve routing restriction and U-turn guidance.
+
+
 
 
 - Staging: record upstream Valhalla failures without route details.
