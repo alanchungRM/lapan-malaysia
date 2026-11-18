@@ -55,3 +55,25 @@ for(const path of ['/leaflet.js','/leaflet.css']){const r=await get(path);assert
 for(const name of ['marker-icon.png','marker-icon-2x.png','marker-shadow.png','layers.png','layers-2x.png']){
  const r=await get('/images/'+name);assert.equal(r.status,200,name);assert.equal(r.headers.get('Content-Type'),'image/png; charset=utf-8');const bytes=Buffer.from(await r.arrayBuffer());assert.deepEqual(bytes,await readFile('web/images/'+name));assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
 }
+
+const production=(path,init,env={})=>worker.fetch(new Request('https://lapan-malaysia.com'+path,init),env);
+for(const [path,canonical] of [['/','/'],['/index.html?ui=1','/'],['/changelog/','/changelog']]){
+ const r=await production(path);
+ assert.equal(r.status,200);
+ assert.equal(r.headers.get('X-Robots-Tag'),null);
+ assert.ok((await r.text()).includes('rel="canonical" href="https://lapan-malaysia.com'+canonical+'"'));
+ const head=await production(path,{method:'HEAD'});
+ assert.equal(head.headers.get('X-Robots-Tag'),null);
+ const cached=await production(path,{headers:{'If-None-Match':r.headers.get('ETag')}});
+ assert.equal(cached.status,304);
+ assert.equal(cached.headers.get('X-Robots-Tag'),null);
+}
+for(const path of ['/statistics','/stdrpt','/s/2222222','/api/routing-config','/missing']){
+ assert.match((await production(path)).headers.get('X-Robots-Tag'),/noindex/);
+}
+assert.match((await production('/',undefined,{LAPAN_ENVIRONMENT:'staging'})).headers.get('X-Robots-Tag'),/noindex/);
+assert.match(await (await production('/robots.txt')).text(),/Sitemap: https:\/\/lapan-malaysia.com\/sitemap.xml/);
+assert.match(await (await get('/robots.txt')).text(),/Disallow: \//);
+const sitemap=await (await production('/sitemap.xml')).text();
+assert.match(sitemap,/<loc>https:\/\/lapan-malaysia.com\/<\/loc>/);
+assert.match(sitemap,/<loc>https:\/\/lapan-malaysia.com\/changelog<\/loc>/);
