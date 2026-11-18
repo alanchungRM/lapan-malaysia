@@ -527,6 +527,8 @@ window.LapanI18n.add({
   "Flooding": "Banjir",
   "Pothole": "Lubang jalan",
   "Still there?": "Masih ada?",
+  "Community report · {m} m": "Laporan komuniti · {m} m",
+  "Dismiss road report": "Tutup laporan jalan",
   "Yes": "Ya",
   "No": "Tidak",
   "Crash reported ahead": "Kemalangan dilaporkan di hadapan",
@@ -595,3 +597,7 @@ window.LapanI18n.add({
   "Share link": "Kongsi pautan",
   "Anyone with a share link can see the destination. Short links store the place and name for about six months and renew when reused. Sharing a drive adds the estimated arrival to your message. Lapan sends tapped map coordinates to Photon to look up place names.": "Sesiapa yang mempunyai pautan kongsi boleh melihat destinasi. Pautan pendek menyimpan tempat dan nama selama kira-kira enam bulan dan diperbaharui apabila digunakan semula. Perkongsian perjalanan menambah anggaran ketibaan pada mesej anda. Lapan menghantar koordinat yang diketuk pada peta kepada Photon untuk mencari nama tempat."
 });
+
+window.LapanI18n.add({"Closes in {s} s":"Tutup dalam {s} s","Community report · just passed":"Laporan komuniti · baru dilepasi"});
+
+window.LapanI18n.add({"Clear starting point":"Kosongkan tempat mula","Starting point cleared. Enter a new place or choose on map.":"Tempat mula dikosongkan. Masukkan tempat baharu atau pilih pada peta."});
