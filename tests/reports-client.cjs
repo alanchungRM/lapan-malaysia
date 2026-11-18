@@ -12,7 +12,7 @@ assert.deepEqual(R.placeOnRoute(null,route),[]);assert.deepEqual(R.placeOnRoute(
 // What is announced next.
 assert.equal(R.ahead(items,-250),null,'550 m ahead is out of range');assert.equal(R.ahead(items,100).id,'d','200 m ahead is in range');
 assert.equal(R.ahead(items,350).id,'b','passed reports are skipped');assert.equal(R.ahead(items,501).id,'a');assert.equal(R.ahead(items,1450).id,'g');assert.equal(R.ahead(items,1600),null);
-assert.equal(R.RANGE,500);assert.equal(R.ASK,120);
+assert.equal(R.RANGE,500);assert.equal(R.ASK,300);
 
 // Refresh policy.
 const fix=(lat,lon)=>({latitude:lat,longitude:lon});
