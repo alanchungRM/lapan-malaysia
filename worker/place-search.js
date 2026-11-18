@@ -1,6 +1,6 @@
 // Additional business/address lookup. Runtime keys and provider responses stay server-side.
 const placeSearchCache=new Map(),placeSearchClients=new Map();let placeSearchInFlight=0,placeSearchPauseUntil=0,placeSearchPauseCode='';
-export async function additionalPlaceSearch(request,env={},regionalSearch=null){
+export async function additionalPlaceSearch(request,env={},regionalSearch=null,metadata={}){
 const json=(d,status=200)=>Response.json(d,{status,headers:{'Cache-Control':'private, no-store'}}),u=new URL(request.url);
 if(request.method!=='POST')return json({error:'POST required'},405);
 if(request.headers.get('origin')&&request.headers.get('origin')!==u.origin)return json({error:'Origin not allowed'},403);
@@ -14,10 +14,10 @@ if(regionalSearch){
  placeSearchClients.set(freeKey,client&&now-client.at<60000?{at:client.at,n:client.n+1}:{at:now,n:1});
  if(placeSearchClients.size>1000)placeSearchClients.delete(placeSearchClients.keys().next().value);
  placeSearchInFlight++;
- try{const items=await regionalSearch(query);if(items.length){const data={items,source:'Overture Maps',coverage:'Regional directory: KL and surrounding Selangor areas',snapshot:'2026-10-21.0'};placeSearchCache.set(key,{at:now,data});if(placeSearchCache.size>100)placeSearchCache.delete(placeSearchCache.keys().next().value);return json(data)}}catch{/* Existing providers remain available if a local index shard fails. */}finally{placeSearchInFlight--}
+ try{const items=await regionalSearch(query);if(items.length){const data={items,source:'Overture Maps',coverage:metadata.coverage||'Regional directory: KL and surrounding Selangor areas',snapshot:metadata.release||'2026-10-21.0'};placeSearchCache.set(key,{at:now,data});if(placeSearchCache.size>100)placeSearchCache.delete(placeSearchCache.keys().next().value);return json(data)}}catch(error){console.warn('POI storage lookup failed',{name:error?.name||'Error',message:String(error?.message||'Unavailable').slice(0,180)})}finally{placeSearchInFlight--}
 }
 // TomTom Search is opt-in and independent of the routing/traffic API key.
-if(!tomTomSearchEnabled)return json({items:[],source:'Overture Maps',coverage:'Regional directory: KL and surrounding Selangor areas'});
+if(!tomTomSearchEnabled)return json({items:[],source:'Overture Maps',coverage:metadata.coverage||'Regional directory: KL and surrounding Selangor areas'});
 if(!env.TOMTOM_API_KEY)return json({error:'Additional place search is unavailable. Try a full address or choose on map.'},503);
 if(now<placeSearchPauseUntil)return json({error:'Additional place search is temporarily unavailable. Try a full address or choose on map.',code:placeSearchPauseCode},503);
 const ip=request.headers.get('cf-connecting-ip')||'anonymous',client=placeSearchClients.get(ip);if((client&&now-client.at<60000&&client.n>=6)||placeSearchInFlight>=2)return json({error:'Additional search is busy. Please retry shortly.'},429);placeSearchClients.set(ip,client&&now-client.at<60000?{at:client.at,n:client.n+1}:{at:now,n:1});if(placeSearchClients.size>1000)placeSearchClients.delete(placeSearchClients.keys().next().value);placeSearchInFlight++;

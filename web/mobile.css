@@ -441,3 +441,11 @@ html[data-ui="2"] #uiAppearance a[href="?ui=2"]{display:none}
 .makakami-badge .makakami-day{display:none}
 html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-day{display:block}
 html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-night{display:none}
+
+/* Visible feedback while additional place results are fetched. */
+#suggest p.search-loading,#placeDialog p.search-loading{display:flex;align-items:center;gap:12px;margin:8px;padding:14px;border:1px solid var(--line,#527367);border-radius:12px;background:var(--surface-2,#203c30);color:var(--brand,#96e9b7);font-size:14px;font-weight:700;line-height:1.5}
+#suggest .search-loading::before,#placeDialog .search-loading::before{content:"";display:block;flex:0 0 20px;width:20px;height:20px;box-sizing:border-box;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:place-search-spin .8s linear infinite}
+@keyframes place-search-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#suggest .search-loading::before,#placeDialog .search-loading::before{animation:none}}
+
+#placeDialog p.search-loading{justify-content:center;min-height:100px;margin:16px 0}

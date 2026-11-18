@@ -112,3 +112,8 @@ npm run build
 On Windows, activate the virtual environment using its Scripts directory and use your Python 3 command. An existing GeoJSON-sequence download can be passed with `python3 scripts/prepare-poi-directory.py --input places.geojsonseq`. The pinned download covers bounding box 100.70,2.55,102.00,3.85. Data preparation filters supported source licenses, removes unused contact fields and exact duplicates, rounds place coordinates, and creates compressed token-index and record shards. Source attribution and full applicable licenses are in `data/POI_NOTICES.txt` and `THIRD_PARTY_LICENSES/`.
 
 Without a generated directory, the build still works with the existing providers. With the directory enabled, additional search checks it before TomTom and returns only matching results to phones. The index requires no AI calls or database writes. The data license is free; hosting usage remains subject to your provider's allowances. Check the larger Worker bundle size, memory and CPU limits before deploying.
+
+
+## Optional nationwide POI hosting
+
+See [POI storage setup](docs/POI_STORAGE.md) to prepare an Overture snapshot, upload it to your own Cloudflare Pages project, and supply your own build-time origin and generated manifest. The public source includes a configuration example and excludes the maintainer's account and actual deployment origin. Without a prepared directory, the optional additional search is empty and normal Photon search remains available.

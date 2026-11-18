@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const source=fs.readFileSync('web/search.js','utf8');
 function harness(){
- const elements={},events={},timers=[];class El{constructor(){this.value='';this.style={};this.children=[];this.events={};this.dataset={};this.disabled=false;this.open=false}addEventListener(n,f){(this.events[n]??=[]).push(f)}fire(n,e={}){for(const f of this.events[n]||[])f(e)}replaceChildren(){this.children=[]}append(...x){this.children.push(...x)}prepend(x){this.children.unshift(x)}setAttribute(){}focus(){this.fire('focus')}blur(){}click(){return this.onclick?.()}showModal(){this.open=true}close(){this.open=false;setImmediate(()=>this.fire('close'))}}
+ const elements={},events={},timers=[];class El{constructor(){this.value='';this.style={};this.children=[];this.events={};this.dataset={};this.disabled=false;this.open=false}addEventListener(n,f){(this.events[n]??=[]).push(f)}fire(n,e={}){for(const f of this.events[n]||[])f(e)}replaceChildren(){this.children=[]}append(...x){this.children.push(...x)}prepend(x){this.children.unshift(x)}setAttribute(n,v){(this.attributes??={})[n]=String(v)}getAttribute(n){return this.attributes?.[n]??null}focus(){this.fire('focus')}blur(){}click(){return this.onclick?.()}showModal(){this.open=true}close(){this.open=false;setImmediate(()=>this.fire('close'))}}
  const $=id=>elements[id]??=new El(),chosen={origin:null,destination:null},status=[];let prayerItems=[],calls=0,invalidations=0,response={features:[]},fail=false,fetcher;const mapHandlers={};let pinpos={lat:3.1,lng:101.6};const buttons=['origin','destination'].map(id=>{const b=new El();b.dataset.mapPlace=id;return b});
  const map={setView(){return this},getCenter(){return {lat:4.8,lng:102.9}},invalidateSize(){},on(n,f){mapHandlers[n]=f;return this}};const pin={addTo(){return this},setLatLng(p){pinpos=Array.isArray(p)?{lat:p[0],lng:p[1]}:p;return this},getLatLng(){return pinpos},on(){return this}};
  const context={console,URL,AbortController,DOMException,document:{getElementById:$,createElement:()=>new El(),createTextNode:text=>({textContent:text}),querySelectorAll:()=>buttons},L:{map:()=>map,maplibreGL:()=>({addTo(){}}),tileLayer:()=>({addTo(){}}),marker:()=>pin},setTimeout(f){timers.push(f);return timers.length},clearTimeout(){},fetch:async(u,options)=>{if(String(u)==='/api/prayer-search')return {ok:true,json:async()=>({items:prayerItems})};calls++;if(fetcher)return fetcher(u,options);if(fail)throw Error('offline');return {ok:true,json:async()=>({items:[],...response})}},requestAnimationFrame:f=>f(),addEventListener(n,f){events[n]=f}};context.window=context;vm.createContext(context);vm.runInContext(source,context);const api=context.LapanSearch.init({get:id=>chosen[id],set:(id,p)=>chosen[id]=p,places:[['KL Sentral',3.134,101.686],['Genting Highlands',3.4238,101.7932]],status:t=>status.push(t),invalidate(){invalidations++}});
@@ -104,5 +104,43 @@ let completed=false;process.on('beforeExit',()=>{if(!completed){console.error('S
  let clearFrom=harness();clearFrom.chosen.origin=['Old start',3,101];clearFrom.chosen.destination=['Keep destination',4,102];clearFrom.$('origin').value='Old start';clearFrom.$('clearOrigin').click();
  assert.equal(clearFrom.$('origin').value,'');assert.equal(clearFrom.chosen.origin,null);assert.equal(clearFrom.chosen.destination[0],'Keep destination');assert.equal(clearFrom.calls,0);assert.equal(clearFrom.$('suggest').style.display,'none');assert.ok(clearFrom.invalidations>0);
  clearFrom=harness();clearFrom.$('origin').value='Pending origin';let finishOrigin;clearFrom.fetcher=()=>new Promise(resolve=>finishOrigin=resolve);const pendingOrigin=clearFrom.api.resolveAll();await new Promise(setImmediate);clearFrom.$('clearOrigin').click();finishOrigin({ok:true,json:async()=>({features:[feature('Pending origin')]})});assert.equal(await pendingOrigin,false);assert.equal(clearFrom.chosen.origin,null);assert.equal(clearFrom.$('origin').value,'');
+ // Additional searches show feedback before the delayed response, then clear it on every outcome.
+ const descendants=node=>[node,...(node.children||[]).flatMap(descendants)];
+ for(const outcome of ['match','empty','failure']){
+  const loading=harness();loading.$('destination').value='Loading Example';loading.$('destination').focus();
+  let finish,reject;loading.fetcher=()=>new Promise((resolve,fail)=>{finish=resolve;reject=fail});
+  const more=descendants(loading.$('suggest')).find(node=>node.className==='search-more-action');
+  const request=more.click();
+  const indicator=loading.$('suggest').children.find(node=>node.className==='search-loading');
+  assert.ok(indicator,'a visible loading message exists while the request is pending');
+  assert.equal(indicator.getAttribute('role'),'status');assert.equal(indicator.getAttribute('aria-live'),'polite');
+  assert.equal(loading.$('suggest').getAttribute('aria-busy'),'true');assert.equal(loading.$('placeDialog').open,true,'click immediately opens the loading dialog');assert.ok(loading.$('placeMatches').children.some(node=>node.className==='search-loading'));assert.equal(loading.$('placeMatches').getAttribute('aria-busy'),'true');
+  const busyButton=descendants(loading.$('suggest')).find(node=>node.className==='search-more-action');
+  assert.equal(busyButton.disabled,true);assert.equal(busyButton.getAttribute('aria-busy'),'true');
+  if(outcome==='failure')reject(Error('offline'));else finish({ok:true,json:async()=>({items:outcome==='match'?[['Loading Example, Shah Alam',3.1,101.5]]:[]})});
+  await new Promise(setImmediate);
+  assert.equal(loading.$('suggest').getAttribute('aria-busy'),'false',outcome+' clears busy state');
+  if(outcome==='match'){assert.equal(loading.$('placeDialog').open,true);assert.equal(loading.$('suggest').style.display,'none');loading.$('closePlace').click()}
+  else{assert.equal(loading.$('placeDialog').open,true,'empty/error feedback stays visible in the same dialog');assert.ok(!loading.$('placeMatches').children.some(node=>node.className==='search-loading'));assert.ok(!loading.$('suggest').children.some(node=>node.className==='search-loading'));assert.equal(descendants(loading.$('suggest')).find(node=>node.className==='search-more-action').disabled,false)}
+  await request;
+ }
+ const staleLoading=harness();staleLoading.$('destination').value='Old Loading Example';staleLoading.$('destination').focus();let finishLoading;
+ staleLoading.fetcher=()=>new Promise(resolve=>finishLoading=resolve);
+ const staleMore=descendants(staleLoading.$('suggest')).find(node=>node.className==='search-more-action').click();
+ staleLoading.$('destination').value='New query';staleLoading.$('destination').fire('input');
+ assert.equal(staleLoading.$('suggest').getAttribute('aria-busy'),'false');
+ finishLoading({ok:true,json:async()=>({items:[['Old Loading Example',3,101]]})});await staleMore;
+ assert.equal(staleLoading.$('placeDialog').open,false,'a stale additional response cannot open a dialog');
+ assert.ok(!staleLoading.$('suggest').children.some(node=>node.className==='search-loading'));
+ for(const action of ['close','escape']){
+  const dismissed=harness();dismissed.$('destination').value='Dismiss Loading';dismissed.$('destination').focus();let finishDismiss,signal;
+  dismissed.fetcher=(u,options)=>{signal=options.signal;return new Promise(resolve=>finishDismiss=resolve)};
+  const dismissedRequest=descendants(dismissed.$('suggest')).find(node=>node.className==='search-more-action').click();
+  if(action==='close')dismissed.$('closePlace').click();else dismissed.$('placeDialog').fire('cancel');
+  assert.equal(dismissed.$('placeDialog').open,false);assert.equal(signal.aborted,true,'dismissing loading aborts the request');assert.ok(!dismissed.$('suggest').children.some(node=>node.className==='search-loading'));assert.equal(descendants(dismissed.$('suggest')).find(node=>node.className==='search-more-action').disabled,false,'dismissal allows retry');
+  finishDismiss({ok:true,json:async()=>({items:[['Dismiss Loading',3,101]]})});await dismissedRequest;await new Promise(setImmediate);
+  assert.equal(dismissed.$('placeDialog').open,false,'a late response cannot reopen a dismissed dialog');
+ }
+ console.log('PASS: immediate loading dialog, success/empty/error transitions, disabled repeats, accessible status, cancel/escape abort and stale-response protection');
  completed=true;console.log('PASS: typed origin/destination, exact local resolution, address results, ambiguity, cancellation, missing places, service errors, stale responses, map confirm/cancel, precise pin restoration, stationary confirmation, GPS selection, denied permission and stale GPS handling');
 })().catch(e=>{console.error(e);process.exitCode=1});

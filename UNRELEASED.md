@@ -1,5 +1,9 @@
 # Pending website release notes
 
+- Enable configurable nationwide additional-place search with common-word intersection fixes and an immediate, cancellable loading dialog.
+
+- Document contributor-owned POI hosting and keep deployment-specific account and origin settings out of public source.
+
 - Add the official MakaKami listing badge below Facebook in More options, following Day and Night with the dark badge for Classic.
 
 - Add the official Lapan Malaysia Facebook link above the version and release history.
@@ -30,4 +34,4 @@ The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are n
 
 ## Next public release scope
 
-Owner approved the road-report countdown, themed place picker, clear starting point, speedometer spacing and default English voice notes. Omit routing fixes and search-indexing maintenance from the next public release announcement. Keep the expanded staging POI data and external storage/report changes excluded from production and public source. Do not increase the visible version or publish new release entries until authorized.
+Owner approved the road-report countdown, themed place picker, clear starting point, speedometer spacing and default English voice notes. Omit routing fixes and search-indexing maintenance from the next public release announcement. Nationwide POI search and external storage are now promoted to production; actual deployment-specific configuration remains private. Do not increase the visible version or publish new release entries until authorized.

@@ -29,3 +29,8 @@ Thanks to [Dandy (@dandycrypto)](https://github.com/dandycrypto) for the origina
 | Release history | `CHANGELOG.md`, `web/changelog.json` |
 
 Read [AGENTS.md](AGENTS.md) before editing. Use `npm run build` to build and `npm test` to run the test suite. Check the target branch before starting work. Use [the live changelog](https://lapan-malaysia.com/changelog) to verify what is deployed and [the repository changelog](CHANGELOG.md) to verify what is recorded in source.
+
+
+## Current maintenance state — 18 November 2026
+
+Visible app version remains v1.0.43; no new public changelog or release has been published. Production uses TomTom as the primary route provider and Valhalla as fallback. Additional POI search supports the nationwide immutable external directory, combines common search words before applying result limits, and opens its loading dialog immediately on an explicit Search more places click. Close and Escape cancel pending lookups. The official MakaKami badge follows the active theme. Production homepage/changelog indexability, canonical URLs, robots and sitemap must be preserved during promotions. Deployment-specific POI configuration belongs only in private source or ignored local build configuration; contributors should follow docs/POI_STORAGE.md with their own hosting.

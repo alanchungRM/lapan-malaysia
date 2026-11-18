@@ -1,6 +1,6 @@
-Regional business directory for Lapan
+Malaysia business directory for Lapan
 Source: Overture Maps Places, release 2026-10-21.0.
-Coverage: bounding box 100.70,2.55,102.00,3.85 (KL and surrounding Selangor areas; not all Malaysia).
+Coverage: Malaysian country-coded places across Peninsular Malaysia, Sabah, Sarawak and Labuan, within bounding box 99.5,0.8,119.6,7.6. Coverage varies by area and does not include every place.
 Contains public business listing data from Overture Maps contributors, including Meta, Microsoft, AllThePlaces, Uberall, PinMeTo, OpenTravel, RenderSEO and DAC.
 This extract retains only records whose declared source licenses are CDLA-Permissive-2.0 or CC0-1.0. Records with other declared licenses are excluded.
 Changes: selected fields only; normalized/trimmed text; rounded coordinates; exact duplicate removal; compressed token index and record shards.

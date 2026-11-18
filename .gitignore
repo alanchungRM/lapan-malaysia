@@ -1,3 +1,12 @@
 /dist/
 __pycache__/
 *.pyc
+
+# Generated data and deployment-specific hosting configuration stay local.
+/data/poi-pages-origin.json
+/data/poi-pages-manifest.json
+/worker/poi-data.json
+/worker/poi-data.json.gz
+/worker/poi-blocks.json.gz
+/poi-pages-upload/
+/Lapan-POI-Pages-Upload.zip

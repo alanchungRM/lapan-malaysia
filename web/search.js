@@ -72,13 +72,13 @@ async function search(query,localItems,signal,allowSecondary=true,near){let item
 if(allowSecondary&&!items.some(p=>match(query,p).strong)){try{const more=await lookupMore(query,signal);extra=more.length>0;items=unique([...items,...more])}catch(e){if(signal?.aborted)throw e;warning=e.message;if(primaryFailed&&!items.length)throw e}}
 return {items:rank(items,query,near),extra,warning}}
 function init({get,set,places,status,invalidate,nearby=()=>null}){
-const $=id=>document.getElementById(id),box=$('suggest'),dialog=$('placeDialog'),results=$('placeMatches');let target='destination',sequence=0,timer,controller,pending=null,mapView,pin,point,resolveBusy=false;
+const $=id=>document.getElementById(id),box=$('suggest'),dialog=$('placeDialog'),results=$('placeMatches');let target='destination',sequence=0,timer,controller,pending=null,mapView,pin,point,resolveBusy=false,moreLoading=false;
 function reference(id){
  const origin=id==='destination'?get('origin'):null;
  return origin&&valid(origin[1],origin[2])?origin.slice(1,3):nearby();
 }
 const local=(q,id)=>rank([...(root.LapanPlaces?.search(q)||[]),...[...root.LapanHistory?.places()||[],...places].filter(p=>expand(p[0]).includes(expand(q)))],q,reference(id));
-function cancelSearch(){sequence++;clearTimeout(timer);controller?.abort()}
+function cancelSearch(){sequence++;clearTimeout(timer);controller?.abort();box.setAttribute('aria-busy','false');if(moreLoading){moreLoading=false;results.setAttribute('aria-busy','false');if(dialog.open)dialog.close();inline(local($(target).value,target),target,'Choose a result, type a place or address, or choose on map.')}}
 function choose(id,p){cancelSearch();const previous=get(id),same=previous&&previous[1]===p[1]&&previous[2]===p[2];if(!same)invalidate();set(id,p.slice());$(id).value=p[0];root.LapanHistory?.remember(p,'selected');box.replaceChildren();box.style.display='none';status((id==='origin'?'Starting point':'Destination')+' selected. Tap Find my route.');}
 function list(el,items,id,onSelect){
  el.replaceChildren();
@@ -104,16 +104,34 @@ function inline(items,id,message){
 const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=!items.some(p=>prayerMatches.has(prayerKey(p)));
 list(box,items,id,p=>choose(id,p));const note=document.createElement('p');note.textContent=message;note.setAttribute('role','status');
 const q=$(id).value.trim(),weak=q.length>=3&&!items.some(p=>match(q,p).strong),searchingMore=message==='Searching additional business and address data…';
+note.className=searchingMore?'search-loading':'';note.setAttribute('aria-live','polite');note.setAttribute('aria-atomic','true');box.setAttribute('aria-busy',String(searchingMore));
 box.prepend(note);
-if(q.length>=3){const more=document.createElement('button');more.type='button';more.className='search-more-action';more.textContent=searchingMore?'Searching more places…':'Search more places';more.disabled=searchingMore;more.onclick=()=>moreMatches(id,q);
+if(q.length>=3){const more=document.createElement('button');more.type='button';more.className='search-more-action';more.textContent=searchingMore?'Searching more places…':'Search more places';more.disabled=searchingMore;more.setAttribute('aria-busy',String(searchingMore));more.onclick=()=>moreMatches(id,q);
 if(weak&&!message.startsWith('Searching')){const panel=document.createElement('div'),title=document.createElement('strong'),help=document.createElement('small');panel.className='search-more-prompt';title.textContent=items.length?'Not the place you’re looking for?':'Can’t find your place?';help.className='search-more-help';help.textContent='Tap below to look in more business and address listings.';panel.append(title,help,more);box.prepend(panel)}else box.append(more)}
 const b=document.createElement('button');b.type='button';b.className='search-map-fallback';b.textContent='⌖ Choose '+(id==='origin'?'starting point':'destination')+' on map';b.onclick=()=>openMap(id);box.append(b);
 if($('extraSearchCredit').hidden===false){const credit=document.createElement('small');credit.textContent='Place data: Overture Maps contributors';box.append(credit)}if(items.some(p=>prayerMatches.has(prayerKey(p)))){const credit=document.createElement('a');credit.href='/prayer-data-notices';credit.target='_blank';credit.rel='noopener';credit.textContent='OpenStreetMap contributors (ODbL)';box.append(credit)}box.style.display='block'}
 
 function settle(value){const done=pending;pending=null;done?.(value)}
-dialog.addEventListener('close',()=>{if(!dialog.open)settle(null)});dialog.addEventListener('cancel',()=>settle(null));$('closePlace').onclick=()=>dialog.close();
-function confirm(items,id,q,extra=false){const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=!items.some(p=>prayerMatches.has(prayerKey(p)));target=id;$('extraSearchCredit').hidden=!extra;$('placeTitle').textContent='Choose '+(id==='origin'?'starting point':'destination');$('placeQuery').textContent='Matches for “'+q+'”. Check the address and town before choosing.';list(results,items,id,p=>{choose(id,p);settle(p);dialog.close()});dialog.showModal();return new Promise(resolve=>pending=resolve)}
-async function moreMatches(id,q){cancelSearch();const rev=sequence;controller=new AbortController();inline([],id,'Searching additional business and address data…');status('Searching more places for “'+q+'”…');try{const items=rank(await lookupMore(q,controller.signal),q,reference(id));if(rev!==sequence||$(id).value.trim()!==q)return;if(!items.length){inline([],id,'No additional matches. Try a full address, town or choose on map.');status('No additional matches for “'+q+'”.');return}box.style.display='none';await confirm(items,id,q,true)}catch(e){if(rev!==sequence)return;inline([],id,e.message+' You can still choose on map.');status(e.message)}}
+dialog.addEventListener('close',()=>{if(!dialog.open){if(moreLoading)cancelSearch();settle(null)}});dialog.addEventListener('cancel',()=>{if(moreLoading)cancelSearch();settle(null)});$('closePlace').onclick=()=>{if(moreLoading)cancelSearch();else dialog.close()};
+function confirm(items,id,q,extra=false){box.setAttribute('aria-busy','false');const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=!items.some(p=>prayerMatches.has(prayerKey(p)));target=id;$('extraSearchCredit').hidden=!extra;$('placeTitle').textContent='Choose '+(id==='origin'?'starting point':'destination');$('placeQuery').textContent='Matches for “'+q+'”. Check the address and town before choosing.';list(results,items,id,p=>{choose(id,p);settle(p);dialog.close()});if(!dialog.open)dialog.showModal();return new Promise(resolve=>pending=resolve)}
+function moreMessage(message){
+ moreLoading=false;results.setAttribute('aria-busy','false');results.replaceChildren();
+ const note=document.createElement('p');note.textContent=message;note.setAttribute('role','status');results.append(note);$('placeQuery').textContent='';
+}
+async function moreMatches(id,q){
+ cancelSearch();const rev=sequence;controller=new AbortController();target=id;
+ inline([],id,'Searching additional business and address data…');status('Searching more places for “'+q+'”…');
+ $('placeTitle').textContent='Choose '+(id==='origin'?'starting point':'destination');$('placeQuery').textContent='Searching additional business and address data…';
+ $('extraSearchCredit').hidden=true;const prayerCredit=$('prayerSearchCredit');if(prayerCredit)prayerCredit.hidden=true;
+ const loader=document.createElement('p');loader.className='search-loading';loader.textContent='Searching more places…';loader.setAttribute('role','status');loader.setAttribute('aria-live','polite');
+ results.replaceChildren();results.append(loader);results.setAttribute('aria-busy','true');moreLoading=true;if(!dialog.open)dialog.showModal();
+ try{
+  const items=rank(await lookupMore(q,controller.signal),q,reference(id));if(rev!==sequence||$(id).value.trim()!==q)return;
+  moreLoading=false;results.setAttribute('aria-busy','false');
+  if(!items.length){const message='No additional matches. Try a full address, town or choose on map.';inline([],id,message);moreMessage(message);status('No additional matches for “'+q+'”.');return}
+  box.style.display='none';await confirm(items,id,q,true);
+ }catch(e){if(rev!==sequence)return;const message=e.message+' You can still choose on map.';inline([],id,message);moreMessage(message);status(e.message)}
+}
 $('placeUseMap').onclick=()=>{dialog.close();openMap(target)};
 ['origin','destination'].forEach(id=>{
  const input=$(id);input.addEventListener('focus',()=>{cancelSearch();target=id;inline(local(input.value,id),id,'Choose a result, type a place or address, or choose on map.')} );

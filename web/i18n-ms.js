@@ -601,3 +601,5 @@ window.LapanI18n.add({
 window.LapanI18n.add({"Closes in {s} s":"Tutup dalam {s} s","Community report · just passed":"Laporan komuniti · baru dilepasi"});
 
 window.LapanI18n.add({"Clear starting point":"Kosongkan tempat mula","Starting point cleared. Enter a new place or choose on map.":"Tempat mula dikosongkan. Masukkan tempat baharu atau pilih pada peta."});
+
+window.LapanI18n.add({"Searching additional business and address data…":"Sedang mencari maklumat perniagaan dan alamat tambahan…","Searching more places…":"Sedang mencari lebih banyak tempat…"});
