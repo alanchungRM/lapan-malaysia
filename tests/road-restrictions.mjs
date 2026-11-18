@@ -11,7 +11,15 @@ const returning=[[101.446719,2.974771],[101.450452,2.974778],eastTurn,north];
 assert.equal(restrictions.blocked(crossing),true,'sparse straight route crosses the physical divider');
 assert.equal(restrictions.blocked(left),false,'left turn stays available');
 assert.equal(restrictions.blocked(returning),false,'eastbound return and turn stay available');
-assert.equal(restrictions.blocked([[101.4554673,2.9736695],[101.4554673,2.9756695]]),false,'nearby former restriction stays removed');
+// East access: the reported TomTom route crosses the median to turn right.
+const eastAccess=[101.45543,2.9756];
+const invalidRight=[eastAccess,[101.45545,2.97482],[101.45545,2.97478],[101.45546,2.97467],[101.455,2.97467]];
+const mappedLeft=[eastAccess,[101.4554089,2.9749662],[101.4554311,2.9749039],[101.4555095,2.9748229],[101.455576,2.974786],[101.4571331,2.9747818]];
+const mappedEntry=[[101.4552831,2.9747897],[101.4553657,2.9748649],[101.4554089,2.9749662],eastAccess];
+assert.equal(restrictions.blocked(invalidRight),true,'reject the reported right turn across the east access median');
+assert.equal(restrictions.blocked(mappedLeft),false,'keep the mapped left exit available');
+assert.equal(restrictions.blocked(mappedEntry),false,'keep the mapped entrance available');
+assert.equal(restrictions.blocked([[101.4551,2.9746667],[101.4557,2.9746667]]),false,'keep through traffic on the opposite carriageway available');
 const entry=restrictions.list()[0];
 entry.name='changed';
 assert.notEqual(restrictions.list()[0].name,entry.name,'inventory is read-only');
@@ -52,5 +60,10 @@ try{
  assert.equal(response.status,200);
  assert.deepEqual((await response.json()).routes[0].geometry.coordinates,detour);
  assert.deepEqual(methods,['GET','POST'],'only a candidate blocked by the divider needs a second request');
+ globalThis.fetch=async()=>Response.json({routes:[makeRoute(invalidRight),makeRoute(mappedLeft)]});
+ const eastRequest=new Request('https://test/api/route',{method:'POST',body:JSON.stringify({from:eastAccess,to:mappedLeft.at(-1),alternatives:true})});
+ response=await planLiveRoute(eastRequest,{TOMTOM_API_KEY:'test'});
+ assert.equal(response.status,200);
+ assert.deepEqual((await response.json()).routes.map(route=>route.geometry.coordinates),[mappedLeft]);
 }finally{globalThis.fetch=oldFetch}
 console.log('PASS: blocked divider, legal turn lanes, provider avoidance and safe alternative selection');
