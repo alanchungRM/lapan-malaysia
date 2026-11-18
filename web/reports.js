@@ -1,6 +1,6 @@
 // Anonymous community reports while driving: report a crash, stopped vehicle, object, flood, pothole or hidden police, see what other drivers reported ahead on your route, and say whether it is still there.
 (function(root){
-const KINDS=['crash','stopped','object','flood','pothole','police-hidden'],RANGE=500,ASK=120,REFRESH_MS=60000,REFRESH_M=1000,FIX_MAX_MS=30000;
+const KINDS=['crash','stopped','object','flood','pothole','police-hidden'],RANGE=500,ASK=300,ASK_DURATION_MS=15000,REFRESH_MS=60000,REFRESH_M=1000,FIX_MAX_MS=30000;
 const {project}=typeof module==='object'?require('./cameras.js'):root.LapanCameras;
 const LABELS={crash:'Crash',stopped:'Stopped vehicle',object:'Object on road',flood:'Flooding',pothole:'Pothole','police-hidden':'Police Hidden'};
 const NAMES={crash:'Crash reported ahead',stopped:'Stopped vehicle reported ahead',object:'Object on the road reported ahead',flood:'Flooding reported ahead',pothole:'Pothole reported ahead','police-hidden':'Police reported ahead'};
@@ -25,12 +25,12 @@ function remainingText(milliseconds,t){
  const h=Math.floor(seconds/3600),m=Math.floor(seconds/60)%60,s=seconds%60;
  return h?t('Time remaining: {h} h {m} min',{h,m}):t('Time remaining: {m} min {s} s',{m,s});
 }
-if(typeof module==='object')module.exports={LABELS,placeOnRoute,ahead,describe,ageText,shouldRefresh,remainingText,KINDS,RANGE,ASK};
+if(typeof module==='object')module.exports={LABELS,placeOnRoute,ahead,describe,ageText,shouldRefresh,remainingText,KINDS,RANGE,ASK,ASK_DURATION_MS};
 if(!root.document)return;
 const $=id=>document.getElementById(id),SEEN='lapan-report-votes',KEY='lapan-report-key';
 const hex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 let browserKey=hex(crypto.getRandomValues(new Uint8Array(16)));
-let available=null,checkedAt=0,last=null,inflight=null,fix=null,fixAt=0,route=null,items=[],raw=[],voted=new Set(),spoken=new Set(),markers=new Map(),askFor=null,askTimer=0,ticker=0;
+let available=null,checkedAt=0,last=null,inflight=null,fix=null,fixAt=0,route=null,items=[],raw=[],voted=new Set(),spoken=new Set(),markers=new Map(),askFor=null,askTimer=0,askEndsAt=0,ticker=0;
 try{
  const saved=localStorage.getItem(KEY);
  if(/^[a-f0-9]{32}$/.test(saved||''))browserKey=saved;
@@ -81,6 +81,7 @@ function paintMap(){
  }
 }
 function refreshDetails(){
+ refreshAskCountdown();
  const now=Date.now(),live=raw.filter(r=>r.deadline>now);
  if(live.length!==raw.length){raw=live;items=placeOnRoute(raw,route);renderAhead(false)}
  paintMap();
@@ -111,7 +112,16 @@ async function refresh(f){
  }catch{}finally{if(inflight===controller)inflight=null}
 }
 function hideBanner(){$('reportWarning').classList.add('hidden')}
-function hideAsk(){$('reportAsk').classList.add('hidden');askFor=null;clearTimeout(askTimer)}
+function hideAsk(){
+ clearTimeout(askTimer);askTimer=0;askEndsAt=0;
+ $('reportAsk').classList.add('hidden');askFor=null;
+}
+function refreshAskCountdown(){
+ if(!askFor)return;
+ const remaining=askEndsAt-Date.now();
+ if(remaining<=0){hideAsk();return}
+ setText($('reportAskCountdown'),translate('Closes in {s} s',{s:Math.ceil(remaining/1000)}));
+}
 function hideAll(){hideBanner();hideAsk()}
 function paintVote(id){
  const entry=markers.get(id);
@@ -137,6 +147,7 @@ async function vote(id,still){
  }catch{if(entry)entry.status.textContent=translate('Could not update the report. Try again.')}
  finally{pendingVotes.delete(id);paintVote(id);last=null}
 }
+$('reportAskDismiss').onclick=hideAsk;
 $('reportYes').onclick=()=>askFor&&vote(askFor,true);$('reportNo').onclick=()=>askFor&&vote(askFor,false);
 function stop({keepFix=false}={}){
  inflight?.abort();inflight=null;hideAll();route=null;items=[];raw=[];last=null;
@@ -151,17 +162,27 @@ function renderAhead(announce){
  const coords=route?.geometry?.coordinates;
  if(!fix||!coords?.length||!items.length){hideAll();return}
  const here=project([fix.longitude,fix.latitude],coords);
- const next=here.distance<=45?ahead(items.filter(r=>r.deadline>Date.now()),here.along):null;
- if(!next){hideAll();return}
- const alert=describe(next,I18()),banner=$('reportWarning');
- const text=alert.text;
- if(banner.textContent!==text)banner.textContent=text;
- banner.classList.remove('hidden');
- if(announce&&!spoken.has(next.id)){spoken.add(next.id);root.LapanVoice?.speak(alert.voice)}
- if(askFor&&askFor!==next.id)hideAsk();
- if(announce&&next.remaining<=ASK&&!voted.has(next.id)&&!pendingVotes.has(next.id)&&!prompted.has(next.id)&&!askFor){
-  askFor=next.id;prompted.add(next.id);$('reportAskKind').textContent=translate(LABELS[next.kind]);$('reportAsk').classList.remove('hidden');
-  askTimer=setTimeout(()=>{if(askFor===next.id)hideAsk()},10000);
+ const now=Date.now();
+ const live=here.distance<=45?items.filter(r=>r.deadline>now):[];
+ // A prompt keeps its original deadline after the driver passes its report.
+ const active=askFor?live.find(report=>report.id===askFor):null;
+ if(askFor&&!active)hideAsk();
+ const next=ahead(live,here.along);
+ if(next){
+  const alert=describe(next,I18());
+  setText($('reportWarning'),alert.text);$('reportWarning').classList.remove('hidden');
+  if(announce&&!spoken.has(next.id)){spoken.add(next.id);root.LapanVoice?.speak(alert.voice)}
+  if(announce&&next.remaining<=ASK&&!voted.has(next.id)&&!pendingVotes.has(next.id)&&!prompted.has(next.id)&&!askFor){
+   askFor=next.id;prompted.add(next.id);askEndsAt=now+ASK_DURATION_MS;
+   $('reportAskKind').textContent=translate(LABELS[next.kind]);$('reportAsk').classList.remove('hidden');
+   askTimer=setTimeout(hideAsk,ASK_DURATION_MS);
+  }
+ }else hideBanner();
+ if(askFor){
+  const report=live.find(report=>report.id===askFor),remaining=report.along-here.along;
+  const distance=Math.max(10,Math.round(remaining/10)*10);
+  setText($('reportAskDistance'),remaining>0?translate('Community report · {m} m',{m:distance}):translate('Community report · just passed'));
+  refreshAskCountdown();
  }
 }
 function update(position,nextRoute){
