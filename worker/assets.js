@@ -1,6 +1,5 @@
 // Static asset serving: validators, cache policy and browser security headers.
 const securityHeaders={
- 'X-Robots-Tag':'noindex, nofollow, noarchive',
  'Strict-Transport-Security':'max-age=31536000',
  'X-Content-Type-Options':'nosniff',
  'X-Frame-Options':'SAMEORIGIN',
@@ -28,9 +27,12 @@ const securityHeaders={
 const longCached=/^\/((?:maplibre|leaflet)\.(js|css)|signals\.json|map-night-gray\.json|lapan-icon\.svg|lapan-192\.png|lapan-512\.png|apple-touch-icon\.png)$/;
 const decodedBinary=new Map();
 function etagMatches(header,etag){return !!header&&header.split(',').some(v=>{v=v.trim();return v==='*'||v.replace(/^W\//,'')===etag})}
-export function withSecurityHeaders(response){
+const productionOrigin='https://lapan-malaysia.com';
+const noIndex='noindex, nofollow, noarchive';
+export function withSecurityHeaders(response,{indexable=false}={}){
  const out=new Response(response.body,response);
  for(const [name,value] of Object.entries(securityHeaders))if(!out.headers.has(name))out.headers.set(name,value);
+ if(!indexable&&!out.headers.has('X-Robots-Tag'))out.headers.set('X-Robots-Tag',noIndex);
  return out;
 }
 export function serveAsset(request,assets,env={}){
@@ -38,6 +40,24 @@ export function serveAsset(request,assets,env={}){
  if(request.method!=='GET'&&request.method!=='HEAD')return withSecurityHeaders(new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}}));
  const path=u.pathname==='/'?'/index.html':u.pathname==='/changelog/'?'/changelog':u.pathname==='/statistics'||u.pathname==='/statistics/'?'/statistics.html':u.pathname;
  let file=Object.hasOwn(assets,path)?assets[path]:null;
+ // Index only public pages on the canonical production domain.
+ const production=u.origin===productionOrigin&&env.LAPAN_ENVIRONMENT!=='staging';
+ if(path==='/robots.txt'||(production&&path==='/sitemap.xml')){
+  const robots=path==='/robots.txt';
+  const body=robots
+   ? 'User-agent: *\n'+(production?'Allow: /\nSitemap: '+productionOrigin+'/sitemap.xml\n':'Disallow: /\n')
+   : '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>'+productionOrigin+'/</loc></url><url><loc>'+productionOrigin+'/changelog</loc></url></urlset>\n';
+  return withSecurityHeaders(new Response(request.method==='HEAD'?null:body,{
+   headers:{'Content-Type':(robots?'text/plain':'application/xml')+'; charset=utf-8','Cache-Control':'no-cache'}
+  }));
+ }
+ const indexable=production&&(path==='/index.html'||path==='/changelog');
+ if(file&&indexable){
+  const canonical=productionOrigin+(path==='/index.html'?'/':'/changelog');
+  file={...file,body:file.body.replace('</head>','<link rel="canonical" href="'+canonical+'"></head>'),
+   etag:file.etag?.replace(/"$/,'-indexable"')};
+ }
+
  if(file&&path==='/index.html'){
   const provider=env.LAPAN_SELECTED_PROVIDER||(env.TOMTOM_ROUTING_DISABLED==='true'?'OSRM':'TomTom');
   const staging=env.LAPAN_ENVIRONMENT==='staging'||env.TOMTOM_ROUTING_DISABLED==='true';
@@ -48,9 +68,9 @@ export function serveAsset(request,assets,env={}){
 
  if(!file)return withSecurityHeaders(new Response('Not found',{status:404}));
  const headers={'Content-Type':file.type+'; charset=utf-8','Cache-Control':/^\/voice-pack-[a-f0-9]{16}\.bin$/.test(path)?'private, max-age=31536000, immutable':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
- if(file.etag){headers.ETag=file.etag;if(etagMatches(request.headers.get('If-None-Match'),file.etag))return withSecurityHeaders(new Response(null,{status:304,headers}))}
- if(request.method==='HEAD')return withSecurityHeaders(new Response(null,{headers}));
+ if(file.etag){headers.ETag=file.etag;if(etagMatches(request.headers.get('If-None-Match'),file.etag))return withSecurityHeaders(new Response(null,{status:304,headers}),{indexable})}
+ if(request.method==='HEAD')return withSecurityHeaders(new Response(null,{headers}),{indexable});
  let body=file.body;
  if(file.binary){body=decodedBinary.get(path);if(!body){body=Uint8Array.from(atob(file.body),c=>c.charCodeAt(0));decodedBinary.set(path,body)}}
- return withSecurityHeaders(new Response(body,{headers}));
+ return withSecurityHeaders(new Response(body,{headers}),{indexable});
 }
