@@ -33,7 +33,6 @@ html[data-ui="2"][data-theme="night"] .nav-then-label{color:var(--planner-mint)}
 html body.guiding #navpanel{pointer-events:none}
 html body.guiding #navpanel :is(button,a){pointer-events:auto;touch-action:manipulation}
 html body.guiding #navpanel #reportWarning{margin-top:10px}
-html body.guiding #navpanel #reportAsk{margin-top:10px}
 html body.guiding :is(#navBar,#driveControls) button{touch-action:manipulation}
 /* Alerts use the yellow warning-sign look */
 html #cameraWarning,html #hazardWarning,html #limitWarning{position:relative;background:var(--warn-sign)!important;color:var(--on-warn-sign)!important;border:0!important;border-radius:14px!important;margin:8px 0 0!important;padding:8px 10px 8px 44px!important;font-size:clamp(14px,3.9vw,16px)!important;line-height:1.25!important;font-weight:800!important}
@@ -99,7 +98,7 @@ html body.guiding.details-open #driveControls{visibility:hidden}
 html body.guiding.drive-more #driveMore{right:calc(100% + 6px);bottom:0}
 @media (max-height:480px) and (orientation:landscape){
   html body.guiding #driveControls{
-    --drive-speed-chip-width:58px;
+    --drive-speed-chip-width:72px;
     --drive-side-gap:8px;
   }
   html body.guiding #driveControls :is(.speed-chip,.limit-sign){
