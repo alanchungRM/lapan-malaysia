@@ -35,6 +35,12 @@ function reversesOnSameRoad(previous,step){
  const incoming=previous.geometry?.coordinates,outgoing=step.geometry?.coordinates;
  if(!Array.isArray(incoming)||incoming.length<2||!Array.isArray(outgoing)||outgoing.length<2)return false;
  const [lon,lat]=outgoing[0],scale=111320,lonScale=scale*Math.cos(lat*Math.PI/180);
+ // At the mapped Pulau Indah crossover, the provider can start the maneuver
+ // early and trace the wider connector between the two frontage lanes.
+ const pulauIndah=lon>=101.4196&&lon<=101.42002&&lat>=2.98338&&lat<=2.98381&&
+  [previous,step].every(part=>roadRefs(part.ref).includes('181')||
+    /^(lebuhraya pulau indah|pulau indah expressway)$/.test(roadName(part.name)));
+ const maxSide=pulauIndah?55:48,maxStart=pulauIndah?85:60;
  const local=([x,y])=>[(x-lon)*lonScale,(y-lat)*scale];
  const approach=[];
  let length=0;
@@ -55,12 +61,12 @@ function reversesOnSameRoad(previous,step){
   const point=local(coordinate),last=path.at(-1);
   if(last)length+=Math.hypot(point[0]-last[0],point[1]-last[1]);
   path.push(point);
-  if(length>=85)break;
+  if(length>=maxStart+25)break;
  }
- for(let start=0;start<=60;start+=5){
+ for(let start=0;start<=maxStart;start+=5){
   const a=pointAlong(path,start),b=pointAlong(path,start+25);
-  if(!a||!b||forward(a)>25||Math.abs(side(a))>48)break;
-  if(forward(b)-forward(a)<=-22&&Math.abs(side(b)-side(a))<=10&&Math.abs(side(b))<=48)return true;
+  if(!a||!b||forward(a)>25||Math.abs(side(a))>maxSide)break;
+  if(forward(b)-forward(a)<=-22&&Math.abs(side(b)-side(a))<=10&&Math.abs(side(b))<=maxSide)return true;
  }
  return false;
 }
