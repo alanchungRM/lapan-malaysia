@@ -49,6 +49,17 @@ html[data-ui="2"] .dot.dest{background:var(--bad)!important;border-color:var(--b
 html[data-ui="2"] .suggest{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:var(--shadow)}
 html[data-ui="2"] .suggest button{background:transparent!important;color:var(--ink)!important;border-color:var(--line)!important}
 
+/* Keep the additional search prompt readable in both themes. */
+html[data-ui="2"] #suggest .search-more-prompt{
+  background:var(--surface-2);
+  border-color:var(--control-border);
+}
+html[data-ui="2"] #suggest .search-more-action{
+  background:var(--brand)!important;
+  color:var(--on-brand)!important;
+  border-color:var(--brand)!important;
+}
+
 /* Buttons and chips */
 html[data-ui="2"] .primary{background:var(--brand)!important;color:var(--on-brand)!important;border-radius:16px!important;min-height:56px!important;font-size:18px!important;font-weight:700!important;box-shadow:none!important}
 html[data-ui="2"] .primary:disabled{opacity:.6}
@@ -277,7 +288,12 @@ html[data-ui="2"] #reportAsk{
   background:var(--surface);
   color:var(--ink);
 }
-html[data-ui="2"] #reportAsk #reportAskKind{color:var(--ink-2)!important}
+html[data-ui="2"] #reportAskDistance{color:var(--ink-2)}
+html[data-ui="2"] #reportAsk #reportNo{
+  background:var(--surface-2)!important;
+  color:var(--ink)!important;
+  border-color:var(--control-border);
+}
 html[data-ui="2"] :is(#reportYes,.report-vote-actions button:first-child){
   background:var(--brand)!important;
   color:var(--on-brand)!important;
@@ -437,4 +453,20 @@ html[data-ui="2"] #tollDialog :is(.calculator-result strong,.tolltitle strong,de
 }
 html[data-ui="2"] #tollDialog .plaza-pickers select{
   border-color:var(--control-border)!important;
+}
+
+/* Place selection uses the active day/night skin throughout the popup. */
+html[data-ui="2"] #placeMatches button,
+html[data-ui="2"] #placeDialog #closePlace{
+ background:var(--surface-2);
+ color:var(--ink);
+ border-color:var(--control-border);
+}
+html[data-ui="2"] #placeMatches button strong{color:var(--ink)}
+html[data-ui="2"] #placeMatches button small{color:var(--ink-2)}
+html[data-ui="2"] #placeMatches button:hover,
+html[data-ui="2"] #placeMatches button:focus-visible{border-color:var(--brand)}
+html[data-ui="2"] #placeDialog #closePlace{
+ display:grid;place-items:center;min-width:44px;min-height:44px;
+ border-radius:12px;font-size:24px;line-height:1;
 }
