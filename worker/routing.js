@@ -115,7 +115,7 @@ const work=(async()=>{
    await globalThis.LapanTomTomUsage?.record(env,body.purpose||'planning');
    return fetch(url.toString(),{...options,signal});
   }
-  const noRoute=()=>json({error:body.avoidTolls?'No route avoiding tolls was found. Try Faster or change your starting point or destination.':'No usable route avoiding reported restrictions was returned. Try a nearby accessible starting point or destination.',allowBasic:false},422);
+  const noRoute=(restricted=false)=>json({error:body.avoidTolls?'No route avoiding tolls was found. Try Faster or change your starting point or destination.':'No usable route avoiding reported restrictions was returned. Try a nearby accessible starting point or destination.',allowBasic:false,...(restricted?{code:'restricted-route'}:{})},422);
   function upstreamError(response){
    if(response.status===429){
     const retry=Math.max(30,Math.min(300,Number(response.headers.get('Retry-After'))||60));
@@ -155,7 +155,7 @@ const work=(async()=>{
    if(!response.ok)return upstreamError(response);
    candidates=await routeCandidates(response);
   }
-  if(!candidates.routes.length)return noRoute();
+  if(!candidates.routes.length)return noRoute(candidates.blocked);
   const routes=await Promise.all(candidates.routes.map(async({normalized,route})=>{
    try{normalized.tollEstimate=body.vehicle==='motorcycle'?null:await estimateTolls(route)}
    catch{normalized.tollEstimate=null}
