@@ -5,7 +5,7 @@ function chooseVoice(voices,uri,lang='en'){const english=voices.filter(v=>new Re
 // Pin one device voice until the user deliberately changes the selection.
 function createVoiceSelector(){let pinned=null;return {get(voices,uri='',lang='en'){const re=new RegExp('^'+lang,'i'),known=uri&&voices.find(x=>x.voiceURI===uri);if(known&&!re.test(known.lang))uri='';if(pinned&&re.test(pinned.lang)&&(!uri||pinned.voiceURI===uri))return pinned;const v=uri?voices.find(x=>re.test(x.lang)&&x.voiceURI===uri):chooseVoice(voices,'',lang);if(v)pinned=v;return v||null},reset(){pinned=null}}}
 const voiceModes={normal:{label:'Normal',icon:'🔊'},less:{label:'Less chatty',icon:'🔉'},alerts:{label:'Alerts only',icon:'🔔'},off:{label:'Off',icon:'🔇'}};
-function normalizeVoice(value={}){const mode=Object.hasOwn(voiceModes,value.mode)?value.mode:value.enabled===false?'off':'normal';return {mode,enabled:mode!=='off',voiceURI:typeof value.voiceURI==='string'?value.voiceURI:''}}
+function normalizeVoice(value={}){const mode=Object.hasOwn(voiceModes,value.mode)?value.mode:value.enabled===false?'off':'normal';return {mode,enabled:mode!=='off',voiceURI:typeof value.voiceURI==='string'?value.voiceURI:null}}
 function allowsVoice(mode,kind='alert',stage=0){if(mode==='off')return false;if(kind==='manual')return true;if(kind==='instruction')return mode==='normal'||(mode==='less'&&stage>=2);if(kind==='startup')return mode==='normal';return true}
 // Reveal only: a swipe never deletes a saved place without a Delete click.
 function bindRecentSwipe({row,face,select,action,toggle,onSelect,onDelete,onOpen}){
@@ -49,7 +49,9 @@ const bundledVoice=uri=>Object.hasOwn(voicePacks,uri)?voicePacks[uri]:null;
 const appLanguage=()=>root.LapanI18n?.lang?.()||'en';
 const matchesLanguage=(language,tag)=>tag?.toLowerCase().split(/[-_]/)[0]===language;
 function pickerVoice(){
- const language=appLanguage(), saved=settings.voiceURI, bundled=bundledVoice(saved);
+ const language=appLanguage();
+ const saved=settings.voiceURI??(language==='en'&&AudioContext&&bundledVoice(heartId)?heartId:'');
+ const bundled=bundledVoice(saved);
  const device=voices.find(voice=>voice.voiceURI===saved);
  if(bundled&&(bundled.language||'en')!==language){
   return AudioContext?Object.keys(voicePacks).find(id=>voicePacks[id].language===language)||'':'';
