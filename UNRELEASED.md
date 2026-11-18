@@ -1,5 +1,7 @@
 # Pending website release notes
 
+- Add the official MakaKami listing badge below Facebook in More options, following Day and Night with the dark badge for Classic.
+
 - Add the official Lapan Malaysia Facebook link above the version and release history.
 
 - Preserve production homepage and changelog indexability with canonical URLs, crawlable robots and sitemap, and SEO regression checks.
