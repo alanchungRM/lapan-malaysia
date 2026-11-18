@@ -105,10 +105,10 @@ body.guiding #driveMap .maplibregl-ctrl-bottom-right{bottom:auto!important;top:c
 .picker-map-credits details{position:relative;background:#fff;color:#203444;border-radius:18px;padding:0}.picker-map-credits summary{list-style:none;cursor:pointer;display:grid;place-items:center;width:24px;height:24px;font:16px system-ui}.picker-map-credits summary::-webkit-details-marker{display:none}.picker-map-credits details>div{position:absolute;right:0;bottom:30px;width:230px;max-width:65vw;padding:10px 12px;border-radius:10px;background:#fff;box-shadow:0 2px 10px #0003;font:12px/1.5 system-ui}.picker-map-credits a{color:#176082}
 
 /* One opaque, high-contrast speed display for both day and night maps. */
-body.guiding #driveControls .speed-chip{box-sizing:border-box;width:60px;min-height:68px;padding:6px 2px;background:#142d40;color:#fff;border:2px solid #b8cbd5;border-radius:13px;box-shadow:0 2px 8px #0004;font-variant-numeric:tabular-nums}
-body.guiding #driveControls .speed-chip strong{font-size:32px;font-weight:800;line-height:1.1;color:#fff}
+body.guiding #driveControls .speed-chip{box-sizing:border-box;width:72px;min-height:68px;padding:6px 8px;background:#142d40;color:#fff;border:2px solid #b8cbd5;border-radius:13px;box-shadow:0 2px 8px #0004;font-variant-numeric:tabular-nums}
+body.guiding #driveControls .speed-chip strong{font-size:28px;font-weight:800;line-height:1.1;color:#fff}
 body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;font-weight:600;color:#fff}
-@media(max-height:480px) and (orientation:landscape){body.guiding #driveControls .speed-chip{width:58px;min-height:58px;padding:4px 2px}body.guiding #driveControls .speed-chip strong{font-size:30px}}
+@media(max-height:480px) and (orientation:landscape){body.guiding #driveControls .speed-chip{width:72px;min-height:58px;padding:4px 8px}body.guiding #driveControls .speed-chip strong{font-size:26px}}
 
 /* Signed road and exit numbers stay readable on both day and night maps. */
 #nextturn .nav-road-badge{display:inline-block;vertical-align:baseline;white-space:nowrap;max-width:100%;box-sizing:border-box;padding:2px 6px;margin:1px 3px;border:1px solid #e1b324;border-radius:5px;background:#ffdf40;color:#172230;font-size:.88em;font-weight:800;line-height:1.25;letter-spacing:.02em;font-variant-numeric:tabular-nums;box-shadow:0 1px 2px #0003}
@@ -127,7 +127,7 @@ body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;fo
 .hot-fm-choice img,.vehicle-hot-fm img,.hot-fm-leaflet img{object-fit:cover;object-position:center}
 
 /* Keep a touch-friendly clear action beside the destination, without squeezing the input. */
-.field>div{min-width:0}.field .clear-destination{flex:0 0 44px;min-width:44px;min-height:44px;font-size:25px;line-height:1;color:#d8e8ed}.field:has(#destination:placeholder-shown) .clear-destination{visibility:hidden}.field .clear-destination:focus-visible{outline:2px solid #a7efc7;outline-offset:2px;border-radius:8px}
+.field>div{min-width:0}.field .clear-destination{flex:0 0 44px;min-width:44px;min-height:44px;font-size:25px;line-height:1;color:#d8e8ed}.field:has(#destination:placeholder-shown) #clearDestination,.field:has(#origin:placeholder-shown) #clearOrigin{visibility:hidden}.field .clear-destination:focus-visible{outline:2px solid #a7efc7;outline-offset:2px;border-radius:8px}
 
 .staging-banner{position:relative;z-index:1001;padding:10px 14px;background:#ffd75e;color:#241900;text-align:center;font:700 13px/1.5 system-ui,sans-serif;overflow-wrap:anywhere}
 
@@ -287,8 +287,26 @@ body.guiding .saved-map-pin{display:none}
 /* Community reports */
 #reportWarning{background:#fff2cc;color:#493100;border:2px solid #d4941c;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;line-height:1.4}
 #cameraWarning:not(.hidden)~#reportWarning{display:none}
-#reportAsk{display:flex;align-items:center;gap:8px;margin-top:6px;padding:8px 10px;border-radius:12px;background:#223143;color:#f4f9f8;font-weight:700}#reportAsk.hidden{display:none}#reportAsk span{flex:1}#reportAsk small{display:block;font-size:12px;font-weight:600;color:#ffd27a}
-#reportAsk button{min-width:64px;min-height:48px;border:0;border-radius:12px;background:#2bb88f;color:#05261c;font-size:16px;font-weight:800;cursor:pointer}#reportAsk #reportNo{background:#3a495a;color:#f4f9f8}
+#reportAsk{
+ position:fixed;z-index:990;left:12px;right:76px;max-width:560px;
+ bottom:calc(var(--nav-footer-height,110px) + 16px + env(safe-area-inset-bottom));
+ padding:10px 12px;border:1px solid #526779;border-radius:16px;
+ background:#223143;color:#f4f9f8;box-shadow:0 6px 18px #0004;
+}
+#reportAsk.hidden,body:not(.guiding) #reportAsk,body.details-open #reportAsk{display:none}
+.report-ask-heading{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.report-ask-heading strong,.report-ask-heading small{display:block}
+.report-ask-heading small{font-size:12px;color:#b1c6cf}
+.report-ask-heading strong{font-size:16px}
+.report-ask-question{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px;font-size:13px}
+#reportAskCountdown{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.report-ask-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#reportAsk button{min-height:44px;border:1px solid transparent;border-radius:10px;background:#2bb88f;color:#05261c;font-size:14px;font-weight:750;cursor:pointer;touch-action:manipulation}
+#reportAsk #reportNo{background:#3a495a;color:#f4f9f8}
+#reportAsk #reportAskDismiss{flex:0 0 44px;background:transparent;color:inherit;font-size:24px}
+@media(max-height:480px) and (orientation:landscape){
+ #reportAsk{left:auto;right:90px;width:min(38vw,340px);bottom:12px}
+}
 #reportDialog{padding:0 0 18px;border:1px solid #526779;border-radius:24px 24px 16px 16px;background:#172738;color:#f4f9f8;width:min(440px,calc(100vw - 24px));max-height:88dvh;overflow:auto;box-shadow:0 12px 60px #0007;margin:auto auto max(12px,env(safe-area-inset-bottom))}#reportDialog::backdrop{background:#07131dcc;backdrop-filter:blur(3px)}
 .report-body{padding:4px 18px 0;display:grid;gap:12px}.report-body p{margin:0;font-size:13px;color:#cfdedb}#reportStatus{min-height:20px;font-weight:700;color:#f4f9f8}
 .report-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.report-kind{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:88px;padding:10px;border:1px solid #475d6e;border-radius:16px;background:#243546;color:#f5faf9;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.report-kind svg{color:var(--report-accent)}
