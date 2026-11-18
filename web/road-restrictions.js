@@ -5,7 +5,11 @@ const areas=[
  {id:'delima-3-bayu-impian-2-divider',name:'Persiaran Delima 3 / Persiaran Bayu Impian 2',
   reason:'Reported physical divider blocks a straight crossing',addedAt:'2026-11-11',
   // The box sits inside the median, clear of the eastbound and westbound turn lanes.
-  west:101.45074,south:2.97471,east:101.45099,north:2.974754}
+  west:101.45074,south:2.97471,east:101.45099,north:2.974754},
+ {id:'delima-bayu-impian-east-access-divider',name:'Persiaran Delima / Bayu Impian east access',
+  reason:'Reported physical divider blocks right turn across the median',addedAt:'2026-11-14',
+  // Between the two carriageways. Keep the mapped left exit and entrance north of the divider open.
+  west:101.45534,south:2.974705,east:101.45559,north:2.974754}
 ];
 // Liang–Barsky segment clipping catches crossings even with no vertex inside the box.
 function intersects(a,b,r){let lo=0,hi=1;const dx=b[0]-a[0],dy=b[1]-a[1];for(const [p,q] of [[-dx,a[0]-r.west],[dx,r.east-a[0]],[-dy,a[1]-r.south],[dy,r.north-a[1]]]){if(p===0){if(q<0)return false;continue}const t=q/p;if(p<0)lo=Math.max(lo,t);else hi=Math.min(hi,t);if(lo>hi)return false}return true}
