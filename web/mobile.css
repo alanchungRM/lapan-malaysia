@@ -434,3 +434,10 @@ html[data-ui="2"] #uiAppearance a[href="?ui=2"]{display:none}
   flex-basis:14px;
   height:14px;
 }
+
+/* Official 150 × 40 artwork. Classic uses the dark badge; the new look follows Day/Night. */
+.menu-footer .makakami-badge{display:flex;align-items:center;width:150px;min-height:44px;margin-top:8px}
+.makakami-badge img{display:block;width:150px;height:40px;flex:none}
+.makakami-badge .makakami-day{display:none}
+html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-day{display:block}
+html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-night{display:none}
