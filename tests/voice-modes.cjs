@@ -43,3 +43,22 @@ h.node('voiceChoice').onchange();
 assert.deepEqual(prepared,['ms'],'only the selected pack is prepared');
 assert.equal(h.ctx.LapanVoice.selectedVoice(),malay);
 assert.match(h.node('voiceNote').textContent,/Bahasa Melayu/);
+
+
+const englishPack={voicePacks:{'lapan-kokoro-heart':heart},createVoicePack:()=>({})};
+storage.delete('lapan-voice');
+h=harness(englishPack,class {});
+assert.equal(h.node('voiceChoice').value,'lapan-kokoro-heart','English defaults to Heart');
+assert.equal(h.ctx.LapanVoice.needsPreparation(),true);
+h.language('ms');
+assert.equal(h.node('voiceChoice').value,'','Malay keeps its automatic device voice');
+h.language('en');
+h.node('voiceChoice').value='';
+h.node('voiceChoice').onchange();
+assert.equal(harness(englishPack,class {}).node('voiceChoice').value,'','explicit Auto survives reload');
+
+storage.set('lapan-voice',JSON.stringify({mode:'off'}));
+h=harness(englishPack,class {});
+assert.equal(h.node('voiceChoice').value,'lapan-kokoro-heart');
+assert.equal(h.ctx.LapanVoice.needsPreparation(),false,'the default never overrides Off');
+assert.equal(harness(englishPack).node('voiceChoice').value,'','use the device default without Web Audio');
