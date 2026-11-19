@@ -449,3 +449,37 @@ html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-night{display:none
 @media(prefers-reduced-motion:reduce){#suggest .search-loading::before,#placeDialog .search-loading::before{animation:none}}
 
 #placeDialog p.search-loading{justify-content:center;min-height:100px;margin:16px 0}
+
+.route-weather {
+ display:grid;
+ gap:.35rem;
+ margin-top:.65rem;
+ padding:.6rem 0 0;
+ border-top:1px solid var(--line,#425369);
+ color:inherit;
+ font-size:.875rem;
+ line-height:1.45;
+}
+.route-weather-warning {
+ display:grid;
+ gap:.25rem;
+ padding:.65rem .75rem;
+ border-radius:.65rem;
+ background:var(--warn,#f2a900);
+ color:var(--on-warn,#2a1d00);
+ overflow-wrap:anywhere;
+}
+.route-weather-warning-title {
+ font-weight:750;
+}
+.route-weather-links {
+ display:flex;
+ flex-wrap:wrap;
+ gap:.25rem .75rem;
+ font-size:.8125rem;
+}
+.route-weather-links a {
+ color:inherit;
+ text-decoration:underline;
+ text-underline-offset:.16em;
+}

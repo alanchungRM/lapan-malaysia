@@ -2,6 +2,19 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.44] — 2026-11-19
+
+Weather forecasts and route warnings
+
+### Added
+
+- See today’s forecast near your destination and active weather warnings that affect areas along your planned route. An amber card below the ETA shows the affected areas and when the warning expires. Those areas are also highlighted on the map.
+- Open JPS Public InfoBanjir from the route preview to check official flood information.
+
+> Weather forecasts and warnings come from MET Malaysia through Malaysia’s official open data API (data.gov.my). Lapan uses geoBoundaries administrative boundaries to match warnings to routes.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.43] — 2026-11-13
 
 Adaptive themes, next-turn preview and nationwide POI search
