@@ -470,3 +470,74 @@ html[data-ui="2"] #placeDialog #closePlace{
  display:grid;place-items:center;min-width:44px;min-height:44px;
  border-radius:12px;font-size:24px;line-height:1;
 }
+
+/* Sunset Drive shares the standard layout and keeps warning colours distinct. */
+html[data-ui="2"][data-skin="sunset"]{
+ --bg:#1a1120;--surface:#25152c;--surface-2:#35213f;
+ --line:#5c4168;--control-border:#a58caf;
+ --ink:#fff4fa;--ink-2:#d6bfdc;--brand:#ffc094;--on-brand:#2c1727;
+ --planner-mint:#ffc094;--lime:#ffd3b7;--route:#ff6c9b;--focus:#ffc094;
+ --turn:#2e1937;--planning-selected:#ff6c9b;--planning-alternative:#ae98c5;
+}
+html[data-skin="sunset"] header{
+ border-image:linear-gradient(90deg,#ffc094,#ff6c9b,#a57dea) 1!important;
+}
+html[data-skin="sunset"] .vehicle-arrow path[fill="#1783ee"]{fill:#fff4e8;stroke:#30203f}
+
+html[data-ui="2"][data-skin="sunset"] :is(.saved-edit,.plan-row .share-icon,.route-preference label){
+ background:var(--surface-2);
+ border-color:var(--control-border);
+}
+html[data-ui="2"][data-skin="sunset"] .route-preference label:has(input:checked){
+ background:#4c2b48;
+ border-color:var(--brand);
+}
+html[data-ui="2"][data-skin="sunset"] .route-preference input{
+ accent-color:var(--brand);
+ color-scheme:dark;
+}
+html[data-skin="sunset"] header .logo{
+ content:url("/lapan-icon-sunset.svg");
+ border-radius:33%;
+ box-shadow:0 0 8px #ff6c9b28;
+}
+
+/* Sunset navigation keeps directions opaque and reserves alert colours for alerts. */
+html[data-skin="sunset"] body.guiding .navpanel{
+ --sign-blue:#392348;
+ --sign-green:#4d2745;
+ --on-sign:#fff4fa;
+ box-shadow:inset 0 0 0 1px #ba849f,var(--shadow)!important;
+}
+html[data-skin="sunset"] body.guiding .navpanel[data-mode="status"]{
+ background:var(--turn)!important;
+}
+html[data-skin="sunset"] body.guiding .navpanel .link{
+ color:var(--brand)!important;
+}
+html[data-skin="sunset"] :is(#routeBasis,#navigationProgress){
+ background:var(--surface-2);
+ border-color:var(--control-border);
+ color:var(--ink);
+}
+html[data-skin="sunset"] body.guiding #navTrip :is(.eta-ampm,.eta-dist){
+ color:var(--ink-2);
+}
+html[data-skin="sunset"] body.guiding #driveMore{
+ background:var(--surface);
+}
+html[data-skin="sunset"] body.guiding :is(#driveControls button,#navBar #navdetails):not(#navAwake[data-state="on"]){
+ background:linear-gradient(145deg,#60375c,#321d42)!important;
+ box-shadow:inset 0 0 0 1px #9b708d,0 2px 8px #0006!important;
+}
+
+/* The sunset illustration lives in the planner, away from driving guidance. */
+html[data-ui="2"][data-skin="sunset"] body:not(.guiding) #journeytitle{
+ min-height:64px;
+ padding-inline:12px;
+ border-radius:12px;
+ background:
+  linear-gradient(105deg,#25152c 15%,#25152cc7 56%,#25152c8f),
+  url("/images/sunset-palms.webp") right 54% / auto 145% no-repeat,
+  var(--surface);
+}

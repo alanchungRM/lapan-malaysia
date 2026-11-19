@@ -6,10 +6,10 @@ function createTheme(env){
  let place={lat:3.139,lon:101.687},last=null;
  try{const s=JSON.parse(storage.getItem(KEY)||'null');if(s&&Number.isFinite(s.lat)&&Number.isFinite(s.lon))place=s}catch{}
  const mode=()=>{try{return mapAppearance()?.mode?.()??storage?.getItem(MODE)}catch{return 'auto'}};
- const current=()=>{const m=mode();return m==='day'||m==='night'?m:sun.themeAt(now(),place.lat,place.lon)};
+ const current=()=>{if(doc.documentElement.dataset.skin==='sunset')return 'night';const m=mode();return m==='day'||m==='night'?m:sun.themeAt(now(),place.lat,place.lon)};
  function apply(){
   const theme=current();last=theme;doc.documentElement.dataset.theme=theme;
-  const meta=doc.querySelector('meta[name="theme-color"]');if(meta)meta.content=COLORS[theme];
+  const meta=doc.querySelector('meta[name="theme-color"]');if(meta)meta.content=doc.documentElement.dataset.skin==='sunset'?'#25152C':COLORS[theme];
   return theme;
  }
  // Re-evaluate and tell the map to follow, but only when the answer changed, so the map style is not reloaded every minute.

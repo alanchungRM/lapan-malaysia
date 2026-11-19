@@ -2,6 +2,17 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.45] — 2026-11-19
+
+GTA Sunset navigation skin
+
+### Added
+
+- Tap the star in the route planner to choose Classic, Adaptive, or the new GTA Sunset skin. Lapan remembers your choice in this browser.
+- GTA Sunset brings a plum map, coral route lines in 2D and 3D, high-contrast turn panels, and sunset-gradient accents to Lapan.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.44] — 2026-11-19
 
 Weather forecasts and route warnings
