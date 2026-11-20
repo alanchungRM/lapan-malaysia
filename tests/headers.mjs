@@ -68,6 +68,17 @@ for(const [path,canonical] of [['/','/'],['/index.html?ui=1','/'],['/changelog/'
  assert.equal(cached.status,304);
  assert.equal(cached.headers.get('X-Robots-Tag'),null);
 }
+assert.match(await (await production('/')).text(),/<link rel="icon" type="image\/png" sizes="192x192" href="\/lapan-192.png">/);
+const favicon=await production('/lapan-192.png');
+assert.equal(favicon.status,200);
+assert.match(favicon.headers.get('Content-Type'),/^image\/png/);
+assert.equal(favicon.headers.get('X-Robots-Tag'),null);
+assert.equal((await production('/lapan-192.png',{method:'HEAD'})).headers.get('X-Robots-Tag'),null);
+const cachedFavicon=await production('/lapan-192.png',{headers:{'If-None-Match':favicon.headers.get('ETag')}});
+assert.equal(cachedFavicon.status,304);
+assert.equal(cachedFavicon.headers.get('X-Robots-Tag'),null);
+assert.match((await get('/lapan-192.png')).headers.get('X-Robots-Tag'),/noindex/);
+assert.match((await production('/lapan-192.png',undefined,{LAPAN_ENVIRONMENT:'staging'})).headers.get('X-Robots-Tag'),/noindex/);
 for(const path of ['/statistics','/stdrpt','/s/2222222','/api/routing-config','/missing']){
  assert.match((await production(path)).headers.get('X-Robots-Tag'),/noindex/);
 }

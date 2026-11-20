@@ -40,7 +40,7 @@ export function serveAsset(request,assets,env={}){
  if(request.method!=='GET'&&request.method!=='HEAD')return withSecurityHeaders(new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}}));
  const path=u.pathname==='/'?'/index.html':u.pathname==='/changelog/'?'/changelog':u.pathname==='/statistics'||u.pathname==='/statistics/'?'/statistics.html':u.pathname;
  let file=Object.hasOwn(assets,path)?assets[path]:null;
- // Index only public pages on the canonical production domain.
+ // Allow indexing for canonical public pages and the declared favicon on production.
  const production=u.origin===productionOrigin&&env.LAPAN_ENVIRONMENT!=='staging';
  if(path==='/robots.txt'||(production&&path==='/sitemap.xml')){
   const robots=path==='/robots.txt';
@@ -51,12 +51,16 @@ export function serveAsset(request,assets,env={}){
    headers:{'Content-Type':(robots?'text/plain':'application/xml')+'; charset=utf-8','Cache-Control':'no-cache'}
   }));
  }
- const indexable=production&&(path==='/index.html'||path==='/changelog');
- if(file&&indexable){
+ const canonicalPage=production&&(path==='/index.html'||path==='/changelog');
+ const indexableFavicon=production&&path==='/lapan-192.png';
+ const indexable=canonicalPage||indexableFavicon;
+ if(file&&canonicalPage){
   const canonical=productionOrigin+(path==='/index.html'?'/':'/changelog');
   file={...file,body:file.body.replace('</head>','<link rel="canonical" href="'+canonical+'"></head>'),
    etag:file.etag?.replace(/"$/,'-indexable"')};
  }
+
+ if(file&&indexableFavicon)file={...file,etag:file.etag?.replace(/"$/,'-indexable"')};
 
  if(file&&path==='/index.html'){
   const provider=env.LAPAN_SELECTED_PROVIDER||(env.TOMTOM_ROUTING_DISABLED==='true'?'OSRM':'TomTom');

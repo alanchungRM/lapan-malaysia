@@ -1,5 +1,7 @@
 # Pending website release notes
 
+- Use a PNG favicon for Google Search on the canonical production domain.
+
 - Add a palm-and-sunset backdrop to the GTA Sunset route planner.
 
 Nationwide POI coverage and the 878,679-listing total were incorporated into the existing v1.0.43 notes on 18 November 2026. Other maintenance items remain pending.
