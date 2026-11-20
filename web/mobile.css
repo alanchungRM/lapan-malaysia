@@ -483,3 +483,9 @@ html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-night{display:none
  text-decoration:underline;
  text-underline-offset:.16em;
 }
+
+.sunset-music-setting{margin:12px 20px}
+.sunset-music-volume{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;font-size:.875rem}
+#sunsetMusicVolume{display:block;width:100%;min-height:44px;margin:0;accent-color:var(--brand)}
+#sunsetMusicStatus{margin:4px 0 0;font-size:.875rem}
+#sunsetMusicStatus:empty{margin:0}

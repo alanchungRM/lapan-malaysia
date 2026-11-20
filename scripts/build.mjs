@@ -37,8 +37,14 @@ for(const [id,label,language,file,note] of [
  voiceAssets.add(url);
  files[url]={body:bundle.toString('base64'),type:'application/octet-stream',binary:true};
 }
+const sunsetAudio=await readFile('web/sunset-music.m4a').catch(error=>{
+ if(error.code==='ENOENT')return null;
+ throw error;
+});
+const sunsetMusicCode=sunsetAudio?(await readFile('web/sunset-music.js','utf8'))+';\n':'';
+if(sunsetAudio)files['/sunset-music.m4a']={body:sunsetAudio.toString('base64'),type:'audio/mp4',binary:true,byteRanges:true};
 const voicePackCode=await readFile('web/voice-pack.js','utf8');
-files['/preferences.js'].body=voicePackCode.replace('/* VOICE_PACKS */ {}',JSON.stringify(voicePacks))+';\n'+files['/preferences.js'].body;
+files['/preferences.js'].body=voicePackCode.replace('/* VOICE_PACKS */ {}',JSON.stringify(voicePacks))+';\n'+sunsetMusicCode+files['/preferences.js'].body;
 files['/hazards.js'].body=files['/hazards.js'].body.replace('__HAZARD_REV__',createHash('sha256').update(files['/hazards.json'].body).digest('hex').slice(0,16));
 for(const name of ['apple-touch-icon.png','lapan-192.png','lapan-512.png'])files['/'+name]={body:(await readFile('web/'+name)).toString('base64'),type:'image/png',binary:true};
 for(const name of ['marker-icon.png','marker-icon-2x.png','marker-shadow.png','layers.png','layers-2x.png'])files['/images/'+name]={body:(await readFile('web/images/'+name)).toString('base64'),type:'image/png',binary:true};
@@ -49,7 +55,7 @@ files['/hot-fm-pointer.png']={body:(await readFile('web/hot-fm-pointer.png')).to
 files['/prayer-data-notices']={body:await readFile('data/PRAYER_NOTICES.txt','utf8'),type:'text/plain'};
 files['/place-data-notices']={body:await readFile('data/POI_NOTICES.txt','utf8'),type:'text/plain'};
 // Content revision updates offline caches even when the visible release version is unchanged.
-{const skip=new Set(['/images/sunset-palms.webp','/weather-areas.json','/ui2.css','/hazards.json','/index.html','/sw.js','/maplibre.js','/signals.json','/speed-limits.json','/speed-cameras.json','/hot-fm-pointer.png','/statistics.html','/statistics.css','/statistics.js','/analytics.js','/navigation-region.js','/changelog','/changelog.css','/malay-voice-notice']);const shell=['/',...Object.keys(files).filter(n=>!voiceAssets.has(n)&&!skip.has(n))];const revision=createHash('sha256').update(shell.map(n=>n+':'+(files[n==='/'?'/index.html':n]?.body||'')).join('\n')).digest('hex').slice(0,16);files['/sw.js'].body=files['/sw.js'].body.replace('{{APP_VERSION}}',version+'-'+revision).replace('__SHELL__',JSON.stringify(shell))}
+{const skip=new Set(['/sunset-music.m4a','/images/sunset-palms.webp','/weather-areas.json','/ui2.css','/hazards.json','/index.html','/sw.js','/maplibre.js','/signals.json','/speed-limits.json','/speed-cameras.json','/hot-fm-pointer.png','/statistics.html','/statistics.css','/statistics.js','/analytics.js','/navigation-region.js','/changelog','/changelog.css','/malay-voice-notice']);const shell=['/',...Object.keys(files).filter(n=>!voiceAssets.has(n)&&!skip.has(n))];const revision=createHash('sha256').update(shell.map(n=>n+':'+(files[n==='/'?'/index.html':n]?.body||'')).join('\n')).digest('hex').slice(0,16);files['/sw.js'].body=files['/sw.js'].body.replace('{{APP_VERSION}}',version+'-'+revision).replace('__SHELL__',JSON.stringify(shell))}
 for(const f of Object.values(files))f.etag='\"'+createHash('sha256').update(f.body).digest('base64url').slice(0,22)+'\"';
 const assetsCode=(await readFile('worker/assets.js','utf8')).replaceAll('export function','function');
 const guardCode=(await readFile('worker/guard.js','utf8')).replace('export async function','async function');

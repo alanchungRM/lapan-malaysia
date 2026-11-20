@@ -8,6 +8,8 @@ assert.match(html,/<button id="exitArrival"[^>]*class="link hidden">End navigati
 const driveCss=fs.readFileSync('web/drive-ui.css','utf8');
 assert.match(driveCss,/#navBar #stop\{grid-area:stop\}/);
 const controls=html.slice(html.indexOf('id="driveControls"'),html.indexOf('class="maptop"'));
+assert.match(controls,/id="navShare"[^>]*>(?:(?!<\/button>).)*<\/button><button id="navMusic"[^>]*aria-pressed="false"[^>]*hidden/s);
+assert.match(driveCss,/#driveShortcuts #navMusic\[hidden\]\{display:none\}/);
 for(const id of ['navVoice','locate','navMore','navLang','driveMode','navRepeat','navAwake','driveLimit','speedChip'])assert.ok(controls.includes('id="'+id+'"'),id+' in driving controls');
 assert.match(controls,/id="navMore"[^>]*aria-expanded="false"[^>]*aria-label="More driving controls"/);
 

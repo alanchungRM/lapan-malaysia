@@ -74,6 +74,100 @@ function currentPack(){
 const guiding=()=>document.body.classList.contains('guiding');
 const speechLanguage=()=>usesBundledVoice()?'en':tripVoice?.language??root.LapanI18n?.deviceSpeechLang?.()??'en';
 const deviceVoice=()=>usesBundledVoice()?'':activeURI();
+const musicToggle=root.LapanSunsetMusic&&document.documentElement?.dataset.skin==='sunset'?$('sunsetMusic'):null;
+const navMusic=musicToggle?$('navMusic'):null;
+const musicVolume=musicToggle?$('sunsetMusicVolume'):null;
+const musicPreferenceKey='lapan-sunset-music';
+const musicVolumeKey='lapan-sunset-music-volume';
+let speaking=false,musicSuspended=false;
+const music=musicToggle?root.LapanSunsetMusic.createSunsetMusic({
+ AudioContext,Audio:root.Audio,fetchAudio:(...args)=>root.fetch(...args),
+ url:'/sunset-music.m4a',onError:musicFailed
+}):null;
+function retryMusicOnGesture(event){
+ if(!event.target?.closest?.('#sunsetMusicSetting label, #navMusic'))updateMusic();
+}
+function waitForMusicGesture(wait){
+ const method=wait?'addEventListener':'removeEventListener';
+ document[method]('click',retryMusicOnGesture,true);
+ document[method]('keydown',retryMusicOnGesture,true);
+}
+const canPlayMusic=()=>musicToggle?.checked&&!musicSuspended&&!document.hidden&&!speaking;
+function showMusicGesture(){
+ $('sunsetMusicStatus').textContent='Tap anywhere in the app to start the music.';
+ waitForMusicGesture(true);
+}
+function updateMusic(){
+ if(!music)return;
+ if(!canPlayMusic()){music.pause();return}
+ music.play(showMusicGesture).then(playing=>{
+  if(!playing||!canPlayMusic())return;
+  waitForMusicGesture(false);
+  $('sunsetMusicStatus').textContent='';
+ }).catch(error=>{
+  if(!canPlayMusic()||error.name==='AbortError')return;
+  if(error.name==='NotAllowedError')showMusicGesture();
+  else musicFailed();
+ });
+}
+function syncMusicButton(){
+ navMusic?.setAttribute('aria-pressed',String(musicToggle.checked));
+}
+function musicFailed(){
+ music.release();
+ waitForMusicGesture(false);
+ musicToggle.checked=false;
+ syncMusicButton();
+ $('sunsetMusicStatus').textContent='Music could not play. Turn it on to try again.';
+}
+if(musicToggle){
+ musicToggle.checked=true;
+ try{
+  musicToggle.checked=localStorage.getItem(musicPreferenceKey)!=='off';
+  const saved=localStorage.getItem(musicVolumeKey);
+  if(saved!==null&&/^\d{1,3}$/.test(saved)&&Number(saved)<=100)musicVolume.value=saved;
+ }catch{}
+ const applyVolume=()=>{
+  $('sunsetMusicVolumeValue').textContent=musicVolume.value+'%';
+  music.setVolume(musicVolume.valueAsNumber/100);
+ };
+ applyVolume();
+ musicVolume.oninput=applyVolume;
+ musicVolume.onchange=()=>{
+  try{localStorage.setItem(musicVolumeKey,musicVolume.value)}catch{}
+ };
+ $('sunsetMusicSetting').hidden=false;
+ syncMusicButton();
+ if(navMusic){
+  navMusic.hidden=false;
+  navMusic.onclick=()=>{
+   musicToggle.checked=!musicToggle.checked;
+   musicToggle.onchange();
+  };
+ }
+ musicToggle.onchange=()=>{
+  syncMusicButton();
+  try{localStorage.setItem(musicPreferenceKey,musicToggle.checked?'on':'off')}catch{}
+  if(!musicToggle.checked)waitForMusicGesture(false);
+  $('sunsetMusicStatus').textContent='';
+  updateMusic();
+ };
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)waitForMusicGesture(false);
+  updateMusic();
+ });
+ root.addEventListener('pagehide',()=>{
+  musicSuspended=true;
+  waitForMusicGesture(false);
+  music.release();
+ });
+ root.addEventListener('pageshow',event=>{
+  if(!event.persisted)return;
+  musicSuspended=false;
+  updateMusic();
+ });
+ updateMusic();
+}
 function sync(){
  const mode=voiceModes[settings.mode], select=$('voiceChoice');
  voices=root.speechSynthesis?.getVoices()||[];
@@ -110,7 +204,11 @@ const engine=root.LapanSpeech.createVoice({
  voice:()=>voiceSelector.get(root.speechSynthesis?.getVoices()||[],deviceVoice(),speechLanguage()),
  playClip:(text,events)=>currentPack()?.play(text,events),
  useDeviceVoice:()=>!usesBundledVoice(),
- onStatus(state){const b=$('navRepeat');if(b){b.textContent=state==='blocked'?'↻ !':'↻';b.title=state==='blocked'?'Voice unavailable or interrupted · tap to retry, or choose a voice in Voice & sound':'Repeat current instruction';b.setAttribute('aria-label',b.title)}}
+ onStatus(state){
+  const nextSpeaking=state==='speaking';
+  if(nextSpeaking!==speaking){speaking=nextSpeaking;updateMusic()}
+  const b=$('navRepeat');if(b){b.textContent=state==='blocked'?'↻ !':'↻';b.title=state==='blocked'?'Voice unavailable or interrupted · tap to retry, or choose a voice in Voice & sound':'Repeat current instruction';b.setAttribute('aria-label',b.title)}
+ }
 });
 let latestInstruction=null;
 function speak(text,preview=false,options={}){text=root.LapanI18n?root.LapanI18n.forSpeech(text):text;if((!root.speechSynthesis&&!usesBundledVoice())||(!preview&&!allowsVoice(settings.mode,options.kind||'alert',options.stage||0)))return false;return engine.speak(text,options)}

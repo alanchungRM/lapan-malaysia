@@ -94,6 +94,8 @@ html body.guiding #driveControls > #driveShortcuts{display:contents}
 }
 html body.guiding #driveShortcuts button[hidden]{visibility:hidden}
 html body.guiding.details-open #driveControls{visibility:hidden}
+#driveShortcuts #navMusic[hidden]{display:none}
+#navMusic[aria-pressed="true"] .music-off-mark{display:none}
 #navReport svg{color:#ffd27a}
 html body.guiding.drive-more #driveMore{right:calc(100% + 6px);bottom:0}
 @media (max-height:480px) and (orientation:landscape){

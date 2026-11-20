@@ -27,6 +27,25 @@ const securityHeaders={
 const longCached=/^\/((?:maplibre|leaflet)\.(js|css)|signals\.json|map-night-gray\.json|lapan-icon\.svg|lapan-192\.png|lapan-512\.png|apple-touch-icon\.png)$/;
 const decodedBinary=new Map();
 function etagMatches(header,etag){return !!header&&header.split(',').some(v=>{v=v.trim();return v==='*'||v.replace(/^W\//,'')===etag})}
+function serveMedia(request,body,headers,etag){
+ const size=body.byteLength;
+ headers['Accept-Ranges']='bytes';
+ headers['Content-Length']=String(size);
+ if(request.method==='HEAD')return new Response(null,{headers});
+ const ifRange=request.headers.get('If-Range');
+ const range=/^bytes=(\d*)-(\d*)$/i.exec(request.headers.get('Range')||'');
+ if(!range||(!range[1]&&!range[2])||(ifRange&&ifRange!==etag))return new Response(body,{headers});
+ const start=range[1]?Number(range[1]):Math.max(0,size-Number(range[2]));
+ const end=range[1]&&range[2]?Math.min(size-1,Number(range[2])):size-1;
+ if(start>end||start>=size){
+  headers['Content-Range']='bytes */'+size;
+  headers['Content-Length']='0';
+  return new Response(null,{status:416,headers});
+ }
+ headers['Content-Range']='bytes '+start+'-'+end+'/'+size;
+ headers['Content-Length']=String(end-start+1);
+ return new Response(body.subarray(start,end+1),{status:206,headers});
+}
 const productionOrigin='https://lapan-malaysia.com';
 const noIndex='noindex, nofollow, noarchive';
 export function withSecurityHeaders(response,{indexable=false}={}){
@@ -71,10 +90,11 @@ export function serveAsset(request,assets,env={}){
  }
 
  if(!file)return withSecurityHeaders(new Response('Not found',{status:404}));
- const headers={'Content-Type':file.type+'; charset=utf-8','Cache-Control':/^\/voice-pack-[a-f0-9]{16}\.bin$/.test(path)?'private, max-age=31536000, immutable':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
+ const headers={'Content-Type':file.byteRanges?file.type:file.type+'; charset=utf-8','Cache-Control':/^\/voice-pack-[a-f0-9]{16}\.bin$/.test(path)?'private, max-age=31536000, immutable':longCached.test(path)?'public, max-age=3600, stale-while-revalidate=604800':'no-cache'};
  if(file.etag){headers.ETag=file.etag;if(etagMatches(request.headers.get('If-None-Match'),file.etag))return withSecurityHeaders(new Response(null,{status:304,headers}),{indexable})}
- if(request.method==='HEAD')return withSecurityHeaders(new Response(null,{headers}),{indexable});
+ if(request.method==='HEAD'&&!file.byteRanges)return withSecurityHeaders(new Response(null,{headers}),{indexable});
  let body=file.body;
  if(file.binary){body=decodedBinary.get(path);if(!body){body=Uint8Array.from(atob(file.body),c=>c.charCodeAt(0));decodedBinary.set(path,body)}}
+ if(file.byteRanges)return withSecurityHeaders(serveMedia(request,body,headers,file.etag),{indexable});
  return withSecurityHeaders(new Response(body,{headers}),{indexable});
 }

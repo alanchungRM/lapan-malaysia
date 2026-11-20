@@ -117,3 +117,7 @@ Without a generated directory, the build still works with the existing providers
 ## Optional nationwide POI hosting
 
 See [POI storage setup](docs/POI_STORAGE.md) to prepare an Overture snapshot, upload it to your own Cloudflare Pages project, and supply your own build-time origin and generated manifest. The public source includes a configuration example and excludes the maintainer's account and actual deployment origin. Without a prepared directory, the optional additional search is empty and normal Photon search remains available.
+
+### Optional GTA Sunset music
+
+To enable background music in your build, put an M4A track you have permission to use at `web/sunset-music.m4a` and rebuild. The audio stays outside Git. With a track present, GTA Sunset shows the same music preference in Voice & sound and below Share while navigating.

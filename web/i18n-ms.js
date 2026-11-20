@@ -606,3 +606,10 @@ window.LapanI18n.add({"Closes in {s} s":"Tutup dalam {s} s","Community report ·
 window.LapanI18n.add({"Clear starting point":"Kosongkan tempat mula","Starting point cleared. Enter a new place or choose on map.":"Tempat mula dikosongkan. Masukkan tempat baharu atau pilih pada peta."});
 
 window.LapanI18n.add({"Searching additional business and address data…":"Sedang mencari maklumat perniagaan dan alamat tambahan…","Searching more places…":"Sedang mencari lebih banyak tempat…"});
+
+window.LapanI18n.add({
+"Background music":"Muzik latar",
+"Music volume":"Kelantangan muzik",
+"Tap anywhere in the app to start the music.":"Ketik di mana-mana dalam aplikasi untuk memainkan muzik.",
+"Music could not play. Turn it on to try again.":"Muzik tidak dapat dimainkan. Hidupkannya untuk mencuba lagi.",
+});
