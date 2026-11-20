@@ -34,6 +34,10 @@ export async function dispatchRoute(request,env,estimateTolls){
   const failure=await response.clone().json();
   if(failure.allowBasic===true||failure.code==='restricted-route'){
    const secondary=await planValhallaRoute(env,body,estimateTolls);
+   if(secondary.ok)console.info('TomTom routing fell back to Valhalla',{
+    status:response.status, reason:failure.code==='restricted-route'?'restricted-route':
+     response.status===429?'rate-limited-or-busy':'primary-unavailable',
+   });
    if(secondary.ok||(failure.allowBasic===true&&secondary.status===422))response=secondary;
   }
  }

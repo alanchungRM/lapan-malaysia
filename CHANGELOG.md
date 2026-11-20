@@ -15,12 +15,22 @@ GTA Sunset navigation skin
 
 ## [1.0.44] — 2026-11-19
 
-Weather forecasts and route warnings
+Weather forecasts, route warnings and Malay voice navigation
 
 ### Added
 
 - See today’s forecast near your destination and active weather warnings that affect areas along your planned route. An amber card below the ETA shows the affected areas and when the warning expires. Those areas are also highlighted on the map.
 - Open JPS Public InfoBanjir from the route preview to check official flood information.
+- Choose Yasmin, a female Bahasa Melayu voice for turn-by-turn guidance and road alerts. Open Voice & sound to try it.
+
+### Improved
+
+- The road report icon is now yellow so it’s easier to spot during navigation.
+
+### Fixed
+
+- In Less Chatty mode, Kokoro Heart and Malay Yasmin now announce each maneuver at most once, within 200 metres. Safety alerts and manual repeat are still available.
+- Normal voice guidance now groups repeat reminders for each maneuver into one advance prompt and one distinct near-turn prompt.
 
 > Weather forecasts and warnings come from MET Malaysia through Malaysia’s official open data API (data.gov.my). Lapan uses geoBoundaries administrative boundaries to match warnings to routes.
 

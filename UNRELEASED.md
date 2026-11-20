@@ -41,3 +41,7 @@ The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are n
 ## Next public release scope
 
 Owner approved the road-report countdown, themed place picker, clear starting point, speedometer spacing and default English voice notes. Omit routing fixes and search-indexing maintenance from the next public release announcement. Nationwide POI search and external storage are now promoted to production; actual deployment-specific configuration remains private. Do not increase the visible version or publish new release entries until authorized.
+
+- Recover additional TomTom options near reported road dividers when the primary search returns a single route. The additional candidates pass the same local restriction and closure checks.
+- Keep primary TomTom route searches available when only an optional alternative request is rate-limited.
+- Retry eligible TomTom searches near a divider before falling back when the initial search finds no usable route.

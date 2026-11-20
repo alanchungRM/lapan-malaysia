@@ -48,6 +48,64 @@ try{
  assert.equal(result.routes.length,1);
  assert.deepEqual(result.routes[0].geometry.coordinates,detour);
 
+ const otherDetour=[...left,[101.444,2.97468],[101.444,2.9748],...returning];
+ const requests=[];
+ globalThis.fetch=async(url,options)=>{
+  const params=new URL(url).searchParams;
+  requests.push([options.method,params.get('maxAlternatives')]);
+  assert.equal(params.get('routeType'),'fastest');
+  assert.equal(params.get('traffic'),'true');
+  if(options.method==='POST'){
+   assert.deepEqual(JSON.parse(options.body).avoidAreas,restrictions.avoidAreas());
+   return Response.json({routes:[makeRoute(detour)]});
+  }
+  return Response.json({routes:[
+   makeRoute(detour),
+   makeRoute(crossing),
+   {...makeRoute(otherDetour),sections:[{simpleCategory:'ROAD_CLOSURE'}]},
+   makeRoute(otherDetour),
+  ]});
+ };
+ response=await planLiveRoute(req(2),{TOMTOM_API_KEY:'test'});
+ assert.equal(response.status,200);
+ assert.deepEqual(requests,[['POST','2'],['GET','5']]);
+ assert.deepEqual((await response.json()).routes.map(route=>route.geometry.coordinates),[detour,otherDetour],
+  'keep the original route and add only distinct alternatives that pass the original divider and closure checks');
+ globalThis.fetch=async(_url,options)=>{
+  if(options.method==='GET')throw Error('extra search failed');
+  return Response.json({routes:[makeRoute(detour)]});
+ };
+ response=await planLiveRoute(req(3),{TOMTOM_API_KEY:'test'});
+ assert.equal(response.status,200,'keep the primary route when the extra search fails');
+ assert.equal((await response.json()).routes.length,1);
+ const afterLimit=[];
+ globalThis.fetch=async(_url,options)=>{
+  afterLimit.push(options.method);
+  if(options.method==='GET')return new Response('',{status:429,headers:{'Retry-After':'60'}});
+  return Response.json({routes:[makeRoute(detour)]});
+ };
+ response=await planLiveRoute(req(4),{TOMTOM_API_KEY:'test'});
+ assert.equal((await response.json()).source,'TomTom');
+ response=await planLiveRoute(req(5),{TOMTOM_API_KEY:'test'});
+ assert.equal(response.status,200,'an optional request limit cannot block a new primary TomTom request');
+ assert.equal((await response.json()).source,'TomTom');
+ assert.deepEqual(afterLimit,['POST','GET','POST'],'only the optional search goes into cooldown');
+ for(const rejectPrimary of [false,true]){
+  const recoveryCalls=[];
+  globalThis.fetch=async(_url,options)=>{
+   recoveryCalls.push(options.method);
+   if(options.method==='POST')return rejectPrimary?new Response('',{status:422}):
+    Response.json({routes:[makeRoute(crossing)]});
+   return Response.json({routes:[makeRoute(crossing),makeRoute(detour)]});
+  };
+  response=await planLiveRoute(req(rejectPrimary?7:6),{TOMTOM_API_KEY:'test'});
+  assert.equal(response.status,200,'recover a legal TomTom route before falling back');
+  const recovered=await response.json();
+  assert.equal(recovered.source,'TomTom');
+  assert.ok(Number.isFinite(Date.parse(recovered.checkedAt)));
+  assert.deepEqual(recovered.routes.map(route=>route.geometry.coordinates),[detour]);
+  assert.deepEqual(recoveryCalls,['POST','GET']);
+ }
  const methods=[];
  globalThis.fetch=async(url,options)=>{
   methods.push(options.method);

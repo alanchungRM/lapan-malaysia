@@ -36,7 +36,7 @@ const detour = {
     const plan = async (vehicle = 'car', avoidTolls = false, purpose = 'planning') => {
       const request = new Request('https://lapan.test/api/route', {
         method: 'POST',
-        body: JSON.stringify({ from: approach, to: destination, alternatives: true, vehicle, avoidTolls, purpose, refresh: true }),
+        body: JSON.stringify({ from: approach, to: destination, alternatives: false, vehicle, avoidTolls, purpose, refresh: true }),
       });
       const response = await planLiveRoute(request, { TOMTOM_API_KEY: 'test' });
       assert.equal(response.status, 200);

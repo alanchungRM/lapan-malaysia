@@ -12,6 +12,10 @@ function routeTrafficSections(route,points){
  return result;
 }
 let routeProviderPauseUntil=0;
+let alternateRoutePauseUntil=0;
+function tomTomRetrySeconds(response){
+ return Math.max(30,Math.min(300,Number(response.headers.get('Retry-After'))||60));
+}
 // Server-only live route planning. Keys never enter response payloads.
 const liveRoutePending=new Map(),liveRouteCache=new Map(),liveRouteClients=new Map();let liveRouteInFlight=0;
 const routePoint=p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&p[0]>=99&&p[0]<=120&&p[1]>=.8&&p[1]<=7.6;
@@ -110,26 +114,26 @@ const work=(async()=>{
   if(body.avoidTolls)url.searchParams.append('avoid','tollRoads');
   const avoidAreas=globalThis.LapanRoadRestrictions.avoidAreas(),hasAreas=avoidAreas.rectangles.length>0;
   const signal=AbortSignal.timeout(body.avoidTolls?12000:18000);
-  async function fetchRoutes(withAreas){
+  async function fetchRoutes(withAreas,routeURL=url,requestSignal=signal){
    const options=withAreas?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avoidAreas})}:{method:'GET'};
    await globalThis.LapanTomTomUsage?.record(env,body.purpose||'planning');
-   return fetch(url.toString(),{...options,signal});
+   return fetch(routeURL.toString(),{...options,signal:requestSignal});
   }
   const noRoute=(restricted=false)=>json({error:body.avoidTolls?'No route avoiding tolls was found. Try Faster or change your starting point or destination.':'No usable route avoiding reported restrictions was returned. Try a nearby accessible starting point or destination.',allowBasic:false,...(restricted?{code:'restricted-route'}:{})},422);
   function upstreamError(response){
    if(response.status===429){
-    const retry=Math.max(30,Math.min(300,Number(response.headers.get('Retry-After'))||60));
+    const retry=tomTomRetrySeconds(response);
     routeProviderPauseUntil=Date.now()+retry*1000;
     return json({error:'Live routing allowance or request limit reached. Please wait before retrying.',allowBasic:true,retryAfterSeconds:retry},429);
    }
    if([400,404,422].includes(response.status))return body.avoidTolls?noRoute():json({error:'No live route could be calculated. Try a nearby accessible starting point or destination.',allowBasic:false},422);
-   if(body.avoidTolls)console.warn('TomTom toll avoidance upstream failure',{status:response.status});
+   console.warn('TomTom routing upstream failure',{status:response.status});
    return json({error:'Live routing is unavailable. Please retry; closures have not been checked.',allowBasic:true},502);
   }
   async function routeCandidates(response){
    const raw=await response.json(),checkedAt=new Date().toISOString(),routes=[];
    let blocked=false;
-   for(const route of (raw.routes||[]).slice(0,3)){
+   for(const route of (raw.routes||[]).slice(0,6)){
     if(body.avoidTolls&&route.sections?.some(s=>s.sectionType==='TOLL'))continue;
     try{
      let normalized=normalizeLiveRoute(route,checkedAt);
@@ -147,16 +151,45 @@ const work=(async()=>{
   }
   // Check every candidate against Lapan's restrictions. Send avoidance areas only
   // when the standard toll-avoidance request cannot produce a legal candidate.
+  const nearDivider=[a,b].some(([lon,lat])=>avoidAreas.rectangles.some(({southWestCorner:corner})=>
+   Math.abs(lon-corner.longitude)<0.02&&Math.abs(lat-corner.latitude)<0.02));
+  const canRetryDividerSearch=body.alternatives&&body.purpose!=='rerouting'&&!body.avoidTolls&&nearDivider;
   let response=await fetchRoutes(hasAreas&&!body.avoidTolls);
-  if(!response.ok)return upstreamError(response);
-  let candidates=await routeCandidates(response);
+  if(!response.ok&&!(canRetryDividerSearch&&[400,404,422].includes(response.status)))return upstreamError(response);
+  let candidates=response.ok?await routeCandidates(response):{routes:[],blocked:false};
   if(body.avoidTolls&&hasAreas&&candidates.blocked&&!candidates.routes.length){
    response=await fetchRoutes(true);
    if(!response.ok)return upstreamError(response);
    candidates=await routeCandidates(response);
   }
-  if(!candidates.routes.length)return noRoute(candidates.blocked);
-  const routes=await Promise.all(candidates.routes.map(async({normalized,route})=>{
+  // The provider's avoidance area can suppress legal approaches near a divider.
+  // Look for extra options without the provider polygons and validate every
+  // returned shape against the original, precise restrictions before showing it.
+  if(canRetryDividerSearch&&candidates.routes.length<2&&(!candidates.routes.length||Date.now()>=alternateRoutePauseUntil)){
+   const alternateURL=new URL(url);
+   alternateURL.searchParams.set('maxAlternatives','5');
+   try{
+    const extra=await fetchRoutes(false,alternateURL,AbortSignal.timeout(4000));
+    if(extra.ok){
+     const additional=await routeCandidates(extra);
+     candidates.checkedAt??=additional.checkedAt;
+     candidates.blocked||=additional.blocked;
+     for(const candidate of additional.routes){
+      const coordinates=JSON.stringify(candidate.normalized.geometry.coordinates);
+      if(candidates.routes.some(({normalized})=>JSON.stringify(normalized.geometry.coordinates)===coordinates))continue;
+      candidates.routes.push(candidate);
+      if(candidates.routes.length===3)break;
+     }
+    }else if(extra.status===429){
+     alternateRoutePauseUntil=Date.now()+tomTomRetrySeconds(extra)*1000;
+    }
+   }catch{/* An extra search failure leaves the checked primary route available. */}
+  }
+  if(!candidates.routes.length){
+   if(!response.ok&&!candidates.blocked)return upstreamError(response);
+   return noRoute(candidates.blocked);
+  }
+  const routes=await Promise.all(candidates.routes.slice(0,3).map(async({normalized,route})=>{
    try{normalized.tollEstimate=body.vehicle==='motorcycle'?null:await estimateTolls(route)}
    catch{normalized.tollEstimate=null}
    return normalized;
