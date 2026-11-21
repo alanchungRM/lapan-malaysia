@@ -24,6 +24,7 @@ Weather forecasts, route warnings and Malay voice navigation
 - Open JPS Public InfoBanjir from the route preview to check official flood information.
 - Choose Yasmin, a female Bahasa Melayu voice for turn-by-turn guidance and road alerts. Open Voice & sound to try it.
 - The 2D route preview shows active community reports as icons for each report type. Tap an icon to see what was reported and how long ago. Community reports are shown for awareness and do not change the route or ETA.
+- A checkered finish flag marks the end of your selected route in the map preview and during navigation.
 
 ### Improved
 
