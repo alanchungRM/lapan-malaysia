@@ -29,7 +29,11 @@ function drawCongestion(route){
  if(!gl||!ready)return;
  const data=root.LapanTrafficColors?.features(route)||{type:'FeatureCollection',features:[]};
  if(gl.getSource('lapan-congestion'))gl.getSource('lapan-congestion').setData(data);
- else{gl.addSource('lapan-congestion',{type:'geojson',data});gl.addLayer({id:'lapan-congestion-line',type:'line',source:'lapan-congestion',layout:{'line-cap':'butt','line-join':'round'},paint:{'line-color':['get','color'],'line-width':7}})}
+ else{
+  gl.addSource('lapan-congestion',{type:'geojson',data});
+  gl.addLayer({id:'lapan-congestion-line',type:'line',source:'lapan-congestion',filter:['!', ['has','community']],layout:{'line-cap':'butt','line-join':'round'},paint:{'line-color':['get','color'],'line-width':7}});
+  gl.addLayer({id:'lapan-community-traffic-line',type:'line',source:'lapan-congestion',filter:['has','community'],layout:{'line-cap':'butt','line-join':'round'},paint:{'line-color':['get','color'],'line-width':7,'line-dasharray':[1.5,.75]}});
+ }
 }
 root.LapanTrafficColors?.subscribe(route=>{if(active&&route===routeRef)drawCongestion(route)});
 function draw(p,route,first=false){if(!ready||!active||gl.isStyleLoaded&&!gl.isStyleLoaded())return;const raw=[p.coords.longitude,p.coords.latitude],near=math.nearest(raw,route.geometry.coordinates),target=near.distance<35&&(p.coords.accuracy||0)<60?near.point:raw,speed=p.coords.speed;const previous=rendered||target,moved=math.distance(previous,target);let nextHeading=Number.isFinite(p.coords.heading)&&Number.isFinite(speed)&&speed>2?p.coords.heading:moved>4?math.bearing(previous,target):heading||near.bearing;nextHeading=math.angle(heading,nextHeading);if(moved<3&&(!Number.isFinite(speed)||speed<1))target.splice(0,2,...previous);const now=performance.now(),ms=motion()?0:first||!rendered?0:Math.min(1400,Math.max(600,now-lastTime));lastTime=now;const fromHeading=heading;heading=first?nextHeading:fromHeading+(nextHeading-fromHeading)*0.65;

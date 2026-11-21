@@ -59,7 +59,7 @@ assert.equal((await communityReports(new Request(ORIGIN+'/api/reports',{method:'
 assert.equal((await post('/api/reports',{kind:'crash',...KL},{'content-length':'9999'})).status,413);
 assert.equal((await communityReports(new Request(ORIGIN+'/api/reports',{method:'DELETE',headers:{origin:ORIGIN}}),env)).status,405);
 
-// Every category expires at eight hours. A creator cannot confirm their own report,
+// Hazard reports expire at eight hours. A creator cannot confirm their own report,
 // a second browser counts once, and a confirmation cannot extend expiry.
 const row=id=>db.raw.prepare('SELECT * FROM community_reports WHERE id=?').get(id);
 const vote=(id,still,key)=>post('/api/reports/vote',{id,still},key?{'x-lapan-report-key':key}:{});
@@ -90,6 +90,20 @@ await vote(j.id,false);assert.ok(row(j.id),'one denial does not remove it');
 await vote(j.id,false);assert.equal(row(j.id),undefined,'two independent denials remove it');
 for(const bad of [{id:'zz',still:true},{id:j.id},{id:j.id,still:'yes'},{id:j.id,still:true,x:1},{id:'../etc/passwd',still:true}])assert.equal((await post('/api/reports/vote',bad)).status,400,JSON.stringify(bad));
 assert.equal((await vote('0'.repeat(24),true)).status,410,'unknown report');
+
+// Both traffic severities use a shorter fixed lifetime and the existing anonymous report flow.
+const jamIds=[];
+for(const kind of ['traffic-heavy','traffic-standstill']){
+ const response=await post('/api/reports',{kind,...KL});
+ assert.equal(response.status,201);
+ const {id}=await response.json();
+ jamIds.push(id);
+ assert.equal(row(id).expires_at-row(id).created_at,1800);
+}
+const jamPreview=(await (await get('?bbox=3.13,101.68,3.15,101.70')).json()).reports;
+assert.deepEqual(jamPreview.filter(r=>jamIds.includes(r.id)).map(r=>r.kind).sort(),['traffic-heavy','traffic-standstill']);
+clock+=1800000;
+assert.ok(!(await (await get('?bbox=3.13,101.68,3.15,101.70')).json()).reports.some(r=>jamIds.includes(r.id)));
 
 // Abuse limits: six writes a minute from one address, fresh again after the minute.
 const spam=await Promise.all(Array.from({length:8},(_,i)=>post('/api/reports',{kind:'stopped',lat:4+i*0.1,lon:100.5},{ip:'203.0.113.7'})));assert.deepEqual(spam.map(x=>x.status).filter(s=>s===429).length,2);

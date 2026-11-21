@@ -1,7 +1,7 @@
-// Anonymous reports store a rounded location and a fixed eight-hour expiry.
+// Anonymous reports store a rounded location and a fixed expiry by report type.
 // Vote receipts are scoped to one report and are deleted with the report.
-const reportKinds=new Set(['crash','stopped','object','flood','pothole','police-hidden']);
-const reportLifetime=8*60*60;
+const trafficReportKinds=new Set(['traffic-heavy','traffic-standstill']);
+const reportKinds=new Set(['crash','stopped','object','flood','pothole','police-hidden',...trafficReportKinds]);
 const reportWrites=new Map();
 const reportPoint=(lat,lon)=>Number.isFinite(lat)&&Number.isFinite(lon)&&lat>=0.8&&lat<=7.6&&lon>=99&&lon<=120;
 const reportHex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
@@ -80,6 +80,7 @@ export async function communityReports(request,env){
   const dLat=near/111320,dLon=near/(111320*Math.cos(lat*Math.PI/180));
   const nearby='kind=? AND expires_at>? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?';
   const bounds=[body.kind,now,lat-dLat,lat+dLat,lon-dLon,lon+dLon];
+  const reportLifetime=trafficReportKinds.has(body.kind)?30*60:8*60*60;
   const id=reportHex(crypto.getRandomValues(new Uint8Array(12)));
   const receipt=await reportReceipt(id,key);
   const [created]=await db.batch([

@@ -31,7 +31,7 @@ for(const [kind,remaining,age,text,voice,msText,msVoice] of rows){const r={kind,
 
 assert.equal(R.ageText(89*60),' · 89 min ago');assert.equal(R.ageText(90*60),' · 2 h ago','switches to hours at 90 minutes');assert.equal(R.ageText(59),' · just now');assert.equal(R.ageText(60),' · 1 min ago');assert.equal(R.ageText(-5),' · just now');
 // Client and server agree on the kinds, and only the hidden police category is supported.
-const server=fs.readFileSync('worker/reports.js','utf8'),serverKinds=[...server.match(/new Set\(\[(.*?)\]\)/)[1].matchAll(/'([^']+)'/g)].map(m=>m[1]);
+const server=fs.readFileSync('worker/reports.js','utf8'),serverKinds=[...server.matchAll(/(?:trafficReportKinds|reportKinds)=new Set\(\[(.*?)\]\)/g)].flatMap(set=>[...set[1].matchAll(/'([^']+)'/g)].map(m=>m[1]));
 assert.deepEqual([...R.KINDS].sort(),serverKinds.sort());assert.ok(R.KINDS.includes('police-hidden'));assert.ok(!R.KINDS.some(k=>/roadblock|aes|saman/i.test(k)));
 const html=fs.readFileSync('web/index.html','utf8');
 assert.deepEqual([...html.matchAll(/data-report="([\w-]+)"/g)].map(m=>m[1]).sort(),[...R.KINDS].sort(),'the dialog offers exactly these kinds');

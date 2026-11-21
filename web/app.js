@@ -6,7 +6,7 @@ let congestionLayer=null;
 function drawCongestion(){
  if(congestionLayer){map.removeLayer(congestionLayer);congestionLayer=null}
  const data=window.LapanTrafficColors?.features(routes[selected]);
- if(data?.features.length)congestionLayer=L.geoJSON(data,{style:f=>({color:f.properties.color,weight:7,opacity:1,lineCap:'butt',className:'route-congestion'}),interactive:false}).addTo(map);
+ if(data?.features.length)congestionLayer=L.geoJSON(data,{style:f=>({color:f.properties.color,weight:7,opacity:1,lineCap:'butt',dashArray:f.properties.community?'10 5':null,className:'route-congestion'}),interactive:false}).addTo(map);
 }
 window.LapanTrafficColors?.subscribe(route=>{if(route===routes[selected])drawCongestion()});
 const status=t=>$('status').textContent=t;

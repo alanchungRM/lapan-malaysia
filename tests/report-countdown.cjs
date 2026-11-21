@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const {webcrypto} = require('node:crypto');
 const {project} = require('../web/cameras.js');
+const traffic = require('../web/traffic-colors.js');
 const code = fs.readFileSync('web/reports.js', 'utf8');
 const route = {geometry: {coordinates: [[101, 3], [101.02, 3]]}};
 const tick = () => new Promise(setImmediate);
@@ -43,7 +44,7 @@ function setup() {
   L,
   document: {getElementById: get,querySelector:()=>({cloneNode:()=>new Element()}),createElement:()=>new Element()}, crypto: webcrypto,
   localStorage: {getItem() {return null}, setItem() {}},
-  LapanCameras: {project}, URLSearchParams, AbortController,
+  LapanTrafficColors: traffic, LapanCameras: {project}, URLSearchParams, AbortController,
   Date: class extends Date {static now() {return now}},
   setTimeout(fn, delay) {timers.set(++timerId, {fn, at: now + delay}); return timerId},
   clearTimeout(id) {timers.delete(id)},
@@ -74,17 +75,20 @@ function setup() {
 (async () => {
  const preview=setup(),bounds={getSouth:()=>3,getNorth:()=>3,getWest:()=>101,getEast:()=>101.02};
  preview.reports[0].remainingSeconds=2;
+ preview.reports.push({id:'traffic',kind:'traffic-heavy',lat:3,lon:101.01,remainingSeconds:2,ageSeconds:0});
  preview.reports.push({id:'off',kind:'flood',lat:3.01,lon:101.01,remainingSeconds:60,ageSeconds:0});
  preview.preview(route,{},bounds);
  await tick();
  assert.match(preview.requests[0].url,/\?bbox=/);
  const layer=preview.previewLayers[0];
- assert.equal(layer.pins.size,1,'only the selected route has report pins');
+ assert.equal(layer.pins.size,2,'only the selected route has report pins');
+ assert.equal(traffic.features(route).features[0].properties.severity,'traffic-heavy');
  const pin=[...layer.pins][0];
  assert.match(pin.icon.html.className,/report-crash/);
  assert.match(pin.popup().textContent,/Crash.*just now/);
  preview.advance(2000);
  assert.equal(layer.pins.size,0,'expired pins disappear without a new fetch');
+ assert.equal(traffic.features(route).features.length,0,'expired route colors disappear without a new fetch');
  const other={geometry:{coordinates:[[101,3.01],[101.02,3.01]]}};
  preview.preview(other,{},bounds);
  preview.stopPreview();
@@ -94,6 +98,15 @@ function setup() {
  assert.equal(layer.removed,true);
 
  let h = setup();
+ h.reports.splice(0,1,{id:'jam',kind:'traffic-standstill',lon:101.002,lat:3,remainingSeconds:2,ageSeconds:0});
+ h.update(101);await tick();
+ assert.equal(traffic.features(route).features[0].properties.severity,'traffic-standstill');
+ assert.equal(h.get('reportAsk').classList.hidden,true,'traffic paints the route without prompting the driver');
+ h.advance(2000);
+ assert.equal(traffic.features(route).features.length,0);
+ h.stop();
+
+ h = setup();
  h.update(101); await tick();
  assert.equal(h.get('reportAsk').classList.hidden, true, 'outside 300 m');
  h.update(101.0005);

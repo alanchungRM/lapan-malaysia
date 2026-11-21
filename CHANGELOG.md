@@ -25,6 +25,7 @@ Weather forecasts, route warnings and Malay voice navigation
 - Choose Yasmin, a female Bahasa Melayu voice for turn-by-turn guidance and road alerts. Open Voice & sound to try it.
 - The 2D route preview shows active community reports as icons for each report type. Tap an icon to see what was reported and how long ago. Community reports are shown for awareness and do not change the route or ETA.
 - A checkered finish flag marks the end of your selected route in the map preview and during navigation.
+- Report heavy or standstill traffic anonymously. Affected segments appear in dashed orange or red in the route preview and during navigation. Traffic reports expire after 30 minutes.
 
 ### Improved
 

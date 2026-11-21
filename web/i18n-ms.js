@@ -554,12 +554,14 @@ window.LapanI18n.add({
   "Reports are not available right now.": "Laporan tidak tersedia sekarang.",
   "Could not send the report. Please try again.": "Laporan tidak dapat dihantar. Sila cuba lagi.",
   "Could not send. Check your connection and try again.": "Tidak dapat dihantar. Semak sambungan anda dan cuba lagi.",
-  "No account or name required. Reports expire after eight hours.": "Tiada akaun atau nama diperlukan. Laporan tamat selepas lapan jam.",
+  "No account or name required. Traffic reports expire after 30 minutes. Other reports expire after eight hours.": "Tiada akaun atau nama diperlukan. Laporan trafik tamat selepas 30 minit. Laporan lain tamat selepas lapan jam.",
+  "Heavy traffic": "Trafik sesak",
+  "Standstill traffic": "Trafik tidak bergerak",
   "Time remaining: {h} h {m} min": "Masa berbaki: {h} j {m} min",
   "Time remaining: {m} min {s} s": "Masa berbaki: {m} min {s} s",
   "Report expired": "Laporan telah tamat"
 });
-window.LapanI18n.add({"Community reports, when you choose to send one, share the report type and a rounded location with nearby drivers. While navigating, Lapan uses an approximate location to find nearby reports. In route preview, Lapan requests reports within the approximate bounds of the selected route. Reports and their votes expire after eight hours. Anonymous daily counts contain no locations.": "Laporan komuniti yang anda hantar berkongsi jenis laporan dan lokasi anggaran dengan pemandu berdekatan. Semasa navigasi, Lapan menggunakan lokasi anggaran untuk mencari laporan berdekatan. Dalam pratonton laluan, Lapan meminta laporan dalam lingkungan anggaran laluan yang dipilih. Laporan dan undian tamat selepas lapan jam. Kiraan harian anonim tidak mengandungi lokasi."});
+window.LapanI18n.add({"Community reports, when you choose to send one, share the report type and a rounded location with nearby drivers. While navigating, Lapan uses an approximate location to find nearby reports. In route preview, Lapan requests reports within the approximate bounds of the selected route. Traffic reports and their votes expire after 30 minutes. Other reports and their votes expire after eight hours. Anonymous daily counts contain no locations.": "Laporan komuniti yang anda hantar berkongsi jenis laporan dan lokasi anggaran dengan pemandu berdekatan. Semasa navigasi, Lapan menggunakan lokasi anggaran untuk mencari laporan berdekatan. Dalam pratonton laluan, Lapan meminta laporan dalam lingkungan anggaran laluan yang dipilih. Laporan trafik dan undiannya tamat selepas 30 minit. Laporan lain dan undiannya tamat selepas lapan jam. Kiraan harian anonim tidak mengandungi lokasi."});
 
 window.LapanI18n.add({
   "Police Hidden": "Polis Tersembunyi",

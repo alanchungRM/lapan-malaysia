@@ -323,6 +323,8 @@ body.guiding .saved-map-pin{display:none}
 .report-flood{--report-accent:#7fe4f2;--report-icon-surface:#153948}
 .report-pothole{--report-accent:#e3b7ff;--report-icon-surface:#39294d}
 .report-police-hidden{--report-accent:#a9c9ff;--report-icon-surface:#213b65}
+.report-traffic-heavy{--report-accent:#ffb454;--report-icon-surface:#563500}
+.report-traffic-standstill{--report-accent:#ff91aa;--report-icon-surface:#651b39}
 .report-pin:focus-visible{outline:2px solid #f4f8fc;outline-offset:3px}
 /* Report details share the driving panel palette. Scope MapLibre overrides to report pins. */
 .lapan-report-popup{

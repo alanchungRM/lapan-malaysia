@@ -1,14 +1,14 @@
-// Anonymous community reports while driving: report a crash, stopped vehicle, object, flood, pothole or hidden police, see what other drivers reported ahead on your route, and say whether it is still there.
+// Anonymous reports can be submitted and confirmed while driving, and viewed on the selected route preview.
 (function(root){
-const KINDS=['crash','stopped','object','flood','pothole','police-hidden'],RANGE=500,ASK=300,ASK_DURATION_MS=15000,REFRESH_MS=60000,REFRESH_M=1000,FIX_MAX_MS=30000;
+const KINDS=['crash','stopped','object','flood','pothole','police-hidden','traffic-heavy','traffic-standstill'],RANGE=500,ASK=300,ASK_DURATION_MS=15000,REFRESH_MS=60000,REFRESH_M=1000,FIX_MAX_MS=30000;
 const {project}=typeof module==='object'?require('./cameras.js'):root.LapanCameras;
-const LABELS={crash:'Crash',stopped:'Stopped vehicle',object:'Object on road',flood:'Flooding',pothole:'Pothole','police-hidden':'Police Hidden'};
+const LABELS={crash:'Crash',stopped:'Stopped vehicle',object:'Object on road',flood:'Flooding',pothole:'Pothole','police-hidden':'Police Hidden','traffic-heavy':'Heavy traffic','traffic-standstill':'Standstill traffic'};
 const NAMES={crash:'Crash reported ahead',stopped:'Stopped vehicle reported ahead',object:'Object on the road reported ahead',flood:'Flooding reported ahead',pothole:'Pothole reported ahead','police-hidden':'Police reported ahead'};
 const VOICE={crash:'Crash reported ahead, in {m} metres.',stopped:'Stopped vehicle reported ahead, in {m} metres.',object:'Object on the road reported ahead, in {m} metres.',flood:'Flooding reported ahead, in {m} metres.',pothole:'Pothole reported ahead, in {m} metres.','police-hidden':'Police reported ahead, in {m} metres.'};
 // Reports that sit on the planned route, with their distance along it.
 function placeOnRoute(reports,route,tolerance=40){
  const coords=route?.geometry?.coordinates;if(!Array.isArray(coords)||coords.length<2||!Array.isArray(reports))return [];
- const out=[];for(const r of reports){if(!r||!KINDS.includes(r.kind)||!Number.isFinite(r.lat)||!Number.isFinite(r.lon))continue;const p=project([r.lon,r.lat],coords);if(p.distance<=tolerance)out.push({...r,along:p.along})}
+ const out=[];for(const r of reports){if(!r||!KINDS.includes(r.kind)||!Number.isFinite(r.lat)||!Number.isFinite(r.lon))continue;const p=project([r.lon,r.lat],coords);if(p.distance<=tolerance)out.push({...r,along:p.along,segment:p.segment,fraction:p.fraction})}
  return out.sort((a,b)=>a.along-b.along);
 }
 const ahead=(items,along)=>items.map(r=>({...r,remaining:r.along-along})).filter(r=>r.remaining>0&&r.remaining<=RANGE).sort((a,b)=>a.remaining-b.remaining)[0]||null;
@@ -83,7 +83,7 @@ function paintMap(){
 function refreshDetails(){
  refreshAskCountdown();
  const now=Date.now(),live=raw.filter(r=>r.deadline>now);
- if(live.length!==raw.length){raw=live;items=placeOnRoute(raw,route);renderAhead(false)}
+ if(live.length!==raw.length){raw=live;syncDrivingReports();renderAhead(false)}
  paintMap();
  for(const report of raw){
   const entry=markers.get(report.id);
@@ -104,12 +104,16 @@ async function refresh(f){
   const q=new URLSearchParams({lat:f.latitude.toFixed(4),lon:f.longitude.toFixed(4),r:'5000'});
   const res=await call('/api/reports?'+q,{signal:controller.signal});
   if(controller.signal.aborted)return;
-  if(res.status===503){setAvailable(false);raw=[];items=[];hideAll();paintMap();return}
+  if(res.status===503){setAvailable(false);raw=[];syncDrivingReports();hideAll();paintMap();return}
   if(res.status!==200||!Array.isArray(res.body?.reports))return;
   setAvailable(true);
   raw=res.body.reports.filter(r=>KINDS.includes(r.kind)&&r.remainingSeconds>0).map(r=>({...r,deadline:at+r.remainingSeconds*1000}));
-  items=placeOnRoute(raw,route);refreshDetails();renderAhead(false);
+  syncDrivingReports();refreshDetails();renderAhead(false);
  }catch{}finally{if(inflight===controller)inflight=null}
+}
+function syncDrivingReports(){
+ items=placeOnRoute(raw,route);
+ root.LapanTrafficColors?.setCommunity(route,items);
 }
 function hideBanner(){$('reportWarning').classList.add('hidden')}
 function hideAsk(){
@@ -150,7 +154,7 @@ async function vote(id,still){
 $('reportAskDismiss').onclick=hideAsk;
 $('reportYes').onclick=()=>askFor&&vote(askFor,true);$('reportNo').onclick=()=>askFor&&vote(askFor,false);
 function stop({keepFix=false}={}){
- inflight?.abort();inflight=null;hideAll();route=null;items=[];raw=[];last=null;
+ inflight?.abort();inflight=null;hideAll();root.LapanTrafficColors?.setCommunity(route,[]);route=null;items=[];raw=[];last=null;
  clearInterval(ticker);ticker=0;spoken.clear();prompted.clear();clearMarkers();
  // Arrival stops background reports, but a fresh fix can still be used in the report dialog.
  if(!keepFix){
@@ -167,7 +171,7 @@ function renderAhead(announce){
  // A prompt keeps its original deadline after the driver passes its report.
  const active=askFor?live.find(report=>report.id===askFor):null;
  if(askFor&&!active)hideAsk();
- const next=ahead(live,here.along);
+ const next=ahead(live.filter(report=>Object.hasOwn(NAMES,report.kind)),here.along);
  if(next){
   const alert=describe(next,I18());
   setText($('reportWarning'),alert.text);$('reportWarning').classList.remove('hidden');
@@ -188,7 +192,7 @@ function renderAhead(announce){
 function update(position,nextRoute){
  const c=position.coords;if(!c||c.accuracy>100)return;
  fix=c;fixAt=Date.now();
- if(route!==nextRoute){route=nextRoute;items=placeOnRoute(raw,route)}
+ if(route!==nextRoute){root.LapanTrafficColors?.setCommunity(route,[]);route=nextRoute;syncDrivingReports()}
  if(!ticker)ticker=setInterval(refreshDetails,1000);
  if(available!==false||Date.now()-checkedAt>=600000){
   if(shouldRefresh(last,c,Date.now()))refresh(c);
@@ -230,7 +234,7 @@ save.onclick=async()=>{
  try{
   const res=await write('/api/reports',selection.body);
   const accepted=res.status===200||res.status===201;
-  if(accepted){if(res.body?.id)remember(res.body.id);last=null}
+  if(accepted){if(res.body?.id)remember(res.body.id);last=null;if(route&&fix)refresh(fix)}
   if(!dialog.open||session!==dialogSession)return;
   if(accepted){
    selection=null;say('Thank you. Your report helps drivers behind you.');
@@ -250,6 +254,7 @@ function stopPreview(){
  clearInterval(previous.timer);
  previous.request?.abort();
  previous.layer.remove();
+ root.LapanTrafficColors?.setCommunity(previous.route,[]);
 }
 function preview(selected,map,bounds){
  if(previewSession?.route===selected)return;
@@ -266,11 +271,14 @@ function preview(selected,map,bounds){
  previewSession=session;
  const tick=()=>{
   const now=Date.now();
+  let expired=false;
   for(const [id,pin] of session.pins){
    if(pin.deadline>now)continue;
+   expired=true;
    layer.removeLayer(pin.marker);
    session.pins.delete(id);
   }
+  if(expired)root.LapanTrafficColors?.setCommunity(selected,[...session.pins.values()].map(pin=>pin.report));
   if(!document.hidden&&!session.request&&now-session.checked>=REFRESH_MS)refreshPreview();
  };
  async function refreshPreview(){
@@ -282,6 +290,7 @@ function preview(selected,map,bounds){
    const result=await call('/api/reports?bbox='+encodeURIComponent(bbox.join(',')),{signal:controller.signal});
    if(previewSession!==session||controller.signal.aborted||result.status!==200||!Array.isArray(result.body?.reports))return;
    const received=placeOnRoute(result.body.reports,selected).filter(r=>at+r.remainingSeconds*1000>Date.now());
+   root.LapanTrafficColors?.setCommunity(selected,received);
    const active=new Set(received.map(r=>r.id));
    for(const [id,pin] of session.pins){
     if(active.has(id))continue;
@@ -303,7 +312,7 @@ function preview(selected,map,bounds){
      return label;
     }).addTo(layer);
     marker.getElement()?.setAttribute('aria-label',translate(LABELS[report.kind]));
-    session.pins.set(report.id,{marker,deadline:at+report.remainingSeconds*1000});
+    session.pins.set(report.id,{marker,report,deadline:at+report.remainingSeconds*1000});
    }
   }catch{}finally{
    clearTimeout(timeout);

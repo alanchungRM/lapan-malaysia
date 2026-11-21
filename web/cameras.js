@@ -1,6 +1,6 @@
 (function(root){
 // Projection gives distance along the route rather than a straight-line warning.
-function project(point,coords){let best={distance:Infinity,along:0},along=0;const cos=Math.cos(point[1]*Math.PI/180),scale=111320;for(let i=1;i<coords.length;i++){const a=coords[i-1],b=coords[i],ax=(a[0]-point[0])*scale*cos,ay=(a[1]-point[1])*scale,dx=(b[0]-a[0])*scale*cos,dy=(b[1]-a[1])*scale,len=Math.hypot(dx,dy),t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/(len*len||1))),distance=Math.hypot(ax+t*dx,ay+t*dy);if(distance<best.distance)best={distance,along:along+t*len};along+=len}return best}
+function project(point,coords){let best={distance:Infinity,along:0},along=0;const cos=Math.cos(point[1]*Math.PI/180),scale=111320;for(let i=1;i<coords.length;i++){const a=coords[i-1],b=coords[i],ax=(a[0]-point[0])*scale*cos,ay=(a[1]-point[1])*scale,dx=(b[0]-a[0])*scale*cos,dy=(b[1]-a[1])*scale,len=Math.hypot(dx,dy),t=Math.max(0,Math.min(1,-(ax*dx+ay*dy)/(len*len||1))),distance=Math.hypot(ax+t*dx,ay+t*dy);if(distance<best.distance)best={distance,along:along+t*len,segment:i-1,fraction:t};along+=len}return best}
 function limit(raw){const m=String(raw||'').match(/^(\d+(?:\.\d+)?)\s*(km\/h|mph)?$/);return m?Number(m[1])*(m[2]==='mph'?1.609344:1):null}
 // Wording per camera kind. Red-light cameras have no speed to compare, so they never say Slow down.
 function describe(kind,remaining,max,over,i18n){
