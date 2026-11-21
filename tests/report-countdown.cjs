@@ -19,14 +19,29 @@ function setup() {
   querySelectorAll() {return []}
   addEventListener() {}
   focus() {}
+  append() {}
+  setAttribute() {}
  }
  const get = id => {
   if (!nodes.has(id)) nodes.set(id, new Element());
   return nodes.get(id);
  };
  const reports = [{id: 'first', kind: 'crash', lon: 101.003, lat: 3, remainingSeconds: 3600, ageSeconds: 0}];
+ const previewLayers=[];
+ const L={
+  divIcon:options=>options,
+  layerGroup(){
+   const layer={pins:new Set(),addTo(){return this},removeLayer(marker){this.pins.delete(marker)},remove(){this.pins.clear();this.removed=true}};
+   previewLayers.push(layer);
+   return layer;
+  },
+  marker(point,{icon}){
+   return {point,icon,bindPopup(popup){this.popup=popup;return this},addTo(layer){layer.pins.add(this);return this},getElement:()=>new Element()};
+  }
+ };
  const context = {
-  document: {getElementById: get}, crypto: webcrypto,
+  L,
+  document: {getElementById: get,querySelector:()=>({cloneNode:()=>new Element()}),createElement:()=>new Element()}, crypto: webcrypto,
   localStorage: {getItem() {return null}, setItem() {}},
   LapanCameras: {project}, URLSearchParams, AbortController,
   Date: class extends Date {static now() {return now}},
@@ -53,10 +68,31 @@ function setup() {
   now = end;
  }
  const update = lon => context.LapanReports.update({coords: {longitude: lon, latitude: 3, accuracy: 10}}, route);
- return {get, update, advance, reports, requests, stop: context.LapanReports.stop};
+ return {get, update, advance, reports, requests, previewLayers, preview:context.LapanReports.preview, stopPreview:context.LapanReports.stopPreview, stop: context.LapanReports.stop};
 }
 
 (async () => {
+ const preview=setup(),bounds={getSouth:()=>3,getNorth:()=>3,getWest:()=>101,getEast:()=>101.02};
+ preview.reports[0].remainingSeconds=2;
+ preview.reports.push({id:'off',kind:'flood',lat:3.01,lon:101.01,remainingSeconds:60,ageSeconds:0});
+ preview.preview(route,{},bounds);
+ await tick();
+ assert.match(preview.requests[0].url,/\?bbox=/);
+ const layer=preview.previewLayers[0];
+ assert.equal(layer.pins.size,1,'only the selected route has report pins');
+ const pin=[...layer.pins][0];
+ assert.match(pin.icon.html.className,/report-crash/);
+ assert.match(pin.popup().textContent,/Crash.*just now/);
+ preview.advance(2000);
+ assert.equal(layer.pins.size,0,'expired pins disappear without a new fetch');
+ const other={geometry:{coordinates:[[101,3.01],[101.02,3.01]]}};
+ preview.preview(other,{},bounds);
+ preview.stopPreview();
+ assert.equal(preview.requests[1].options.signal.aborted,true);
+ await tick();
+ assert.equal(preview.previewLayers[1].pins.size,0,'late replies cannot repaint a cleared route');
+ assert.equal(layer.removed,true);
+
  let h = setup();
  h.update(101); await tick();
  assert.equal(h.get('reportAsk').classList.hidden, true, 'outside 300 m');

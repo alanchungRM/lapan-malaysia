@@ -44,6 +44,14 @@ const police=await post('/api/reports',{kind:'police-hidden',lat:3.2,lon:101.75}
 assert.equal(police.status,201);
 assert.equal((await (await get('?lat=3.2&lon=101.75&r=200')).json()).reports[0].kind,'police-hidden');
 
+// A planning box reads active reports in that area without proximity or GPS parameters.
+const preview=await (await get('?bbox=3.138,101.686,3.141,101.688')).json();
+assert.equal(preview.reports.length,2);
+assert.deepEqual(new Set(preview.reports.map(r=>r.kind)),new Set(['crash','stopped']));
+for(const bbox of ['3,101,2,102','3,,4,102','3,101,4,102,103','1,98,4,102','3,101,foo,102']){
+ assert.equal((await get('?bbox='+bbox)).status,400);
+}
+
 // Validation. Free text and extra fields are refused, so nothing personal or abusive can be stored.
 for(const bad of [{kind:'police',...KL},{kind:'crash',lat:40,lon:101},{kind:'crash',lat:3,lon:'x'},{kind:'crash',...KL,note:'hello'},{kind:'crash',lat:3},[],'null','{bad',{kind:'__proto__',...KL},{kind:'toString',...KL}]){const x=await post('/api/reports',bad);assert.equal(x.status,400,JSON.stringify(bad))}
 assert.equal((await post('/api/reports',{kind:'crash',...KL},{origin:'https://evil.example'})).status,403);

@@ -33,10 +33,22 @@ export async function communityReports(request,env){
   }
   if(request.method==='GET'&&url.pathname==='/api/reports'){
    const lat=Number(url.searchParams.get('lat')),lon=Number(url.searchParams.get('lon')),radius=Math.min(20000,Math.max(200,Number(url.searchParams.get('r'))||3000));
-   if(!reportPoint(lat,lon))return json({error:'Choose a valid Malaysian location.'},400);
-   await sweepCommunityReports(env,now,true);
-   const dLat=radius/111320,dLon=radius/(111320*Math.cos(lat*Math.PI/180));
-   const rows=await db.prepare('SELECT id,kind,lat,lon,created_at,expires_at,confirms,denies FROM community_reports WHERE expires_at>? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? ORDER BY created_at DESC LIMIT 100').bind(now,lat-dLat,lat+dLat,lon-dLon,lon+dLon).all();
+   const box=url.searchParams.get('bbox');
+   let bounds,limit=100;
+   if(box!==null){
+    const parts=box.split(',');
+    bounds=parts.map(Number);
+    const [south,west,north,east]=bounds;
+    if(parts.length!==4||parts.some(value=>!value.trim())||!reportPoint(south,west)||!reportPoint(north,east)||south>=north||west>=east)return json({error:'Choose valid Malaysian map bounds.'},400);
+    bounds=[south,north,west,east];
+    limit=500;
+   }else{
+    if(!reportPoint(lat,lon))return json({error:'Choose a valid Malaysian location.'},400);
+    const dLat=radius/111320,dLon=radius/(111320*Math.cos(lat*Math.PI/180));
+    bounds=[lat-dLat,lat+dLat,lon-dLon,lon+dLon];
+   }
+   await sweepCommunityReports(env,now,box===null);
+   const rows=await db.prepare('SELECT id,kind,lat,lon,created_at,expires_at,confirms,denies FROM community_reports WHERE expires_at>? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ?').bind(now,...bounds,limit).all();
    return json({reports:(rows.results||[]).map(r=>({
     id:r.id,kind:r.kind,lat:r.lat,lon:r.lon,ageSeconds:now-r.created_at,
     remainingSeconds:r.expires_at-now,confirms:r.confirms,denies:r.denies

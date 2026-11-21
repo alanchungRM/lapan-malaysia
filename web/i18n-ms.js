@@ -559,7 +559,7 @@ window.LapanI18n.add({
   "Time remaining: {m} min {s} s": "Masa berbaki: {m} min {s} s",
   "Report expired": "Laporan telah tamat"
 });
-window.LapanI18n.add({"Community reports, when you choose to send one, share the report type and a rounded location with nearby drivers. While navigating, Lapan uses an approximate location to find nearby reports. Reports and their votes expire after eight hours. Anonymous daily counts contain no locations.": "Laporan komuniti yang anda hantar berkongsi jenis laporan dan lokasi anggaran dengan pemandu berdekatan. Semasa navigasi, Lapan menggunakan lokasi anggaran untuk mencari laporan berdekatan. Laporan dan undian tamat selepas lapan jam. Kiraan harian anonim tidak mengandungi lokasi."});
+window.LapanI18n.add({"Community reports, when you choose to send one, share the report type and a rounded location with nearby drivers. While navigating, Lapan uses an approximate location to find nearby reports. In route preview, Lapan requests reports within the approximate bounds of the selected route. Reports and their votes expire after eight hours. Anonymous daily counts contain no locations.": "Laporan komuniti yang anda hantar berkongsi jenis laporan dan lokasi anggaran dengan pemandu berdekatan. Semasa navigasi, Lapan menggunakan lokasi anggaran untuk mencari laporan berdekatan. Dalam pratonton laluan, Lapan meminta laporan dalam lingkungan anggaran laluan yang dipilih. Laporan dan undian tamat selepas lapan jam. Kiraan harian anonim tidak mengandungi lokasi."});
 
 window.LapanI18n.add({
   "Police Hidden": "Polis Tersembunyi",

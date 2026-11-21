@@ -241,5 +241,77 @@ save.onclick=async()=>{
  }catch{if(dialog.open&&session===dialogSession)say('Could not send. Check your connection and try again.')}
  finally{sending=false;save.disabled=$('reportBack').disabled=false}
 };
-root.LapanReports={update,stop};
+// Planning uses a separate, read-only overlay and never feeds results into routing.
+let previewSession=null;
+function stopPreview(){
+ const previous=previewSession;
+ if(!previous)return;
+ previewSession=null;
+ clearInterval(previous.timer);
+ previous.request?.abort();
+ previous.layer.remove();
+}
+function preview(selected,map,bounds){
+ if(previewSession?.route===selected)return;
+ stopPreview();
+ const bbox=[
+  Math.max(.8,Math.floor((bounds.getSouth()-.001)*1000)/1000),
+  Math.max(99,Math.floor((bounds.getWest()-.001)*1000)/1000),
+  Math.min(7.6,Math.ceil((bounds.getNorth()+.001)*1000)/1000),
+  Math.min(120,Math.ceil((bounds.getEast()+.001)*1000)/1000)
+ ];
+ if(bbox[0]>=bbox[2]||bbox[1]>=bbox[3])return;
+ const L=root.L, layer=L.layerGroup().addTo(map);
+ const session={route:selected,layer,request:null,checked:0,pins:new Map()};
+ previewSession=session;
+ const tick=()=>{
+  const now=Date.now();
+  for(const [id,pin] of session.pins){
+   if(pin.deadline>now)continue;
+   layer.removeLayer(pin.marker);
+   session.pins.delete(id);
+  }
+  if(!document.hidden&&!session.request&&now-session.checked>=REFRESH_MS)refreshPreview();
+ };
+ async function refreshPreview(){
+  const controller=new AbortController(),at=Date.now();
+  session.request=controller;
+  session.checked=at;
+  const timeout=setTimeout(()=>controller.abort(),10000);
+  try{
+   const result=await call('/api/reports?bbox='+encodeURIComponent(bbox.join(',')),{signal:controller.signal});
+   if(previewSession!==session||controller.signal.aborted||result.status!==200||!Array.isArray(result.body?.reports))return;
+   const received=placeOnRoute(result.body.reports,selected).filter(r=>at+r.remainingSeconds*1000>Date.now());
+   const active=new Set(received.map(r=>r.id));
+   for(const [id,pin] of session.pins){
+    if(active.has(id))continue;
+    layer.removeLayer(pin.marker);
+    session.pins.delete(id);
+   }
+   for(const report of received){
+    if(session.pins.has(report.id))continue;
+    const icon=document.querySelector('[data-report="'+report.kind+'"] svg');
+    const pin=document.createElement('span');
+    pin.className='report-pin report-'+report.kind;
+    if(icon)pin.append(icon.cloneNode(true));
+    const marker=L.marker([report.lat,report.lon],{
+     icon:L.divIcon({className:'planning-report-marker',html:pin,iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-18]}),
+     title:translate(LABELS[report.kind])
+    }).bindPopup(()=>{
+     const label=document.createElement('span');
+     label.textContent=translate(LABELS[report.kind])+ageText(report.ageSeconds+(Date.now()-at)/1000,I18());
+     return label;
+    }).addTo(layer);
+    marker.getElement()?.setAttribute('aria-label',translate(LABELS[report.kind]));
+    session.pins.set(report.id,{marker,deadline:at+report.remainingSeconds*1000});
+   }
+  }catch{}finally{
+   clearTimeout(timeout);
+   session.request=null;
+  }
+ }
+ session.timer=setInterval(tick,1000);
+ if(!document.hidden)refreshPreview();
+}
+root.LapanReports={update,stop,preview,stopPreview};
 })(typeof window==='object'?window:globalThis);
