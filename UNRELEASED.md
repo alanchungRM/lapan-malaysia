@@ -1,5 +1,7 @@
 # Pending website release notes
 
+- Show rain and thunderstorm effects on the planning map using MET Malaysia forecasts and warnings.
+
 - Use a PNG favicon for Google Search on the canonical production domain.
 
 - Add a palm-and-sunset backdrop to the GTA Sunset route planner.

@@ -2,6 +2,9 @@
  const floodUrl = 'https://publicinfobanjir.water.gov.my/';
  const metUrl = 'https://www.met.gov.my/';
  const timezone = 'Asia/Kuala_Lumpur';
+ const PANE = 'route-weather';
+ const wetKind = summary => /^(ribut petir|thunderstorms?)( |$)/.test(key(summary)) ? 'storm'
+  : /^(hujan|rain|showers?)( |$)/.test(key(summary)) ? 'rain' : null;
  const alias = {
   'wp kuala lumpur':'kuala lumpur', 'wp putrajaya':'putrajaya', 'wp labuan':'labuan',
   'w p kuala lumpur':'kuala lumpur', 'w p putrajaya':'putrajaya', 'w p labuan':'labuan',
@@ -132,6 +135,45 @@
   return result[0].toUpperCase()+result.slice(1);
  }
 
+ function paintWeather(map, effects) {
+  if (!effects.length) return null;
+  const pane=map.getPane(PANE) || map.createPane(PANE);
+  pane.style.zIndex='350';
+  const group=L.layerGroup().addTo(map);
+  const ordered=[...effects].sort((a,b) => Number(a.warning)-Number(b.warning) || Number(a.kind==='storm')-Number(b.kind==='storm'));
+  L.geoJSON({
+   type:'FeatureCollection',
+   features:ordered.map(({area,kind,warning}) => ({
+    type:'Feature', geometry:{type:'MultiPolygon',coordinates:area.polygons}, properties:{kind,warning}
+   }))
+  },{
+   pane:PANE, interactive:false,
+   style:({properties:{kind,warning}}) => ({
+    className:'route-weather-area',
+    color:warning?'var(--weather-map-warning)':'var(--weather-map-outline)',
+    weight:warning?2:1.25, opacity:warning?1:.65,
+    fillColor:'url(#lapan-weather-'+kind+')',fillOpacity:1,
+    dashArray:warning?null:'4 6'
+   })
+  }).addTo(group);
+  for (const {point,warning} of ordered.filter(item=>item.kind==='storm').slice(-6)) {
+   const badge=document.createElement('span');
+   badge.className='weather-map-storm'+(warning?' weather-map-storm-warning':'');
+   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+   svg.setAttribute('viewBox','0 0 24 24');
+   svg.setAttribute('aria-hidden','true');
+   const bolt=document.createElementNS('http://www.w3.org/2000/svg','path');
+   bolt.setAttribute('d','M13 2 5 14h6l-1 8 9-13h-6l1-7z');
+   svg.append(bolt);
+   badge.append(svg);
+   L.marker([point[1],point[0]],{
+    pane:PANE, interactive:false, keyboard:false,
+    icon:L.divIcon({className:'weather-map-marker',html:badge,iconSize:[24,24],iconAnchor:[-5,29]})
+   }).addTo(group);
+  }
+  return group;
+ }
+
  function render(view) {
   const {panel,destination,route,map,areas,data}=view;
   panel.replaceChildren();
@@ -153,25 +195,50 @@
    /^(Ds|St|Tn|Dv|Rc)/.test(row.location?.location_id ?? '') && key(row.location?.location_name)===name
   )).find(Boolean);
   const samples = routeSamples(route.geometry);
-  const overlays = new Set();
+  const overlays = new Map();
+  const locate=area=>{
+   const matches=samples.filter(point=>inBounds(area.box,point)&&contains(area.polygons,point));
+   return matches[Math.floor(matches.length/2)];
+  };
+  const forecastAreas=[];
+  if (data?.date===date) {
+   for (const row of data.forecasts ?? []) {
+    const kind=wetKind(row.summary_forecast);
+    if (!kind || !/^Ds/.test(row.location?.location_id ?? '')) continue;
+    const area=layers.ADM2.get(key(row.location.location_name));
+    if (!area || overlays.has(area)) continue;
+    const point=locate(area);
+    if (!point) continue;
+    overlays.set(area,{area,point,kind,warning:false});
+    forecastAreas.push(area.name);
+   }
+  }
   for (const row of latestWarnings(data?.warnings ?? [],now)) {
-   const matches=warningAreas(row).map(([level,name]) => layers[level].get(name)).filter(area =>
-    area && samples.some(point=>inBounds(area.box,point) && contains(area.polygons,point)));
+   const kind=/thunderstorm/i.test(row.warning_issue.title_en)?'storm':'rain';
+   const matches=warningAreas(row).flatMap(([level,name]) => {
+    const area=layers[level].get(name),point=area&&locate(area);
+    return point?[{area,point,kind,warning:true}]:[];
+   });
    if (!matches.length) continue;
-   matches.forEach(area=>overlays.add(area));
+   for (const effect of matches) {
+    const previous=overlays.get(effect.area);
+    if (kind==='storm'||!previous?.warning) overlays.set(effect.area,effect);
+   }
    const title=bilingual(row.warning_issue.title_en,row.warning_issue.title_bm || row.warning_issue.title_en);
    const warning=document.createElement('div');
    warning.className='route-weather-warning';
    note(warning,'⚠ '+title+' · '+bilingual('Along your route','Sepanjang laluan anda'),'route-weather-warning-title');
    const expiry=new Intl.DateTimeFormat(bilingual('en-MY','ms-MY'),{timeZone:timezone,day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}).format(malaysiaTime(row.valid_to));
-   note(warning,matches.map(area=>area.name).join(', ')+' · '+bilingual('Until ','Sehingga ')+expiry+' · MET Malaysia');
+   note(warning,matches.map(({area})=>area.name).join(', ')+' · '+bilingual('Until ','Sehingga ')+expiry+' · MET Malaysia');
    panel.append(warning);
   }
-  if (overlays.size) {
-   layer=L.geoJSON({type:'FeatureCollection',features:[...overlays].map(area=>({
-    type:'Feature',geometry:{type:'MultiPolygon',coordinates:area.polygons},properties:{}
-   }))},{interactive:false,style:{className:'route-weather-area',color:'#d38312',weight:2,fillOpacity:.12,dashArray:'5 5'}}).addTo(map);
-   layer.bringToBack();
+  layer=paintWeather(map,[...overlays.values()]);
+  if (forecastAreas.length) {
+   const format=new Intl.ListFormat(bilingual('en-MY','ms-MY'));
+   const names=format.format(forecastAreas.slice(0,3));
+   const remaining=forecastAreas.length-3;
+   const more=remaining>0?bilingual(' + '+remaining+' more',' + '+remaining+' lagi'):'';
+   note(panel,bilingual("Today's wet-weather forecast areas","Kawasan ramalan hujan hari ini")+' · '+names+more,'route-weather-location');
   }
   if (forecast?.summary_forecast) {
    const temp=Number.isFinite(forecast.min_temp)&&Number.isFinite(forecast.max_temp)

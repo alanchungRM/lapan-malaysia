@@ -457,6 +457,28 @@ html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-night{display:none
 
 #placeDialog p.search-loading{justify-content:center;min-height:100px;margin:16px 0}
 
+/* Forecast effects use a separate Leaflet pane below route lines and pins. */
+:root {
+ --weather-map-outline:#2563a7;--weather-map-warning:#a95208;
+ --weather-rain:#5aabed;--weather-rain-stroke:#125995;
+ --weather-storm:#8770d1;--weather-storm-stroke:#5539a8;
+}
+html[data-theme="night"],html[data-map-theme="night"],html[data-skin="sunset"] {
+ --weather-map-outline:#7baee9;--weather-map-warning:#ffc36d;
+ --weather-rain:#3588d4;--weather-rain-stroke:#a4d7ff;
+ --weather-storm:#8154c9;--weather-storm-stroke:#d7beff;
+}
+.weather-map-definitions{position:absolute;pointer-events:none}
+.weather-rain-wash{fill:var(--weather-rain);fill-opacity:.17}
+.weather-storm-wash{fill:var(--weather-storm);fill-opacity:.22}
+.weather-rain-streak,.weather-storm-streak{fill:none;stroke-linecap:round;stroke-width:1.15;stroke-opacity:.48}
+.weather-rain-streak{stroke:var(--weather-rain-stroke)}
+.weather-storm-streak{stroke:var(--weather-storm-stroke)}
+.weather-map-storm{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#242044;color:#e3d3ff;box-shadow:0 1px 4px #0005}
+.weather-map-storm-warning{background:#4b2a13;color:#ffce7e}
+.weather-map-storm svg{width:15px;height:15px;fill:currentColor}
+body.guiding .leaflet-route-weather-pane{display:none}
+
 .route-weather {
  display:grid;
  gap:.35rem;
