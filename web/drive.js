@@ -14,13 +14,20 @@ function progress(text){const el=$('navigationProgress');if(el){el.hidden=!text;
 function collapseCredits(){document.querySelector?.('#driveMap .maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show')}
 function fallback(reason){progress(null);clearTimeout(loadTimer);ready=false;document.body.classList.remove('drive-ready');$('driveMode').textContent='2D';$('driveMode').disabled=true;$('driveMode').title=typeof reason==='string'?reason:'3D map unavailable on this device; using the 2D map';finishFlag?.remove();finishFlag=null;if(gl){gl.remove();gl=null}cancelAnimationFrame(frame);frame=null}
 function init(pos){if(gl)return;if(!root.maplibregl){fallback("3D renderer did not load; using the 2D map");return}try{gl=new maplibregl.Map({container:'driveMap',style:root.LapanMapAppearance?.url()||'https://tiles.openfreemap.org/styles/liberty',center:pos,zoom:17,pitch:tilt?52:0,bearing:heading,maxPitch:60,attributionControl:{compact:true},canvasContextAttributes:{antialias:false},fadeDuration:150});root.LapanMapAppearance?.bind(gl);loadTimer=setTimeout(()=>{if(!ready)fallback()},18000);gl.on('load',()=>{root.requestAnimationFrame?.(collapseCredits);clearTimeout(loadTimer);ready=true;root.LapanSignals?.attachGL(gl);const style=gl.getStyle(),source=Object.keys(style.sources).find(k=>style.sources[k].type==='vector');if(source&&!gl.getLayer('lapan-buildings')){const before=style.layers.find(l=>l.type==='symbol')?.id;gl.addLayer({id:'lapan-buildings',type:'fill-extrusion',source,'source-layer':'building',minzoom:15,paint:{'fill-extrusion-color':sunset()?'#684b74':'#d4dce1','fill-extrusion-height':['coalesce',['get','render_height'],['get','height'],5],'fill-extrusion-base':['coalesce',['get','render_min_height'],0],'fill-extrusion-opacity':0.7}},before)}const el=document.createElement('div');el.className='vehicle-arrow';vehicleElement=el;el.setAttribute('aria-label','Your vehicle');el.innerHTML='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 4 33 34 20 27 7 34Z" fill="#1783ee" stroke="white" stroke-width="3" stroke-linejoin="round"/></svg>';if(root.LapanVehiclePointer)root.LapanVehiclePointer.paint(el);marker=new maplibregl.Marker({element:el,rotationAlignment:'map',pitchAlignment:'viewport'}).setLngLat(pos).addTo(gl);if(active){document.body.classList.add('drive-ready');gl.resize();if(pending)draw(pending.p,pending.route,true)}});gl.on('render',()=>{if(active&&gl.getLayer('lapan-route-line')&&gl.isSourceLoaded?.('lapan-route'))progress(null)});gl.on('dragstart',()=>{following=false;$('locate').textContent='⌖';$('locate').title='Resume following your vehicle'});gl.on('error',e=>{if(!ready&&e.error?.message?.includes('WebGL'))fallback()});gl.getCanvas().addEventListener('webglcontextlost',fallback,{once:true})}catch(e){fallback("3D is unavailable in this browser; using the 2D map")}}
+let finishKind=null;
 function drawFinishFlag(point){
- if(!finishFlag){
+ const saved=root.LapanSaved,kind=saved?.routeKind?.()||null;
+ if(!finishFlag||finishKind!==kind){
+  finishFlag?.remove();
+  finishKind=kind;
+  const icon=saved?.routeIcon?.(kind);
   const element=document.createElement('div');
-  element.className='route-finish-flag';
+  element.className=icon?.className||'route-finish-flag';
+  if(icon)element.append(icon.html);
   element.setAttribute('role','img');
-  element.setAttribute('aria-label',root.LapanI18n?.t?.('Destination')||'Destination');
-  finishFlag=new maplibregl.Marker({element,anchor:'bottom',offset:[11,0],rotationAlignment:'viewport',pitchAlignment:'viewport'}).setLngLat(point).addTo(gl);
+  const label=icon?.label||'Destination';
+  element.setAttribute('aria-label',root.LapanI18n?.t?.(label)||label);
+  finishFlag=new maplibregl.Marker({element,anchor:'bottom',offset:icon?[0,0]:[11,0],rotationAlignment:'viewport',pitchAlignment:'viewport'}).setLngLat(point).addTo(gl);
   return;
  }
  finishFlag.setLngLat(point);

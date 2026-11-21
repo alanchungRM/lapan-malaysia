@@ -23,10 +23,25 @@ let kind='home',destination=()=>null,pickMap=null,candidate=null,session=0,reque
 const chip=k=>document.querySelector('[data-saved="'+k+'"]'),edit=k=>document.querySelector('[data-saved-edit="'+k+'"]');
 let mapPins, openPin, routeDestination=null;
 const samePoint=(a,b)=>!!a&&!!b&&a[1]===b[1]&&a[2]===b[2];
-function setRouteDestination(place){
- if(routeDestination===place||samePoint(routeDestination,place))return;
- routeDestination=place;
- renderPins();
+let routeKind=null;
+function setRouteDestination(place,preferred){
+ routeKind=[preferred,...KINDS].find(k=>samePoint(store.get(k),place))||null;
+ if(routeDestination!==place&&!samePoint(routeDestination,place)){
+  routeDestination=place;
+  renderPins();
+ }
+ return routeKind;
+}
+function routeIcon(k){
+ if(!KINDS.includes(k))return null;
+ return {
+  className:'saved-map-pin saved-map-pin-'+k+' saved-destination-pin',
+  html:chip(k).querySelector('svg').cloneNode(true),
+  label:LABEL[k],
+  iconSize:[44,44],
+  iconAnchor:[22,44],
+  popupAnchor:[0,-44]
+ };
 }
 function renderPins(){
  if(!mapPins)return;
@@ -66,7 +81,7 @@ for(const k of KINDS){chip(k).onclick=()=>{const place=store.get(k);if(!place)re
 $('closeSaved').onclick=$('cancelSaved').onclick=()=>{suspended=false;stopPending();session++;dialog.close()};
 dialog.addEventListener('cancel',()=>{suspended=false;stopPending();session++});
 dialog.addEventListener('close',()=>{if(!dialog.open&&!suspended){stopPending();session++}});
-root.LapanSaved={get:k=>store.get(k),setRouteDestination,bind(options){destination=options.destination||destination;pickMap=options.pickMap||pickMap;
+root.LapanSaved={get:k=>store.get(k),setRouteDestination,routeIcon,routeKind:()=>routeKind,bind(options){destination=options.destination||destination;pickMap=options.pickMap||pickMap;
  if(options.map&&!mapPins){
   openPin=options.openPin;
   mapPins=root.L.layerGroup().addTo(options.map);

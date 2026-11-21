@@ -14,7 +14,7 @@ function marker(p,end){const label=document.createElement('span');label.textCont
 markers=[];
 function invalidatePlan(){$('refreshRoute').classList.add('hidden');plannedKey=null;plannedAt=0;window.LapanRouteCosts?.render(null);if(document.body.classList.contains('guiding'))endGuidance();window.LapanRouteCosts?.render(null);routes=[];window.LapanReports?.stopPreview?.();drawCongestion();lines.forEach(l=>map.removeLayer(l));lines=[];markers.forEach(m=>map.removeLayer(m));markers=[];window.LapanSaved?.setRouteDestination?.(null);window.LapanRouteWeather?.clear();$('routes').replaceChildren();$('steps').replaceChildren();$('routecount').textContent='';$('routeBasis').classList.add('hidden');$('start').classList.add('hidden');document.body.classList.remove('has-route');}
 let searchLocation=null;
-const placeSearch=window.LapanSearch.init({get:id=>chosen[id],set:(id,p)=>chosen[id]=p,places,status,invalidate:invalidatePlan,
+const placeSearch=window.LapanSearch.init({get:id=>chosen[id],set:(id,p)=>{chosen[id]=p;if(id==='destination')chosen.savedKind=null},places,status,invalidate:invalidatePlan,
  nearby:()=>searchLocation&&Date.now()-searchLocation.at<900000?searchLocation.coordinates:null});
 document.addEventListener('click',e=>{if(!e.target.closest('.field')&&!e.target.closest('#suggest'))$('suggest').style.display='none'});
 $('swap').onclick=()=>{placeSearch.cancel();invalidatePlan();[chosen.origin,chosen.destination]=[chosen.destination,chosen.origin];[$('origin').value,$('destination').value]=[$('destination').value,$('origin').value]};
@@ -28,11 +28,17 @@ const vehicleMode=()=>$('vehicle').value==='motorcycle'?'motorcycle':'car';
 try{$('vehicle').value=localStorage.getItem('lapan-vehicle')==='motorcycle'?'motorcycle':'car'}catch{}
 const vehicleNote=()=>{$('vehicleNote').hidden=vehicleMode()!=='motorcycle'};vehicleNote();
 $('vehicle').onchange=()=>{invalidatePlan();window.LapanETA?.stop();vehicleNote();try{localStorage.setItem('lapan-vehicle',vehicleMode())}catch{}status(vehicleMode()==='motorcycle'?'Motorcycle selected. Find a new route using TomTom or HERE.':'Car selected. Find a new route.');};
-function keepDestination(place){const same=chosen.destination&&chosen.destination[1]===place[1]&&chosen.destination[2]===place[2];if(!same)invalidatePlan();chosen.destination=place.slice();$('destination').value=place[0];return same&&routes.length>0}
+function keepDestination(place,savedKind=null){const same=chosen.destination&&chosen.destination[1]===place[1]&&chosen.destination[2]===place[2];if(!same)invalidatePlan();chosen.destination=place.slice();chosen.savedKind=savedKind;$('destination').value=place[0];return same&&routes.length>0}
 function positionFinishFlag(route){
  const [lon,lat]=route.geometry.coordinates.at(-1);
- markers[1]?.setLatLng([lat,lon]);
- window.LapanSaved?.setRouteDestination?.(chosen.destination);
+ const finish=markers[1],saved=window.LapanSaved;
+ const kind=saved?.setRouteDestination?.(chosen.destination,chosen.savedKind)||null;
+ if(!finish)return;
+ if(kind!==(finish.savedKind||null)){
+  finish.setIcon(L.divIcon(saved?.routeIcon?.(kind)||{className:'route-finish-flag',iconSize:[32,30],iconAnchor:[5,30]}));
+  finish.savedKind=kind;
+ }
+ finish.setLatLng([lat,lon]);
 }
 function instruction(s){return window.LapanDirections.format(s)}
 function selectRoute(i){if(!routes[i]||!chosen.origin||!chosen.destination)return;if(watch!==null)endGuidance();selected=i;positionFinishFlag(routes[i]);lines.forEach((l,n)=>l.setStyle({color:n===i?'var(--planning-selected, #175b48)':'var(--planning-alternative, #8fa5a0)',weight:n===i?7:4,opacity:n===i?1:.8}));lines[i].bringToFront();drawCongestion();window.LapanRouteWeather?.show($('routes').children[i],routes[i],chosen.destination,map);const bounds=lines[i].getBounds();map.fitBounds(bounds,{padding:[50,65]});window.LapanReports?.preview?.(routes[i],map,bounds);document.querySelectorAll('.route').forEach((c,n)=>{c.classList.toggle('active',n===i);const arrival=c.querySelector('.route-arrival'),strong=c.querySelector('.top strong');if(arrival&&routes[n])arrival.textContent=window.LapanETA?.preview(routes[n])||'No live traffic';if(strong&&routes[n])strong.textContent=duration(routes[n].duration)});$('steps').replaceChildren();const heading=document.createElement('h3');heading.textContent='Turn-by-turn directions';heading.style.fontSize='14px';$('steps').append(heading);routes[i].legs.flatMap(l=>l.steps).forEach(s=>{const d=document.createElement('div');d.className='step';const span=document.createElement('span');span.textContent=s.distance>=1000?(s.distance/1000).toFixed(1)+' km':Math.round(s.distance)+' m';d.append(span,document.createTextNode(instruction(s)));$('steps').append(d)});window.LapanETA?.setRoute(routes[i]);window.LapanRouteCosts?.render(routes[i]);$('routeBasis').textContent=window.LapanRouting.label(routes[i]);$('routeBasis').classList.remove('hidden');$('start').classList.remove('hidden');$('refreshRoute').classList.remove('hidden');document.body.classList.add('has-route');document.querySelector('.search-panel').open=false;$('journeytitle').textContent=chosen.destination[0];map.invalidateSize();if(window.matchMedia('(max-width:760px)').matches)window.scrollTo({top:0,behavior:'smooth'})}
@@ -169,12 +175,12 @@ window.LapanShare?.bind({map,destination:()=>chosen.destination?.[0]===$('destin
  status('Place selected. Tap Find my route.');
  if(plan)$('plan').click();else $('plan').focus();
 }});
-window.LapanSaved?.bind({map,openPin:(kind,place)=>window.LapanShare?.showSaved(kind,place),destination:()=>chosen.destination,pickMap:options=>placeSearch.pickSaved(options)});window.addEventListener('lapan-saved-place',e=>{const place=window.LapanSaved?.get(e.detail?.kind);if(!place)return;placeSearch.cancel();const kept=keepDestination(place);$('suggest').replaceChildren();$('suggest').style.display='none';document.querySelector('.search-panel').open=true;status(kept?'Current route kept. Tap Refresh route for a fresh calculation.':e.detail.kind==='work'?'Work selected. Tap Find my route.':'Home selected. Tap Find my route.');$('plan').focus()});
+window.LapanSaved?.bind({map,openPin:(kind,place)=>window.LapanShare?.showSaved(kind,place),destination:()=>chosen.destination,pickMap:options=>placeSearch.pickSaved(options)});window.addEventListener('lapan-saved-place',e=>{const place=window.LapanSaved?.get(e.detail?.kind);if(!place)return;placeSearch.cancel();const kept=keepDestination(place,e.detail.kind);if(kept&&markers[1])positionFinishFlag(routes[selected]);$('suggest').replaceChildren();$('suggest').style.display='none';document.querySelector('.search-panel').open=true;status(kept?'Current route kept. Tap Refresh route for a fresh calculation.':e.detail.kind==='work'?'Work selected. Tap Find my route.':'Home selected. Tap Find my route.');$('plan').focus()});
 window.addEventListener('lapan-place',e=>{placeSearch.cancel();const kept=keepDestination(e.detail);document.querySelector('.search-panel').open=true;status(kept?'Current route kept. Tap Refresh route for a fresh calculation.':'Recent destination selected. Tap Find my route.');});
 
 window.LapanStopsContext={
 async location(){try{const p=await new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(Error());navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})});const {latitude:lat,longitude:lon}=p.coords;if(lat<.8||lat>7.6||lon<99||lon>120)throw Error();return {lat,lon,label:'your location'}}catch{if(chosen.origin)return {lat:chosen.origin[1],lon:chosen.origin[2],label:chosen.origin[0]==='My location'?'your last known location':'your starting point'};throw Error('Allow location access, or choose a starting point first.')}},
-async route(item,origin){const resume=document.body.classList.contains('guiding');endGuidance();chosen.origin=['My location',origin.lat,origin.lon];$('origin').value='My location';chosen.destination=[item.name,item.lat,item.lon];$('destination').value=item.name;window.LapanHistory?.remember(chosen.destination,'selected');const ok=await $('plan').onclick();if(ok&&resume)$('start').onclick();return !!ok}
+async route(item,origin){const resume=document.body.classList.contains('guiding');endGuidance();chosen.origin=['My location',origin.lat,origin.lon];$('origin').value='My location';chosen.destination=[item.name,item.lat,item.lon];chosen.savedKind=null;$('destination').value=item.name;window.LapanHistory?.remember(chosen.destination,'selected');const ok=await $('plan').onclick();if(ok&&resume)$('start').onclick();return !!ok}
 };
 
 window.addEventListener('lapan-voice-enabled',()=>{spoken=-1});

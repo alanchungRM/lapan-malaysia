@@ -21,7 +21,9 @@ function setup({blocked=false,seed={}}={}){const nodes=new Map(),chips={},edits=
  pinTest.root.LapanSaved.bind({map:{},openPin:(kind,place)=>clicked=[kind,place[0],place[1],place[2]]});
  assert.equal(pinTest.layers.length,2);
  assert.notEqual(pinTest.layers[0].options.icon.iconAnchor[0],pinTest.layers[1].options.icon.iconAnchor[0]);
- pinTest.root.LapanSaved.setRouteDestination(['Shared destination',3.1,101.5]);
+ assert.equal(pinTest.root.LapanSaved.setRouteDestination(['Shared destination',3.1,101.5],'work'),'work');
+ assert.match(pinTest.root.LapanSaved.routeIcon('work').className,/saved-map-pin-work saved-destination-pin/);
+ assert.equal(pinTest.root.LapanSaved.setRouteDestination(['Shared destination',3.1,101.5],'home'),'home');
  assert.equal(pinTest.layers.length,0,'neither coincident saved pin covers the finish flag');
  pinTest.root.LapanSaved.setRouteDestination(null);
  pinTest.layers[1].click();
@@ -37,10 +39,23 @@ function setup({blocked=false,seed={}}={}){const nodes=new Map(),chips={},edits=
  const active=setup({seed:{home:['Home',3.1,101.5],work:['Office',3.2,101.6]}});
  const saved=active.root.LapanSaved;
  saved.bind({map:{},openPin(){}});
- saved.setRouteDestination(['Home via search',3.1,101.5]);
+ const app=fs.readFileSync('web/app.js','utf8');
+ const positionCode=app.slice(app.indexOf('function positionFinishFlag('),app.indexOf('function instruction('));
+ const endpoint={setIcon(icon){this.icon=icon},setLatLng(point){this.point=Array.from(point)}};
+ const ctx={markers:[null,endpoint],L:{divIcon:icon=>icon},window:{LapanSaved:saved},
+  chosen:{destination:['Home via search',3.1,101.5]},
+  route:{geometry:{coordinates:[[101,3],[101.5001,3.1001]]}}};
+ vm.runInNewContext(positionCode+';positionFinishFlag(route)',ctx);
+ assert.match(endpoint.icon.className,/saved-map-pin-home saved-destination-pin/);
+ assert.deepEqual(endpoint.point,[3.1001,101.5001],'the Home icon is at the road endpoint');
  assert.deepEqual(active.layers.map(pin=>pin.options.title),['Work']);
- saved.setRouteDestination(saved.get('work'));
+ ctx.chosen.destination=saved.get('work');
+ vm.runInNewContext(positionCode+';positionFinishFlag(route)',ctx);
+ assert.match(endpoint.icon.className,/saved-map-pin-work saved-destination-pin/);
  assert.deepEqual(active.layers.map(pin=>pin.options.title),['Home']);
+ ctx.chosen.destination=['Another place',3.3,101.7];
+ vm.runInNewContext(positionCode+';positionFinishFlag(route)',ctx);
+ assert.equal(endpoint.icon.className,'route-finish-flag');
  saved.setRouteDestination(null);
  assert.deepEqual(active.layers.map(pin=>pin.options.title),['Home','Work']);
  assert.equal(active.writes.length,0,'routing does not change saved places');
