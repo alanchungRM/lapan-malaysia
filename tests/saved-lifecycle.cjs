@@ -21,6 +21,9 @@ function setup({blocked=false,seed={}}={}){const nodes=new Map(),chips={},edits=
  pinTest.root.LapanSaved.bind({map:{},openPin:(kind,place)=>clicked=[kind,place[0],place[1],place[2]]});
  assert.equal(pinTest.layers.length,2);
  assert.notEqual(pinTest.layers[0].options.icon.iconAnchor[0],pinTest.layers[1].options.icon.iconAnchor[0]);
+ pinTest.root.LapanSaved.setRouteDestination(['Shared destination',3.1,101.5]);
+ assert.equal(pinTest.layers.length,0,'neither coincident saved pin covers the finish flag');
+ pinTest.root.LapanSaved.setRouteDestination(null);
  pinTest.layers[1].click();
  assert.deepEqual(clicked,['work','Office',3.1,101.5]);
  assert.equal(pinTest.events.length,0,'clicking a pin does not choose a route');
@@ -31,6 +34,16 @@ function setup({blocked=false,seed={}}={}){const nodes=new Map(),chips={},edits=
  pinTest.edits.home.onclick();pinTest.get('savedRemove').onclick();await tick();
  assert.equal(pinTest.layers.length,1);
  assert.equal(pinTest.layers[0].options.title,'Work');
+ const active=setup({seed:{home:['Home',3.1,101.5],work:['Office',3.2,101.6]}});
+ const saved=active.root.LapanSaved;
+ saved.bind({map:{},openPin(){}});
+ saved.setRouteDestination(['Home via search',3.1,101.5]);
+ assert.deepEqual(active.layers.map(pin=>pin.options.title),['Work']);
+ saved.setRouteDestination(saved.get('work'));
+ assert.deepEqual(active.layers.map(pin=>pin.options.title),['Home']);
+ saved.setRouteDestination(null);
+ assert.deepEqual(active.layers.map(pin=>pin.options.title),['Home','Work']);
+ assert.equal(active.writes.length,0,'routing does not change saved places');
  // GPS is a draft. Cancelling discards it; only Save writes to storage.
  let x=setup();x.chips.home.onclick();x.get('savedUseHere').onclick();x.callbacks[0].ok({coords:{latitude:3.14,longitude:101.69,accuracy:10}});assert.equal(x.writes.length,0);assert.equal(x.get('saveSaved').disabled,false);x.get('cancelSaved').onclick();await tick();assert.equal(x.root.LapanSaved.get('home'),null);
  x.chips.home.onclick();x.get('savedUseHere').onclick();x.callbacks[1].ok({coords:{latitude:3.14,longitude:101.69}});x.get('saveSaved').onclick();await tick();assert.equal(x.writes.length,1);assert.equal(x.root.LapanSaved.get('home')[1],3.14);

@@ -21,15 +21,21 @@ let storage;try{storage=root.localStorage}catch{}
 const $=id=>document.getElementById(id),store=createStore(storage||{getItem:()=>null,setItem(){throw Error('unavailable')}}),dialog=$('savedDialog');
 let kind='home',destination=()=>null,pickMap=null,candidate=null,session=0,request=0,timer,controller,suspended=false,shown=[];
 const chip=k=>document.querySelector('[data-saved="'+k+'"]'),edit=k=>document.querySelector('[data-saved-edit="'+k+'"]');
-let mapPins, openPin;
+let mapPins, openPin, routeDestination=null;
+const samePoint=(a,b)=>!!a&&!!b&&a[1]===b[1]&&a[2]===b[2];
+function setRouteDestination(place){
+ if(routeDestination===place||samePoint(routeDestination,place))return;
+ routeDestination=place;
+ renderPins();
+}
 function renderPins(){
  if(!mapPins)return;
  mapPins.clearLayers();
  const home=store.get('home'),work=store.get('work');
- const sameLocation=home&&work&&home[1]===work[1]&&home[2]===work[2];
+ const sameLocation=samePoint(home,work);
  for(const k of KINDS){
   const place=store.get(k);
-  if(!place)continue;
+  if(!place||samePoint(place,routeDestination))continue;
   const icon=chip(k).querySelector('svg').cloneNode(true);
   const marker=root.L.marker([place[1],place[2]],{
    icon:root.L.divIcon({className:'saved-map-pin saved-map-pin-'+k,html:icon,iconSize:[44,44],
@@ -60,7 +66,7 @@ for(const k of KINDS){chip(k).onclick=()=>{const place=store.get(k);if(!place)re
 $('closeSaved').onclick=$('cancelSaved').onclick=()=>{suspended=false;stopPending();session++;dialog.close()};
 dialog.addEventListener('cancel',()=>{suspended=false;stopPending();session++});
 dialog.addEventListener('close',()=>{if(!dialog.open&&!suspended){stopPending();session++}});
-root.LapanSaved={get:k=>store.get(k),bind(options){destination=options.destination||destination;pickMap=options.pickMap||pickMap;
+root.LapanSaved={get:k=>store.get(k),setRouteDestination,bind(options){destination=options.destination||destination;pickMap=options.pickMap||pickMap;
  if(options.map&&!mapPins){
   openPin=options.openPin;
   mapPins=root.L.layerGroup().addTo(options.map);
