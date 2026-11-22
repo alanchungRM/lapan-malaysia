@@ -1,10 +1,22 @@
 import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import {readFile} from 'node:fs/promises';
 const source=await readFile('worker/analytics.js','utf8'),{analytics}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));const db=new DatabaseSync(':memory:');db.exec(await readFile('drizzle/0000_visitor_statistics.sql','utf8'));db.exec(await readFile('drizzle/0001_browser_visits.sql','utf8'));db.exec(await readFile('drizzle/0002_connection_regions.sql','utf8'));
 db.exec(await readFile('drizzle/0004_navigation_regions.sql','utf8'));
+db.exec(await readFile('drizzle/0012_navigation_engagement.sql','utf8'));
+db.prepare('INSERT INTO analytics_navigation_usage(day,starts,moving,distance_units) VALUES (?,?,?,?)')
+  .run('2026-11-21',11,7,250);
+db.prepare('INSERT INTO analytics_navigation_usage(day,starts,moving,distance_units) VALUES (?,?,?,?)')
+  .run('2026-11-22',17,13,500);
 const DB={prepare(sql){return {values:[],bind(...values){this.values=values;return this},async run(){return db.prepare(sql).run(...this.values)},_sql:sql}},async batch(queries){db.exec('BEGIN');try{const rows=queries.map(q=>{const statement=db.prepare(q._sql);return /^SELECT/i.test(q._sql)?{results:statement.all(...q.values)}:{results:[],meta:statement.run(...q.values)}});db.exec('COMMIT');return rows}catch(e){db.exec('ROLLBACK');throw e}}};
 const req=(body,headers={})=>new Request('https://test/api/visit',{method:'POST',headers:{Origin:'https://test','Content-Type':'application/json',...headers},body:JSON.stringify(body)}),body={id:'11111111-1111-4111-8111-111111111111',kind:'page',device:'Android',browser:'Chrome'};
 assert.equal((await analytics(req(body),{})).status,503);assert.equal((await analytics(req(body,{Origin:'https://evil.test'}),{DB})).status,403);assert.equal((await analytics(req({...body,gps:[101,3]}),{DB})).status,400);assert.equal((await analytics(req(body,{DNT:'1'}),{DB})).status,200);assert.equal(db.prepare('SELECT COUNT(*) AS n FROM analytics_daily').get().n,0);
-assert.equal((await analytics(req(body),{DB})).status,200);await analytics(req(body),{DB});assert.equal(db.prepare('SELECT SUM(views) AS n FROM analytics_daily').get().n,1);await analytics(req({...body,id:'22222222-2222-4222-8222-222222222222',device:'iPhone/iPad',browser:'Safari'}),{DB});const stats=await (await analytics(new Request('https://test/api/statistics'),{DB})).json();assert.equal(stats.total,2);assert.equal(stats.today,2);assert.equal(stats.active,2);assert.equal(stats.devices.length,2);assert.ok(!JSON.stringify(stats).includes(body.id));assert.ok(!JSON.stringify(stats).includes('11111111'));await analytics(req({...body,kind:'leave'}),{DB});assert.equal(db.prepare('SELECT COUNT(*) AS n FROM analytics_active').get().n,1);
+assert.equal((await analytics(req(body),{DB})).status,200);await analytics(req(body),{DB});assert.equal(db.prepare('SELECT SUM(views) AS n FROM analytics_daily').get().n,1);await analytics(req({...body,id:'22222222-2222-4222-8222-222222222222',device:'iPhone/iPad',browser:'Safari'}),{DB});const stats=await (await analytics(new Request('https://test/api/statistics'),{DB})).json();
+assert.equal(stats.totalNavigationEngagement,20,'public statistics sum engaged trips across days');
+assert.equal(stats.estimatedTotalKm,75,'public statistics sum estimated distance across days');
+assert.equal(stats.estimatedKmPerEngagedTrip,3.75,'divide cumulative distance by cumulative engagements');
+assert.deepEqual(Object.keys(stats).filter(key=>/navigation|moving|distance|estimated/i.test(key)),[
+  'totalNavigationEngagement','estimatedTotalKm','estimatedKmPerEngagedTrip',
+]);
+assert.equal(stats.total,2);assert.equal(stats.today,2);assert.equal(stats.active,2);assert.equal(stats.devices.length,2);assert.ok(!JSON.stringify(stats).includes(body.id));assert.ok(!JSON.stringify(stats).includes('11111111'));await analytics(req({...body,kind:'leave'}),{DB});assert.equal(db.prepare('SELECT COUNT(*) AS n FROM analytics_active').get().n,1);
 console.log('PASS: actual SQLite migration, aggregation, deduplication, active expiry query, same-origin checks, privacy signals, no location fields and no IDs in public response');
 
 const originalNow=Date.now;let clock=Date.now();Date.now=()=>clock;const browserId='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',pageA='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',pageB='cccccccc-cccc-4ccc-8ccc-cccccccccccc';const event=(id,kind='page')=>({...body,id,browserId,kind});
@@ -31,3 +43,16 @@ assert.deepEqual(db.prepare('PRAGMA table_info(analytics_navigation_seen)').all(
 assert.deepEqual(db.prepare('PRAGMA table_info(analytics_navigation_regions)').all().map(x=>x.name),['day','region','browsers']);
 assert.ok(!JSON.stringify(await(await analytics(new Request('https://test/api/statistics'),{DB})).json()).includes('West · Central'),'private regions absent from public API');
 console.log('PASS: first-region-only aggregate, coordinate rejection, DNT/GPC, minimal dedup and private-only reporting');
+
+const getStats=async()=> (await analytics(new Request('https://test/api/statistics'),{DB})).json();
+const navigationTotals=data=>[data.totalNavigationEngagement,data.estimatedTotalKm,data.estimatedKmPerEngagedTrip];
+try{
+ Date.now=()=>clock+16000;
+ db.exec('DELETE FROM analytics_navigation_usage');
+ assert.deepEqual(navigationTotals(await getStats()),[0,0,null],'empty history has zero trips and distance with no average');
+ Date.now=()=>clock+32000;
+ db.exec('DROP TABLE analytics_navigation_usage');
+ const unavailable=await getStats();
+ assert.deepEqual(navigationTotals(unavailable),[null,null,null]);
+ assert.ok(unavailable.total>0,'visit totals survive unavailable engagement storage');
+}finally{Date.now=originalNow;}
