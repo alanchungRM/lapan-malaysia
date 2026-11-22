@@ -1,5 +1,7 @@
 # Pending website release notes
 
+- Show recent daily visits newest first on Lapan in Numbers.
+
 - Group navigation figures under Navigation statistics and improve mobile readability.
 
 - Show rain and thunderstorm effects on the planning map using MET Malaysia forecasts and warnings.
