@@ -2,6 +2,20 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.46] — 2026-11-22
+
+Lighter 2D navigation and a 3D view option
+
+### Added
+
+- Choose 2D or 3D before starting a drive in More options → Screen & navigation → Navigation view. You can also switch in the driving controls. Lapan remembers your choice for future drives.
+
+### Improved
+
+- Navigation starts in 2D until you choose a view. The flat map uses lighter graphics to help save battery, with smooth movement of the camera and vehicle marker between GPS updates.
+
+[GitHub history](https://github.com/alanchungRM/lapan-malaysia/commits/main/)
+
 ## [1.0.45] — 2026-11-19
 
 GTA Sunset navigation skin
