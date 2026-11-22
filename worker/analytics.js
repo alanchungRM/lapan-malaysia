@@ -3,12 +3,14 @@ export async function analytics(request,env){const json=(d,status=200)=>Response
 try{if(request.method==='GET'){if(url.pathname!=='/api/statistics')return json({error:'Not found'},404);if(statsCache?.day===day&&now-statsCache.at<15000)return json(statsCache.data);const result=await env.DB.batch([env.DB.prepare('SELECT COALESCE(SUM(views),0) AS total, COALESCE(SUM(CASE WHEN day=? THEN views ELSE 0 END),0) AS today FROM analytics_daily').bind(day),env.DB.prepare('SELECT COUNT(DISTINCT COALESCE(browser_id,id)) AS active FROM analytics_active WHERE seen>?').bind(now-90000),env.DB.prepare('SELECT day, SUM(views) AS views FROM analytics_daily GROUP BY day ORDER BY day DESC LIMIT 7'),env.DB.prepare('SELECT device AS label, SUM(views) AS views FROM analytics_daily GROUP BY device ORDER BY views DESC'),env.DB.prepare('SELECT browser AS label, SUM(views) AS views FROM analytics_daily GROUP BY browser ORDER BY views DESC'),env.DB.prepare('SELECT MIN(day) AS since FROM analytics_daily'),env.DB.prepare('SELECT COALESCE(SUM(visits),0) AS totalVisits, COALESCE(SUM(CASE WHEN day=? THEN visits ELSE 0 END),0) AS visitsToday, COALESCE(SUM(CASE WHEN day=? THEN browsers ELSE 0 END),0) AS uniqueToday, MIN(day) AS metricsSince FROM analytics_metrics').bind(day,day),env.DB.prepare('SELECT day,SUM(visits) AS visits,SUM(browsers) AS browsers FROM analytics_metrics GROUP BY day ORDER BY day DESC LIMIT 7'),env.DB.prepare('SELECT device AS label,SUM(visits) AS visits,SUM(browsers) AS browsers FROM analytics_metrics GROUP BY device ORDER BY visits DESC'),env.DB.prepare('SELECT browser AS label,SUM(visits) AS visits,SUM(browsers) AS browsers FROM analytics_metrics GROUP BY browser ORDER BY visits DESC')]);const data={total:Number(result[0].results[0].total),today:Number(result[0].results[0].today),active:Number(result[1].results[0].active),days:result[2].results,devices:result[3].results,browsers:result[4].results,since:result[5].results[0].since,checkedAt:new Date(now).toISOString(),timezone:'Asia/Kuala_Lumpur',...result[6].results[0],visitDays:result[7].results,visitDevices:result[8].results,visitBrowsers:result[9].results};data.totalNavigationEngagement=null;
  data.estimatedTotalKm=null;
  data.estimatedTotalKmToday=null;
+ data.todayNavigation=null;
  data.estimatedKmPerEngagedTrip=null;
  try{
   const [engagement]=await env.DB.batch([env.DB.prepare(
-   'SELECT COALESCE(SUM(moving),0) AS trips, COALESCE(SUM(distance_units),0) AS units, COALESCE(SUM(CASE WHEN day=? THEN distance_units END),0) AS todayUnits FROM analytics_navigation_usage'
-  ).bind(day)]);
-  const {trips,units,todayUnits}=engagement.results[0] ?? {};
+   'SELECT COALESCE(SUM(moving),0) AS trips, COALESCE(SUM(distance_units),0) AS units, COALESCE(SUM(CASE WHEN day=? THEN distance_units END),0) AS todayUnits, COALESCE(SUM(CASE WHEN day=? THEN starts END),0) AS todayStarts FROM analytics_navigation_usage'
+  ).bind(day,day)]);
+  const {trips,units,todayUnits,todayStarts}=engagement.results[0] ?? {};
+  if(Number.isSafeInteger(todayStarts)&&todayStarts>=0)data.todayNavigation=todayStarts;
   if(Number.isSafeInteger(todayUnits)&&todayUnits>=0)data.estimatedTotalKmToday=todayUnits/10;
   if(Number.isSafeInteger(trips)&&trips>=0){
    data.totalNavigationEngagement=trips;
