@@ -14,7 +14,7 @@ assert.equal(stats.totalNavigationEngagement,20,'public statistics sum engaged t
 assert.equal(stats.estimatedTotalKm,75,'public statistics sum estimated distance across days');
 assert.equal(stats.estimatedKmPerEngagedTrip,3.75,'divide cumulative distance by cumulative engagements');
 assert.deepEqual(Object.keys(stats).filter(key=>/navigation|moving|distance|estimated/i.test(key)),[
-  'totalNavigationEngagement','estimatedTotalKm','estimatedKmPerEngagedTrip',
+  'totalNavigationEngagement','estimatedTotalKm','estimatedTotalKmToday','estimatedKmPerEngagedTrip',
 ]);
 assert.equal(stats.total,2);assert.equal(stats.today,2);assert.equal(stats.active,2);assert.equal(stats.devices.length,2);assert.ok(!JSON.stringify(stats).includes(body.id));assert.ok(!JSON.stringify(stats).includes('11111111'));await analytics(req({...body,kind:'leave'}),{DB});assert.equal(db.prepare('SELECT COUNT(*) AS n FROM analytics_active').get().n,1);
 console.log('PASS: actual SQLite migration, aggregation, deduplication, active expiry query, same-origin checks, privacy signals, no location fields and no IDs in public response');
@@ -55,4 +55,18 @@ try{
  const unavailable=await getStats();
  assert.deepEqual(navigationTotals(unavailable),[null,null,null]);
  assert.ok(unavailable.total>0,'visit totals survive unavailable engagement storage');
+}finally{Date.now=originalNow;}
+
+db.exec(await readFile('drizzle/0012_navigation_engagement.sql','utf8'));
+try{
+ const malaysiaMidnight=Date.parse('2027-01-01T16:00:00Z');
+ const insert=db.prepare('INSERT INTO analytics_navigation_usage(day,starts,moving,distance_units) VALUES (?,?,?,?)');
+ insert.run('2027-01-01',1,1,42);
+ insert.run('2027-01-02',1,1,74);
+ Date.now=()=>malaysiaMidnight-1;
+ assert.equal((await getStats()).estimatedTotalKmToday,4.2);
+ Date.now=()=>malaysiaMidnight;
+ assert.equal((await getStats()).estimatedTotalKmToday,7.4,'today changes at midnight Malaysia time, even within the cache TTL');
+ Date.now=()=>malaysiaMidnight+86400000;
+ assert.equal((await getStats()).estimatedTotalKmToday,0,'no engaged trips today');
 }finally{Date.now=originalNow;}

@@ -9,7 +9,7 @@ Lighter 2D navigation and a 3D view option
 ### Added
 
 - Choose 2D or 3D before starting a drive in More options → Screen & navigation → Navigation view. You can also switch in the driving controls. Lapan remembers your choice for future drives.
-- Lapan in Numbers now shows total navigation engagement, estimated total distance, and estimated distance per engaged trip.
+- Lapan in Numbers now shows total navigation engagement, today’s estimated distance, estimated total distance, and estimated distance per engaged trip. Lapan Malaysia estimates distance on your device without collecting or storing precise GPS locations for these figures. Trips taken while your browser is opted out of visitor statistics are excluded.
 
 ### Improved
 

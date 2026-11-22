@@ -4,6 +4,7 @@ const averageKmFormat=new Intl.NumberFormat('en-MY',{minimumFractionDigits:1,max
 function renderNavigationTotals(data){
  for(const [key,format] of [
   ['totalNavigationEngagement',fmt],
+  ['estimatedTotalKmToday',totalKmFormat],
   ['estimatedTotalKm',totalKmFormat],
   ['estimatedKmPerEngagedTrip',averageKmFormat],
  ]){
