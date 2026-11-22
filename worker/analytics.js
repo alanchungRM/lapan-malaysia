@@ -7,10 +7,10 @@ try{if(request.method==='GET'){if(url.pathname!=='/api/statistics')return json({
  data.estimatedKmPerEngagedTrip=null;
  try{
   const [engagement]=await env.DB.batch([env.DB.prepare(
-   'SELECT COALESCE(SUM(moving),0) AS trips, COALESCE(SUM(distance_units),0) AS units, COALESCE(SUM(CASE WHEN day=? THEN distance_units END),0) AS todayUnits, COALESCE(SUM(CASE WHEN day=? THEN starts END),0) AS todayStarts FROM analytics_navigation_usage'
+   'SELECT COALESCE(SUM(moving),0) AS trips, COALESCE(SUM(distance_units),0) AS units, COALESCE(SUM(CASE WHEN day=? THEN distance_units END),0) AS todayUnits, COALESCE(SUM(CASE WHEN day=? THEN moving END),0) AS todayMoving FROM analytics_navigation_usage'
   ).bind(day,day)]);
-  const {trips,units,todayUnits,todayStarts}=engagement.results[0] ?? {};
-  if(Number.isSafeInteger(todayStarts)&&todayStarts>=0)data.todayNavigation=todayStarts;
+  const {trips,units,todayUnits,todayMoving}=engagement.results[0] ?? {};
+  if(Number.isSafeInteger(todayMoving)&&todayMoving>=0)data.todayNavigation=todayMoving;
   if(Number.isSafeInteger(todayUnits)&&todayUnits>=0)data.estimatedTotalKmToday=todayUnits/10;
   if(Number.isSafeInteger(trips)&&trips>=0){
    data.totalNavigationEngagement=trips;
