@@ -1,5 +1,7 @@
 # Pending website release notes
 
+- Group navigation figures under Navigation statistics and improve mobile readability.
+
 - Show rain and thunderstorm effects on the planning map using MET Malaysia forecasts and warnings.
 
 - Use a PNG favicon for Google Search on the canonical production domain.

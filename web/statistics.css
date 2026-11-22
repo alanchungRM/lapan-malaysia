@@ -3,3 +3,30 @@
 
 
 .stats-row b{text-align:right;line-height:1.6;font-size:12px}.stats-grid article:last-child{grid-column:auto}@media(max-width:520px){.stats-grid article:last-child{grid-column:auto}.stats-row{gap:10px}.stats-row b{max-width:65%}}
+
+.navigation-statistics {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line, #3d5264);
+}
+.navigation-statistics > h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.navigation-statistics .stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+}
+.navigation-statistics article {
+  container-type: inline-size;
+}
+.navigation-statistics h3 {
+  margin: 0 0 16px;
+  color: var(--ink-2, #c0d5c7);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.navigation-statistics .stats-grid strong {
+  font-size: clamp(16px, 15cqi, 40px);
+}
