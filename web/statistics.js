@@ -3,6 +3,7 @@ const totalKmFormat=new Intl.NumberFormat('en-MY',{maximumFractionDigits:1});
 const averageKmFormat=new Intl.NumberFormat('en-MY',{minimumFractionDigits:1,maximumFractionDigits:1});
 function renderNavigationTotals(data){
  for(const [key,format] of [
+  ['todayNavigation',fmt],
   ['totalNavigationEngagement',fmt],
   ['estimatedTotalKmToday',totalKmFormat],
   ['estimatedTotalKm',totalKmFormat],
