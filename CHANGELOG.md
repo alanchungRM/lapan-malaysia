@@ -2,11 +2,13 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
-## [1.0.46] — 2026-11-22
+## [1.0.46] — 2026-11-23
 
 Lighter 2D navigation and a 3D view option
 
 ### Added
+
+- An optional striped route progress bar shows your remaining distance, traffic conditions where available, and community reports along the route. It appears on the left in portrait and on the right in landscape. Enable Show route progress bar in More options → Screen & navigation. It is off by default, and Lapan remembers your choice.
 
 - Added Today navigation to Lapan in Numbers. It counts navigation sessions that started today in Malaysia time after receiving a usable GPS fix.
 

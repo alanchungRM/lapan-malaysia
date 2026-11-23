@@ -124,6 +124,26 @@ html #driveMore>*{width:44px!important;height:44px!important;min-width:44px!impo
 html #driveMore>*{background:#253243!important;color:var(--ink)!important;border:0!important;border-radius:14px!important;box-shadow:none!important;font-weight:800}
 
 html #driveMore>:is(#navVoice,#navRepeat,#navAwake){display:flex!important;align-items:center;justify-content:center}
+/* Keep navigation controls in the fixed viewport while Safari rotates or changes browser chrome. */
+html:has(body.guiding),body.guiding{overflow:hidden;overscroll-behavior:none;overflow-anchor:none}
+html body.guiding #driveControls{
+ z-index:920;
+ right:calc(env(safe-area-inset-right,0px) + 14px);
+ pointer-events:none;
+}
+html body.guiding #driveControls button{pointer-events:auto}
+html body.guiding.details-open #driveControls button{pointer-events:none}
+html body.guiding :is(#navpanel,#navBar){
+ left:calc(env(safe-area-inset-left,0px) + 12px);
+ right:calc(env(safe-area-inset-right,0px) + 12px);
+}
+@media (max-height:480px) and (orientation:landscape){
+ html body.guiding :is(#navpanel,#navBar){right:auto}
+}
+@media (min-width:761px){
+ html body.guiding #navBar{right:auto}
+}
+
 /* The column grows upward from the trip bar and never spills over it; on a very small screen the turn banner stays on top. */
 html body.guiding #driveControls{max-height:none!important;overflow:visible!important}
 @media(max-width:340px){
@@ -136,3 +156,44 @@ html body.guiding #driveMore #openStops{position:static!important;inset:auto!imp
 html #driveMore #openStops span{display:none}
 
 html #nextturn .turn-action{display:block;font-size:clamp(24px,6.5vw,28px);font-weight:800;line-height:1.18;margin:2px 0 4px}body.guiding #navpanel[data-mode="status"] #nextturn{font-size:18px!important}
+
+/* Keep the route overview within the exposed map between the turn and trip cards. */
+#routeRail{display:none}
+body.guiding:not(.details-open) #routeRail:not([hidden]){
+ display:flex;flex-direction:column;align-items:flex-start;gap:8px;position:fixed;
+ top:var(--rail-card-top, 150px);
+ bottom:var(--rail-card-bottom, 140px);
+ left:calc(env(safe-area-inset-left,0px) + 12px);z-index:850;pointer-events:none;
+}
+.rail-track{position:relative;flex:1;width:11px;margin-left:4px;border:1px solid #fff;border-radius:6px;background-color:var(--planning-selected,#175b48);background-image:repeating-linear-gradient(135deg,transparent 0 5px,rgb(255 255 255 / 38%) 5px 8px);box-shadow:0 1px 4px #0009}
+.rail-bands,.rail-past,.rail-band{position:absolute;inset:0;border-radius:inherit}
+body.drive-ready .rail-track{background-color:#16bc68}
+html[data-skin="sunset"] .rail-track{background-color:#ff6c9b}
+.rail-band{top:auto;min-height:5px}
+.rail-event{position:absolute;left:10px;font:12px/1 sans-serif;transform:translateY(50%)}
+.rail-past{top:auto;height:var(--rail-progress);background:#324251db}
+.rail-car{position:absolute;left:50%;bottom:var(--rail-progress);transform:translate(-50%,50%);background:white;color:#184784;border-radius:50%;font:900 13px/17px sans-serif;width:17px;text-align:center;box-shadow:0 1px 4px #0009}
+.rail-distance{font:bold 12px/1.4 system-ui;color:white;background:#20313e;padding:1px 5px;border-radius:5px}
+body.guiding:has(#navpanel[data-mode="status"]) #routeRail,
+#routeRail[data-no-room]{visibility:hidden}
+
+@media (orientation:landscape){
+ body.guiding:not(.details-open) #routeRail:not([hidden]){
+  left:auto;right:calc(env(safe-area-inset-right,0px) + 76px);
+  top:max(var(--rail-card-top, 0px), calc(env(safe-area-inset-top,0px) + 48px));
+  bottom:max(var(--rail-card-bottom, 0px), calc(env(safe-area-inset-bottom,0px) + 84px));
+  align-items:flex-end;
+ }
+ #routeRail .rail-track{margin:0 4px 0 0}
+ #routeRail .rail-event{left:auto;right:12px}
+}
+
+/* Leave a lane for the right-side rail and its distance label beside the open tray. */
+@media (orientation:landscape) and (min-width:651px){
+ html body.guiding.drive-more:has(#routeRail:not([hidden], [data-no-room])) #driveMore{
+  right:calc(100% + var(--rail-label-width, 56px) + 24px);
+ }
+}
+@media (orientation:landscape) and (max-width:650px){
+ body.guiding.drive-more #routeRail{visibility:hidden}
+}

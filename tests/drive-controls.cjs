@@ -30,7 +30,7 @@ more.onclick();assert.ok(!classes.has('drive-more'));assert.equal(attrs['aria-ex
 more.onclick();classes.delete('guiding');observer();assert.ok(!classes.has('drive-more'),'ending navigation resets the extra controls');
 // The extra controls form a tray that can always be closed: tap elsewhere, Escape, or 12 seconds of nothing. Taps inside it keep it open.
 const outside={target:{closest:()=>null}},inside={target:{closest:sel=>sel.includes('#driveMore')?{}:null}};let focused=false;more.focus=()=>focused=true;
-classes.add('guiding');more.onclick();assert.ok(classes.has('drive-more'));handlers.pointerdown(inside);assert.ok(classes.has('drive-more'),'a tap inside the tray keeps it open');handlers.pointerdown(outside);assert.ok(!classes.has('drive-more'),'a tap elsewhere closes it');
+classes.add('guiding');more.onclick();assert.ok(classes.has('drive-more'));handlers.click(inside);assert.ok(classes.has('drive-more'),'a tap inside the tray keeps it open');handlers.click(outside);assert.ok(!classes.has('drive-more'),'a tap elsewhere closes it');
 more.onclick();handlers.keydown({key:'a'});assert.ok(classes.has('drive-more'));handlers.keydown({key:'Escape'});assert.ok(!classes.has('drive-more'),'Escape closes it');assert.ok(focused,'focus returns to the toggle');
 more.onclick();const live=timers.filter(t=>t.live).at(-1);assert.equal(live.ms,12000);live.fn();assert.ok(!classes.has('drive-more'),'it closes itself after 12 seconds');
 more.onclick();more.onclick();assert.ok(timers.filter(t=>t.live).length===0||timers.filter(t=>t.live).every(t=>t.ms===12000),'closing cancels the timer');assert.ok(!classes.has('drive-more'));

@@ -48,6 +48,6 @@ function features(route,now=Date.now()){
  return result;
 }
 let expiry=null;
-const api={features,setCommunity,subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn)},changed(route){if(root.document&&root.setTimeout){root.clearTimeout(expiry);expiry=null;const until=Date.parse(route?.trafficCheckedAt)+FRESH_MS-Date.now();if(['TomTom','HERE'].includes(route?.provider)&&route.trafficSections?.length&&until>0&&until<=FRESH_MS)expiry=root.setTimeout(()=>{route.trafficSections=[];for(const fn of listeners)fn(route)},until)}for(const fn of listeners)fn(route)}};
+const api={features,setCommunity,reportColors:Object.freeze(reportColors),reportRadiusMetres:REPORT_RADIUS_METRES,subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn)},changed(route){if(root.document&&root.setTimeout){root.clearTimeout(expiry);expiry=null;const until=Date.parse(route?.trafficCheckedAt)+FRESH_MS-Date.now();if(['TomTom','HERE'].includes(route?.provider)&&route.trafficSections?.length&&until>0&&until<=FRESH_MS)expiry=root.setTimeout(()=>{route.trafficSections=[];for(const fn of listeners)fn(route)},until)}for(const fn of listeners)fn(route)}};
 root.LapanTrafficColors=api;if(typeof module==='object')module.exports=api;
 })(typeof window==='object'?window:globalThis);

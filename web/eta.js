@@ -12,9 +12,90 @@ function basis(){const routeNote=['OSRM','Valhalla'].includes(current?.provider)
 function trafficSeconds(){if(!traffic||!left||Date.now()-traffic.at>=refreshInterval())return left?.seconds;const fraction=traffic.base>0?Math.max(0,Math.min(1,left.seconds/traffic.base)):1;return traffic.seconds*fraction}
 function etaText(node,text){if(node.textContent!==text)node.textContent=text}
 function tripText(node,text){if(root.LapanDriveUI)root.LapanDriveUI.paintTrip(node,text);else etaText(node,text)}
+// Draw the trip overview from the same distance estimate as the ETA.
+let railRoute=null,railOffsets=null,railSections=null,railReports=null,railChecked=null,railExpiry=Infinity;
+const reportSymbols={crash:'💥',stopped:'🚗',object:'⚠',flood:'🌊',pothole:'⚠','police-hidden':'👮'};
+let showRail=false;
+try{showRail=root.localStorage?.getItem('lapan-show-route-bar')==='on'}catch{}
+function bindRailPreference(){
+ const toggle=root.document?.getElementById('showRouteRail');
+ if(!toggle)return;
+ toggle.checked=showRail;
+ toggle.onchange=()=>{
+  showRail=toggle.checked;
+  try{root.localStorage.setItem('lapan-show-route-bar',showRail?'on':'off')}catch{}
+  paintRail();
+ };
+}
+if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bindRailPreference);
+else bindRailPreference();
+function paintRail(){
+ const rail=root.document?.getElementById('routeRail');
+ if(!rail?.querySelector)return;
+ rail.hidden=!showRail||stopped||paused||!left||!model?.length||!root.document.body.classList.contains('guiding');
+ if(rail.hidden)return;
+ const coords=current.geometry?.coordinates;
+ if(!coords||coords.length<2){rail.hidden=true;return}
+ const changed=railRoute!==current;
+ if(changed){
+  railRoute=current;railOffsets=new Map();let sum=0;
+  coords.forEach((point,i)=>{if(i)sum+=distance(coords[i-1],point);railOffsets.set(point.join(','),sum)});
+  railOffsets.total=sum;
+ }
+ const reports=root.LapanReports?.onRoute?.(current);
+ if(changed||railSections!==current.trafficSections||railReports!==reports||railChecked!==current.trafficCheckedAt||Date.now()>=railExpiry){
+  railSections=current.trafficSections;railReports=reports;railChecked=current.trafficCheckedAt;
+  const bands=rail.querySelector('.rail-bands');bands.replaceChildren();
+  const total=railOffsets.total;
+  function mark(start,end,color,symbol,title){
+   if(!Number.isFinite(start)||!Number.isFinite(end)||!total)return;
+   const a=Math.max(0,Math.min(total,start)),b=Math.max(a,Math.min(total,end));
+   const el=document.createElement('span');el.className=symbol?'rail-event':'rail-band';
+   el.style.bottom=(100*a/total)+'%';el.title=title;
+   if(symbol)el.textContent=symbol;
+   else {el.style.height=(100*(b-a)/total)+'%';el.style.background=color}
+   bands.append(el);
+  }
+  // Refreshed traffic can use slightly different vertices from the selected route.
+  let projectionBudget=100000;
+  function offset(point){
+   const exact=railOffsets.get(point.join(','));
+   if(exact!==undefined)return exact;
+   if(projectionBudget<coords.length)return;
+   projectionBudget-=coords.length;
+   const p=root.LapanCameras?.project(point,coords);
+   if(p?.distance<=40)return p.along;
+  }
+  for(const f of root.LapanTrafficColors?.features(current).features||[]){
+   if(f.properties.community)continue;
+   const line=f.geometry.coordinates,a=offset(line[0]),b=offset(line.at(-1));
+   if(b>a)mark(a,b,f.properties.color,'',f.properties.severity);
+  }
+  railExpiry=Infinity;
+  // Paint standstill last, as on the map, when multiple reports overlap.
+  const orderedReports=[...(reports||[])].sort((a,b)=>Number(a.kind==='traffic-standstill')-Number(b.kind==='traffic-standstill'));
+  for(const r of orderedReports){
+   if(r.deadline<=Date.now())continue;
+   if(Number.isFinite(r.deadline))railExpiry=Math.min(railExpiry,r.deadline);
+   const trafficColor=root.LapanTrafficColors?.reportColors?.[r.kind];
+   if(trafficColor){
+    const radius=root.LapanTrafficColors.reportRadiusMetres;
+    mark(r.along-radius,r.along+radius,trafficColor,'',r.kind);
+   }else if(reportSymbols[r.kind])mark(r.along,r.along,'',reportSymbols[r.kind],r.kind);
+  }
+ }
+ const fraction=Math.min(1,Math.max(0,left.progress/model.length));
+ rail.style.setProperty('--rail-progress',(100*fraction).toFixed(2)+'%');
+ const km=left.distance>=1000?(left.distance/1000).toFixed(1)+' km':Math.round(left.distance)+' m';
+ etaText(rail.querySelector('.rail-distance'),km);
+ rail.setAttribute('aria-label',(document.documentElement.lang==='ms'?'Baki jarak ':'Distance remaining ')+km);
+}
+root.LapanTrafficColors?.subscribe?.(route=>{
+ if(route && route===current && route===railRoute)paintRail();
+});
 function render(){if(!root.document)return;
  if(current?.trafficSections?.length&&(!Number.isFinite(Date.parse(current.trafficCheckedAt))||Date.now()-Date.parse(current.trafficCheckedAt)>=TRAFFIC_REFRESH_MS)){current.trafficSections=[];root.LapanTrafficColors?.changed(current)}
-const b=document.getElementById('trafficBasis');if(b){const t=basis();etaText(b,t);b.setAttribute&&b.setAttribute('data-live',/^(TomTom|HERE)/.test(t)?'1':'0');b.title=t}const trip=document.getElementById('navTrip');if(trip&&current&&document.body.classList.contains('guiding'))tripText(trip,api.text(current));const card=document.querySelector('.route.active .route-arrival');if(card&&current){const strong=card.closest('.route')?.querySelector('.top strong');if(strong&&!document.body.classList.contains('guiding')){const minutes=Math.max(1,Math.round((trafficSeconds()??current.duration)/60));etaText(strong,minutes>=60?Math.floor(minutes/60)+' h '+minutes%60+' min':minutes+' min')}etaText(card,'Arrive '+time(trafficSeconds()??current.duration)+' · '+(traffic&&Date.now()-traffic.at<refreshInterval()?current.provider+' traffic':'No live traffic'))}}
+paintRail();const b=document.getElementById('trafficBasis');if(b){const t=basis();etaText(b,t);b.setAttribute&&b.setAttribute('data-live',/^(TomTom|HERE)/.test(t)?'1':'0');b.title=t}const trip=document.getElementById('navTrip');if(trip&&current&&document.body.classList.contains('guiding'))tripText(trip,api.text(current));const card=document.querySelector('.route.active .route-arrival');if(card&&current){const strong=card.closest('.route')?.querySelector('.top strong');if(strong&&!document.body.classList.contains('guiding')){const minutes=Math.max(1,Math.round((trafficSeconds()??current.duration)/60));etaText(strong,minutes>=60?Math.floor(minutes/60)+' h '+minutes%60+' min':minutes+' min')}etaText(card,'Arrive '+time(trafficSeconds()??current.duration)+' · '+(traffic&&Date.now()-traffic.at<refreshInterval()?current.provider+' traffic':'No live traffic'))}}
 function cancelRequest(){requestId++;pending?.abort();pending=null}
 function setRoute(route){cancelRequest();paused=false;current=route;root.LapanTrafficColors?.changed(route);model=segments(route);left={seconds:route.duration,distance:route.distance,gap:0,progress:0};traffic=liveProvider(route.provider)?{seconds:route.duration,base:route.duration,at:new Date(route.trafficCheckedAt).getTime(),delay:route.trafficDelay,interval:trafficInterval(route.trafficDelay,route.trafficSections)}:null;attemptAt=traffic&&Number.isFinite(traffic.at)?Math.min(Date.now(),traffic.at):0;render();refresh()}
 function coordinates(){if(!model?.edges.length||!left)return [];const index=Number.isInteger(left.index)?left.index:0,t=left.t||0,edge=model.edges[index],start=[edge.a[0]+(edge.b[0]-edge.a[0])*t,edge.a[1]+(edge.b[1]-edge.a[1])*t];return [start,...model.edges.slice(index).map(e=>e.b)].filter((p,i,a)=>!i||distance(a[i-1],p)>1)}
@@ -26,5 +107,5 @@ return traffic?.interval||TRAFFIC_REFRESH_MS;
 async function refresh(){if(!root.document||!current||current.bayuCrossover||!left||left.arrived||pending||(Number.isFinite(trafficSeconds())&&trafficSeconds()<300)||document.visibilityState==='hidden'||!document.body.classList.contains('guiding')||!liveProvider(current.provider)||paused||stopped||Date.now()-attemptAt<refreshInterval())return;const coords=coordinates();if(coords.length<2||coords.length>20000)return;attemptAt=Date.now();const route=current,base=left.seconds,token=++requestId,controller=new AbortController();pending=controller;render();try{const response=await fetch('/api/traffic-eta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({coordinates:coords,vehicle:route.vehicle||'car',...(route.provider==='HERE'?{provider:'HERE',hereRouteHandle:route.hereRouteHandle}:{})}),signal:controller.signal});const data=await response.json();if(token!==requestId||route!==current)return;if(!response.ok||!Number.isFinite(data.seconds))throw Error();traffic={seconds:data.seconds,base,at:new Date(data.checkedAt).getTime(),delay:data.delaySeconds,interval:trafficInterval(data.delaySeconds,data.trafficSections)};if(!Number.isFinite(traffic.at))traffic=null;route.trafficSections=traffic&&Array.isArray(data.trafficSections)?data.trafficSections:[];route.trafficCheckedAt=traffic?data.checkedAt:null;route.trafficDelay=traffic?data.delaySeconds:null;root.LapanTrafficColors?.changed(route)}catch(e){if(token===requestId&&e.name!=='AbortError'){traffic=null;route.trafficSections=[];route.trafficCheckedAt=null;root.LapanTrafficColors?.changed(route)}}finally{if(token===requestId){pending=null;render()}}}
 // Only Start and a fresh GPS fix can unlock traffic after End or arrival.
 // Preserve attemptAt across stop/start so a planned or just-issued request keeps its cooldown.
-const api={setRoute,start(route){stopped=true;if(current!==route)setRoute(route);stopped=false;paused=true},update(p,route){if(stopped)return;if(current!==route)setRoute(route);if((p.coords.accuracy||0)>100)return;const next=remaining(model,[p.coords.longitude,p.coords.latitude]);if(next.gap>150){left=null;traffic=null;current.trafficSections=[];current.trafficCheckedAt=null;root.LapanTrafficColors?.changed(current);cancelRequest();render();return}paused=false;left=next;refresh();render()},text(route){if(!route)return 'Route guidance';if(current!==route)setRoute(route);if(!left)return 'Updating arrival estimate…';if(left.arrived)return 'Arrived '+time(0);const seconds=trafficSeconds()??left.seconds;return 'ETA '+time(seconds)+' · '+Math.max(1,Math.ceil(seconds/60))+' min · '+(left.distance/1000).toFixed(1)+' km'},preview(route){return 'Arrive '+time(route.duration)+' · '+(liveProvider(route.provider)?route.provider+' live route':'No live traffic · closures unchecked')},suspend(){paused=true;cancelRequest()},arrived(){stopped=true;paused=true;cancelRequest();left={seconds:0,distance:0,arrived:true};traffic=null;render()},stop(){stopped=true;paused=true;cancelRequest()},basis};root.LapanETA=api;
+const api={setRoute,start(route){stopped=true;if(current!==route)setRoute(route);stopped=false;paused=true},update(p,route){if(stopped)return;if(current!==route)setRoute(route);if((p.coords.accuracy||0)>100)return;const next=remaining(model,[p.coords.longitude,p.coords.latitude]);if(next.gap>150){left=null;traffic=null;current.trafficSections=[];current.trafficCheckedAt=null;root.LapanTrafficColors?.changed(current);cancelRequest();render();return}paused=false;left=next;refresh();render()},text(route){if(!route)return 'Route guidance';if(current!==route)setRoute(route);if(!left)return 'Updating arrival estimate…';if(left.arrived)return 'Arrived '+time(0);const seconds=trafficSeconds()??left.seconds;return 'ETA '+time(seconds)+' · '+Math.max(1,Math.ceil(seconds/60))+' min · '+(left.distance/1000).toFixed(1)+' km'},preview(route){return 'Arrive '+time(route.duration)+' · '+(liveProvider(route.provider)?route.provider+' live route':'No live traffic · closures unchecked')},suspend(){paused=true;cancelRequest();paintRail()},arrived(){stopped=true;paused=true;cancelRequest();left={seconds:0,distance:0,arrived:true};traffic=null;render()},stop(){stopped=true;paused=true;cancelRequest();paintRail()},basis};root.LapanETA=api;
 })(typeof window==='object'?window:globalThis);

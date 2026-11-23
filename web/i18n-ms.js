@@ -210,6 +210,8 @@ window.LapanI18n.add({
 "Driving map":"Peta pemanduan",
 "Navigation view":"Paparan navigasi",
 "2D · Flat map":"2D · Peta rata",
+"Show route progress bar":"Paparkan bar kemajuan laluan",
+"Off by default. You can turn it on at any time. The bar follows your route colour. Orange and red sections show reported slow or heavy traffic.":"Dimatikan secara lalai. Anda boleh menghidupkannya pada bila-bila masa. Bar mengikut warna laluan anda. Bahagian jingga dan merah menunjukkan laporan trafik perlahan atau sesak.",
 "Switch to 2D to help save battery.":"Tukar kepada 2D untuk membantu menjimatkan bateri.",
 "3D · Tilted map":"3D · Peta condong",
 "Switch between 3D and battery-saving 2D":"Tukar antara 3D dan 2D jimat bateri",

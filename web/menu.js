@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   more.onclick=()=>{const open=!document.body.classList.contains('drive-more');set(open);if(open)arm();else clearTimeout(timer)};
   // The tray closes itself: tap anywhere else, press Escape, use one of its buttons, or leave it alone for 12 seconds.
   if(tray){tray.addEventListener('click',e=>{if(e.target.closest('button,a')&&e.target.closest('#navLang')===null){arm()}});tray.addEventListener('pointerdown',arm)}
-  document.addEventListener('pointerdown',e=>{if(document.body.classList.contains('drive-more')&&!e.target.closest?.('#driveMore,#navMore'))set(false)},true);
+  // Wait for the native click so closing the tray cannot move the target mid-tap.
+  document.addEventListener('click',e=>{if(document.body.classList.contains('drive-more')&&!e.target.closest?.('#driveMore,#navMore'))set(false)});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('drive-more')){set(false);more.focus?.()}});
   new MutationObserver(()=>{if(!document.body.classList.contains('guiding')&&document.body.classList.contains('drive-more'))set(false)}).observe(document.body,{attributes:true,attributeFilter:['class']});
  }

@@ -322,5 +322,5 @@ function preview(selected,map,bounds){
  session.timer=setInterval(tick,1000);
  if(!document.hidden)refreshPreview();
 }
-root.LapanReports={update,stop,preview,stopPreview};
+root.LapanReports={update,stop,preview,stopPreview,onRoute:selected=>selected===route?items:null};
 })(typeof window==='object'?window:globalThis);

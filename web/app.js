@@ -1,6 +1,6 @@
 const $=s=>document.getElementById(s), places=[['Kuala Lumpur City Centre',3.1579,101.7116],['Genting Highlands',3.4238,101.7932],['KL Sentral',3.134,101.686],['KLIA Terminal 1',2.7456,101.7072],['George Town, Penang',5.4141,100.3288],['Ipoh',4.5975,101.0901],['Johor Bahru',1.4927,103.7414],['Melaka',2.1896,102.2501],['Shah Alam',3.0738,101.5183],['Petaling Jaya',3.1073,101.6067],['Kota Kinabalu',5.9804,116.0735],['Kuching',1.5533,110.3592],['Cameron Highlands',4.4704,101.376]];
 let chosen={origin:null,destination:null},routes=[],selected=0,lines=[],markers=[],watch=null,userMarker=null,spoken=-1,searchId=0;
-const map=L.map('map',{zoomControl:false,attributionControl:false}).setView([3.24,101.73],11);L.control.zoom({position:'topright'}).addTo(map);const baseMap=L.maplibreGL({style:window.LapanMapAppearance?.url()||'https://tiles.openfreemap.org/styles/liberty',interactive:false,attribution:'© OpenMapTiles · © OpenStreetMap contributors'}).addTo(map);if(baseMap?.getMaplibreMap)window.LapanMapAppearance?.bind(baseMap.getMaplibreMap());
+const map=L.map('map',{trackResize:false,zoomControl:false,attributionControl:false}).setView([3.24,101.73],11);L.control.zoom({position:'topright'}).addTo(map);const baseMap=L.maplibreGL({style:window.LapanMapAppearance?.url()||'https://tiles.openfreemap.org/styles/liberty',interactive:false,attribution:'© OpenMapTiles · © OpenStreetMap contributors'}).addTo(map);if(baseMap?.getMaplibreMap)window.LapanMapAppearance?.bind(baseMap.getMaplibreMap());
 const credits=L.control({position:'bottomleft'});credits.onAdd=()=>{const wrap=L.DomUtil.create('div','compact-credits');wrap.innerHTML='<details><summary aria-label="Map credits" title="Map credits">ⓘ</summary><div>Signals © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · Map © OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors</div></details>';L.DomEvent.disableClickPropagation(wrap);L.DomEvent.disableScrollPropagation(wrap);return wrap};credits.addTo(map);
 let congestionLayer=null;
 function drawCongestion(){
@@ -112,7 +112,7 @@ $('start').onclick=()=>{
   return startGuidance();
  });
 };
-function startGuidance(){endGuidance();window.LapanReports?.stopPreview?.();window.LapanVoice?.unlock();window.LapanSpeed?.preload();const session=navSession;if(!routes[selected]?.legs?.length)return status('Plan a route before starting navigation.');const dest=chosen.destination;window.LapanAwake?.start();showNav('Finding your location…','Allow location access when prompted. GPS guidance starts after a location is received.');$('start').disabled=true;$('start').textContent='Finding GPS…';document.querySelector('.mapwrap').scrollIntoView({behavior:'smooth',block:'start'});if(!window.isSecureContext)return failNavigation('GPS requires a secure HTTPS connection. Open the published Lapan site and retry.',session);if(!navigator.geolocation)return failNavigation('Location access is unavailable here. Open this site in a browser that supports location and allow access when prompted.',session);cleanupNavigation(()=>window.LapanETA?.start?.(routes[selected]));const steps=routes[selected].legs.flatMap(l=>l.steps);navProgress=0;window.LapanHazards?.start();
+function startGuidance(){endGuidance();window.LapanReports?.stopPreview?.();window.LapanVoice?.unlock();window.LapanSpeed?.preload();const session=navSession;if(!routes[selected]?.legs?.length)return status('Plan a route before starting navigation.');const dest=chosen.destination;window.LapanAwake?.start();showNav('Finding your location…','Allow location access when prompted. GPS guidance starts after a location is received.');$('start').disabled=true;$('start').textContent='Finding GPS…';if(!window.isSecureContext)return failNavigation('GPS requires a secure HTTPS connection. Open the published Lapan site and retry.',session);if(!navigator.geolocation)return failNavigation('Location access is unavailable here. Open this site in a browser that supports location and allow access when prompted.',session);cleanupNavigation(()=>window.LapanETA?.start?.(routes[selected]));const steps=routes[selected].legs.flatMap(l=>l.steps);navProgress=0;window.LapanHazards?.start();
 const onFix=p=>{if(session!==navSession||document.visibilityState==='hidden'||navBackground)return;const steps=routes[selected].legs.flatMap(l=>l.steps);const fixTime=Number.isFinite(p.timestamp)?p.timestamp:Date.now();if(lastGPS&&(fixTime<lastGPS.time||Number.isFinite(p.timestamp)&&fixTime===lastGPS.time))return;if(Date.now()-fixTime>15000){if(!lastFix)showNav('Waiting for fresh GPS…','The last location is old. Waiting for a current position.');return}const lastFixFirst=!lastFix;lastFix=Date.now();clearTimeout(navDeadline);const pos=[p.coords.latitude,p.coords.longitude];if(!pos.every(Number.isFinite)||pos[0]<0.8||pos[0]>7.6||pos[1]<99||pos[1]>120)return failNavigation('An invalid GPS location was received. Please retry.',session);const accuracy=p.coords.accuracy||0;if(accuracy>100){window.LapanHazards?.hide();window.LapanSpeed?.stop();offRouteSince=0;rerouteMisses=0;showNav('GPS signal is weak','Waiting for a more accurate location. Current accuracy: approximately '+Math.round(accuracy)+' m.');return}lastGPS={p,time:fixTime};window.LapanTheme?.locate(p.coords.latitude,p.coords.longitude);window.LapanAnalytics?.navigation(p);window.LapanAnalytics?.sampleEngagement?.(p);const hotPointer=!!window.LapanVehiclePointer?.enabled();if(userMarker&&!!userMarker._lapanHotFM!==hotPointer){map.removeLayer(userMarker);userMarker=null}if(userMarker?.setLatLng)userMarker.setLatLng(pos);else userMarker=(window.LapanVehiclePointer?.createLeaflet(L,pos)||L.circleMarker(pos,{radius:9,color:'white',fillColor:'#2583c5',fillOpacity:1})).addTo(map);window.LapanDrive?.update(p,routes[selected]);if(!window.LapanDrive?.isReady()){if(map.getZoom?.()!==16)map.setView(pos,16);else map.panTo(pos,{animate:true,duration:0.8})}$('start').disabled=true;setNavText($('start'),'Navigation running');if(accuracy>150){showNav('GPS signal is weak','Waiting for a more accurate location. Current accuracy: approximately '+Math.round(accuracy)+' m.');return}cleanupNavigation(()=>window.LapanSpeed?.update(p,routes[selected]));window.LapanHazards?.prepare(p,routes[selected]);window.LapanCameras?.update(p,routes[selected]);window.LapanReports?.update(p,routes[selected]);window.LapanHazards?.update(p,routes[selected]);const road=nearestRoad(pos,steps);
 // Use the complete road polyline for off-route detection, including geometry between instructions.
 if(routes[selected].geometry?.coordinates?.length>1)road.distance=nearestRoad(pos,[{geometry:routes[selected].geometry}]).distance;
@@ -158,7 +158,24 @@ offRouteSince=0;rerouteFailures=0;showNav('Route updated','Continue along the hi
 $('basicRoute').onclick=()=>{allowBasicRoute=true;$('plan').onclick()};
 $('replan').onclick=()=>{if(!userMarker)return;const p=userMarker.getLatLng();rerouteFrom([p.lat,p.lng])};
 
-document.querySelector('.mapwrap').append($('navpanel'));window.addEventListener('resize',()=>map.invalidateSize());
+document.querySelector('.mapwrap').append($('navpanel'));
+// Phone rotation produces several transient sizes. Resize only after the map settles.
+let mapResizeTimer,lastMapSize='';
+function scheduleMapResize(){
+ clearTimeout(mapResizeTimer);
+ mapResizeTimer=setTimeout(()=>{
+  const box=document.querySelector('.mapwrap');
+  const width=box.clientWidth,height=box.clientHeight;
+  if(!width||!height)return;
+  const size=width+'x'+height;
+  if(size===lastMapSize)return;
+  lastMapSize=size;
+  map.invalidateSize({animate:false,pan:false,debounceMoveend:true});
+  window.LapanDrive?.resize();
+ },120);
+}
+if(typeof ResizeObserver==='function')new ResizeObserver(scheduleMapResize).observe(document.querySelector('.mapwrap'));
+window.addEventListener('resize',scheduleMapResize);
 
 initToll();
 
@@ -179,7 +196,7 @@ window.LapanSaved?.bind({map,openPin:(kind,place)=>window.LapanShare?.showSaved(
 window.addEventListener('lapan-place',e=>{placeSearch.cancel();const kept=keepDestination(e.detail);document.querySelector('.search-panel').open=true;status(kept?'Current route kept. Tap Refresh route for a fresh calculation.':'Recent destination selected. Tap Find my route.');});
 
 window.LapanStopsContext={
-async location(){try{const p=await new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(Error());navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})});const {latitude:lat,longitude:lon}=p.coords;if(lat<.8||lat>7.6||lon<99||lon>120)throw Error();return {lat,lon,label:'your location'}}catch{if(chosen.origin)return {lat:chosen.origin[1],lon:chosen.origin[2],label:chosen.origin[0]==='My location'?'your last known location':'your starting point'};throw Error('Allow location access, or choose a starting point first.')}},
+async location(){if(lastGPS&&Date.now()-lastGPS.time<=10000){const {latitude:lat,longitude:lon}=lastGPS.p.coords;return {lat,lon,label:'your location'}}try{const p=await new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(Error());navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,timeout:10000,maximumAge:10000})});const {latitude:lat,longitude:lon}=p.coords;if(lat<.8||lat>7.6||lon<99||lon>120)throw Error();return {lat,lon,label:'your location'}}catch{if(chosen.origin)return {lat:chosen.origin[1],lon:chosen.origin[2],label:chosen.origin[0]==='My location'?'your last known location':'your starting point'};throw Error('Allow location access, or choose a starting point first.')}},
 async route(item,origin){const resume=document.body.classList.contains('guiding');endGuidance();chosen.origin=['My location',origin.lat,origin.lon];$('origin').value='My location';chosen.destination=[item.name,item.lat,item.lon];chosen.savedKind=null;$('destination').value=item.name;window.LapanHistory?.remember(chosen.destination,'selected');const ok=await $('plan').onclick();if(ok&&resume)$('start').onclick();return !!ok}
 };
 
