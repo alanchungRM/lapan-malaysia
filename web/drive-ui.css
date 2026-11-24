@@ -190,10 +190,15 @@ body.guiding:has(#navpanel[data-mode="status"]) #routeRail,
 
 /* Leave a lane for the right-side rail and its distance label beside the open tray. */
 @media (orientation:landscape) and (min-width:651px){
- html body.guiding.drive-more:has(#routeRail:not([hidden], [data-no-room])) #driveMore{
+ html body.guiding.drive-more:has(#routeRail:not([hidden])) #driveMore{
   right:calc(100% + var(--rail-label-width, 56px) + 24px);
  }
 }
 @media (orientation:landscape) and (max-width:650px){
  body.guiding.drive-more #routeRail{visibility:hidden}
 }
+
+/* Position the turn card, controls and rail in the same viewport after rotation. */
+html body.guiding > #navpanel{position:fixed}
+html body.guiding > #driveControls button{touch-action:manipulation}
+html body.guiding > #routeRail,html body.guiding > #routeRail *{pointer-events:none}

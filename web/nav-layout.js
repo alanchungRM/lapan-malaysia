@@ -2,7 +2,8 @@
  const root=document.documentElement,footer=document.getElementById('navBar'),turn=document.getElementById('navpanel');
  const rail=document.getElementById('routeRail'),distance=rail.querySelector('.rail-distance');
  const controls=document.getElementById('driveControls');
- const controlsHome=controls.parentNode,controlsNext=controls.nextSibling;
+ const overlays=[controls,turn,rail].map(node=>({node,home:node.parentNode,next:node.nextSibling}));
+ const tray=document.getElementById('driveMore');
  const landscape=matchMedia('(orientation: landscape)');
  let queued=false;
 
@@ -25,8 +26,10 @@
   setSize('--rail-card-top',top);
   setSize('--rail-card-bottom',bottom);
   setSize('--rail-label-width',r.width);
+  const trayBox=tray?.getBoundingClientRect();
+  const trayInLane=trayBox&&intersectsX(trayBox)&&trayBox.height>0;
   const freeHeight=height-Math.max(top,landscape.matches?48:0)-Math.max(bottom,landscape.matches?84:0);
-  rail.toggleAttribute('data-no-room',freeHeight<56);
+  rail.toggleAttribute('data-no-room',freeHeight<56||trayInLane);
  }
 
  function schedule(){
@@ -40,13 +43,23 @@
   const observer=new MutationObserver(schedule);
   for(const node of [footer,turn,distance])observer.observe(node,{childList:true,subtree:true,characterData:true});
  }
- window.addEventListener('resize',schedule);
+ function settle(){
+  schedule();
+  clearTimeout(settle.timer);
+  settle.timer=setTimeout(schedule,250);
+ }
+ landscape.addEventListener?.('change',settle);
+ window.addEventListener('orientationchange',settle);
+ window.addEventListener('resize',settle);
  window.visualViewport?.addEventListener('resize',schedule);
  window.visualViewport?.addEventListener('scroll',schedule);
  // Keep taps in the driving HUD outside the map's compositor layer during rotation.
  const guidance=new MutationObserver(()=>{
-  const parent=document.body.classList.contains('guiding')?document.body:controlsHome;
-  if(controls.parentNode!==parent)parent.insertBefore(controls,parent===controlsHome?controlsNext:null);
+  const guiding=document.body.classList.contains('guiding');
+  for(const {node,home,next} of overlays){
+   const parent=guiding?document.body:home;
+   if(node.parentNode!==parent)parent.insertBefore(node,!guiding&&next?.parentNode===home?next:null);
+  }
   schedule();
  });
  guidance.observe(document.body,{attributes:true,attributeFilter:['class']});

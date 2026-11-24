@@ -16,13 +16,16 @@ const rail={
 };
 const mapWrap={insertBefore(node,before){node.parentNode=this;assert.equal(before,node.nextSibling)}};
 const controls={parentNode:mapWrap,nextSibling:{}};
-const elements={navBar:footer,navpanel:turn,routeRail:rail,driveControls:controls};
+controls.nextSibling.parentNode=mapWrap;
+for(const node of [turn,rail]){node.parentNode=mapWrap;node.nextSibling={parentNode:mapWrap}}
+const tray={getBoundingClientRect:()=>({width:0,height:0})};
+const elements={driveMore:tray,navBar:footer,navpanel:turn,routeRail:rail,driveControls:controls};
 const events={};
 let observer, guidance, guiding=false;
 const body={classList:{contains:()=>guiding},insertBefore(node,before){node.parentNode=this;assert.equal(before,null)}};
 const document={documentElement:root,body,getElementById:id=>elements[id]};
 vm.runInNewContext(readFileSync('web/nav-layout.js','utf8'),{
- document,matchMedia:()=>orientation,requestAnimationFrame:fn=>callbacks.push(fn),
+ document,setTimeout:()=>1,clearTimeout(){},matchMedia:()=>orientation,requestAnimationFrame:fn=>callbacks.push(fn),
  window:{ResizeObserver:true,addEventListener:(event,fn)=>{events[event]=fn}},
  ResizeObserver:class{constructor(fn){observer=fn}observe(){}},
  MutationObserver:class{constructor(fn){this.fn=fn}observe(target){if(target===body)guidance=this.fn}},
@@ -55,7 +58,18 @@ turn.getBoundingClientRect=()=>({left:12,right:739,bottom:210,width:727,height:1
 observer();
 measure();
 assert.equal(styles.get('--rail-card-top'),'230px','also clear a wide landscape turn card');
+assert.equal(turn.parentNode,body);assert.equal(rail.parentNode,body);
 assert.equal(controls.parentNode,body,'rotation keeps the same control nodes in the viewport');
+tray.getBoundingClientRect=()=>({left:700,right:840,width:140,height:100});
+guidance();measure();
+assert.equal(attrs.has('data-no-room'),true,'an overlapping open tray keeps its tap area clear');
+orientation.matches=false;root.clientHeight=820;
+rail.getBoundingClientRect=()=>({left:12,right:69,width:57});
+turn.getBoundingClientRect=()=>({left:12,right:399,bottom:232,width:387,height:168});
+footer.getBoundingClientRect=()=>({left:12,right:399,top:702,width:387,height:102});
+events.orientationchange();measure();
+assert.equal(styles.get('--rail-card-top'),'252px');
+assert.equal(attrs.has('data-no-room'),false);
 guiding=false;
 guidance();
 measure();
