@@ -11,8 +11,8 @@ const securityHeaders={
   "script-src 'self'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' data: blob: https://tiles.openfreemap.org",
-  "connect-src 'self' https://tiles.openfreemap.org https://photon.komoot.io https://router.project-osrm.org",
+  "img-src 'self' data: blob: https://tiles.openfreemap.org https://tiles.maps.eox.at",
+  "connect-src 'self' https://tiles.openfreemap.org https://tiles.maps.eox.at https://photon.komoot.io https://router.project-osrm.org",
   "worker-src 'self' blob:",
   "frame-src 'self'",
   "media-src 'self' blob: data:",
@@ -54,9 +54,40 @@ export function withSecurityHeaders(response,{indexable=false}={}){
  if(!indexable&&!out.headers.has('X-Robots-Tag'))out.headers.set('X-Robots-Tag',noIndex);
  return out;
 }
+// Relay only World Imagery tiles and keep the ArcGIS key in the Worker.
+async function serveEsriImagery(request,url,env){
+ const headers={'Cache-Control':'private, no-store','Cross-Origin-Resource-Policy':'same-origin'};
+ const fail=status=>withSecurityHeaders(new Response(null,{status,headers}));
+ const tile=url.pathname.match(/^\/satellite\/esri\/(\d{1,2})\/(\d{1,6})\/(\d{1,6})\.jpg$/);
+ if(request.method!=='GET'||!tile||url.search)return fail(404);
+ const [,z,y,x]=tile.map(Number);
+ if(z>19||x>=2**z||y>=2**z)return fail(404);
+ const referrer=request.headers.get('referer');
+ try{
+  if(!referrer||new URL(referrer).origin!==url.origin)return fail(403);
+ }catch{return fail(403)}
+ const site=request.headers.get('sec-fetch-site');
+ if(site&&site!=='same-origin')return fail(403);
+ const key=env.ARCGIS_PUBLIC_API_KEY;
+ if(!key)return fail(503);
+ try{
+  const upstream=new URL('https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/'+z+'/'+y+'/'+x);
+  upstream.searchParams.set('token',key);
+  const tileResponse=await fetch(upstream,{
+   headers:{Referer:url.origin+'/'},redirect:'error',signal:AbortSignal.timeout(8000)
+  });
+  const type=tileResponse.headers.get('content-type')?.split(';')[0];
+  if(!tileResponse.ok||!['image/jpeg','image/png'].includes(type)||!tileResponse.body){
+   return fail(tileResponse.status===429?429:502);
+  }
+  return withSecurityHeaders(new Response(tileResponse.body,{headers:{...headers,'Content-Type':type}}));
+ }catch{return fail(502)}
+}
+
 export function serveAsset(request,assets,env={}){
  const u=new URL(request.url);
  if(request.method!=='GET'&&request.method!=='HEAD')return withSecurityHeaders(new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}}));
+ if(u.pathname.startsWith('/satellite/esri/'))return serveEsriImagery(request,u,env);
  const path=u.pathname==='/'?'/index.html':u.pathname==='/changelog/'?'/changelog':u.pathname==='/statistics'||u.pathname==='/statistics/'?'/statistics.html':u.pathname;
  let file=Object.hasOwn(assets,path)?assets[path]:null;
  // Allow indexing for canonical public pages and the declared favicon on production.

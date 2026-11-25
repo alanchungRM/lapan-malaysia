@@ -518,3 +518,22 @@ body.guiding .leaflet-route-weather-pane{display:none}
 #sunsetMusicVolume{display:block;width:100%;min-height:44px;margin:0;accent-color:var(--brand)}
 #sunsetMusicStatus{margin:4px 0 0;font-size:.875rem}
 #sunsetMusicStatus:empty{margin:0}
+
+#planningMapTools{
+ position:absolute;z-index:500;top:10px;left:10px;right:64px;
+ display:flex;flex-wrap:wrap;align-items:center;gap:8px;pointer-events:none
+}
+#planningMapTools>*{pointer-events:auto}
+#planningMapTools #openPlanningStops{
+ position:static;flex:none;margin:0;min-height:44px;padding:8px 12px
+}
+#satelliteStatus:empty{display:none}
+#satelliteCredit,#esriImageryCredit{margin:4px 0 0}
+#esriMapCredit{
+ position:absolute;left:30px;bottom:0;white-space:nowrap;padding:3px 6px;
+ border-radius:6px;background:var(--surface,#fff);color:var(--ink,#243b4d);font-size:11px
+}
+.satellite-planning .leaflet-route-weather-pane,
+body.guiding :is(#planningMapTools,#satelliteCredit){display:none}
+
+.navigation-view-setting{display:block;margin-top:8px}

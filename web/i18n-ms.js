@@ -1,6 +1,13 @@
 // Bahasa Malaysia for Lapan. Each key is the exact English text; {name} marks a value that is kept. Entries equal to their key are intentionally the same in both languages.
 // Terms follow everyday Malaysian usage: laluan (route), had laju (speed limit), km/j, lebuh raya, Skrin Utama. A native speaker should review before release.
 window.LapanI18n.add({
+"Esri imagery unavailable. Showing EOX satellite imagery.":"Imej Esri tidak tersedia. Imej satelit EOX dipaparkan.",
+"Planning map view":"Paparan peta perancangan",
+"Satellite":"Satelit",
+"Satellite imagery unavailable. Showing the standard map.":"Imej satelit tidak tersedia. Peta biasa dipaparkan.",
+"by EOX IT Services GmbH \u00b7 Contains modified Copernicus Sentinel data 2016":"oleh EOX IT Services GmbH · Mengandungi data Copernicus Sentinel 2016 yang diubah suai",
+"EOxCloudless":"EOxCloudless",
+"Standard":"Standard",
 "Road reports":"Laporan jalan",
 "Community road reports":"Laporan jalan komuniti",
 "Active anonymous reports across Malaysia, newest first.":"Laporan tanpa nama yang masih aktif di seluruh Malaysia, bermula dengan yang terkini.",
