@@ -57,7 +57,7 @@ export function withSecurityHeaders(response,{indexable=false}={}){
 // Relay only World Imagery tiles and keep the ArcGIS key in the Worker.
 async function serveEsriImagery(request,url,env){
  const headers={'Cache-Control':'private, no-store','Cross-Origin-Resource-Policy':'same-origin'};
- const fail=status=>withSecurityHeaders(new Response(null,{status,headers}));
+ const fail=(status,reason)=>withSecurityHeaders(new Response(null,{status,headers:reason?{...headers,'X-Imagery-Status':reason}:headers}));
  const tile=url.pathname.match(/^\/satellite\/esri\/(\d{1,2})\/(\d{1,6})\/(\d{1,6})\.jpg$/);
  if(request.method!=='GET'||!tile||url.search)return fail(404);
  const [,z,y,x]=tile.map(Number);
@@ -73,15 +73,19 @@ async function serveEsriImagery(request,url,env){
  try{
   const upstream=new URL('https://ibasemaps-api.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/'+z+'/'+y+'/'+x);
   upstream.searchParams.set('token',key);
-  const tileResponse=await fetch(upstream,{
-   headers:{Referer:url.origin+'/'},redirect:'error',signal:AbortSignal.timeout(8000)
+  const tileResponse=await fetch(upstream.toString(),{
+   headers:{Referer:url.origin+'/',Accept:'image/jpeg,image/png','User-Agent':'Lapan/1.0'},redirect:'manual',signal:AbortSignal.timeout(8000)
   });
   const type=tileResponse.headers.get('content-type')?.split(';')[0];
   if(!tileResponse.ok||!['image/jpeg','image/png'].includes(type)||!tileResponse.body){
-   return fail(tileResponse.status===429?429:502);
+   return fail(tileResponse.status===429?429:502,'upstream-'+tileResponse.status);
   }
   return withSecurityHeaders(new Response(tileResponse.body,{headers:{...headers,'Content-Type':type}}));
- }catch{return fail(502)}
+ }catch(error){
+  const reason=String(error?.message??'').toLowerCase();
+  const kind=/denied|forbidden|blocked|policy|allowlist/.test(reason)?'policy':/tls|ssl|cert/.test(reason)?'tls':/dns|resolve/.test(reason)?'dns':/network|connect|socket/.test(reason)?'connection':error instanceof TypeError?'type-error':'transport';
+  return fail(error?.name==='TimeoutError'?504:502,kind);
+ }
 }
 
 export function serveAsset(request,assets,env={}){
