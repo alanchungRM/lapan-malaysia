@@ -1,6 +1,17 @@
 // Bahasa Malaysia for Lapan. Each key is the exact English text; {name} marks a value that is kept. Entries equal to their key are intentionally the same in both languages.
 // Terms follow everyday Malaysian usage: laluan (route), had laju (speed limit), km/j, lebuh raya, Skrin Utama. A native speaker should review before release.
 window.LapanI18n.add({
+"Road reports":"Laporan jalan",
+"Community road reports":"Laporan jalan komuniti",
+"Active anonymous reports across Malaysia, newest first.":"Laporan tanpa nama yang masih aktif di seluruh Malaysia, bermula dengan yang terkini.",
+"Checking road reports…":"Menyemak laporan jalan…",
+"No active reports.":"Tiada laporan aktif.",
+"Load more reports":"Muatkan lebih banyak laporan",
+"No more active reports.":"Tiada lagi laporan aktif.",
+"Show on map":"Papar pada peta",
+"Report type":"Jenis laporan",
+"Reported at (MYT)":"Masa laporan (MYT)",
+"Approximate location":"Anggaran lokasi",
 "Then":"Kemudian",
 "Auto · female device voice preferred":"Auto · Utamakan suara wanita peranti",
 "Malay voice credits":"Kredit suara Bahasa Melayu",

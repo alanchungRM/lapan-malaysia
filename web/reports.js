@@ -245,6 +245,14 @@ save.onclick=async()=>{
  }catch{if(dialog.open&&session===dialogSession)say('Could not send. Check your connection and try again.')}
  finally{sending=false;save.disabled=$('reportBack').disabled=false}
 };
+function reportIcon(kind){
+ const badge=document.createElement('span');
+ badge.className='report-pin report-'+kind;
+ badge.setAttribute('aria-hidden','true');
+ const icon=document.querySelector('[data-report="'+kind+'"] svg');
+ if(icon)badge.append(icon.cloneNode(true));
+ return badge;
+}
 // Planning uses a separate, read-only overlay and never feeds results into routing.
 let previewSession=null;
 function stopPreview(){
@@ -299,12 +307,8 @@ function preview(selected,map,bounds){
    }
    for(const report of received){
     if(session.pins.has(report.id))continue;
-    const icon=document.querySelector('[data-report="'+report.kind+'"] svg');
-    const pin=document.createElement('span');
-    pin.className='report-pin report-'+report.kind;
-    if(icon)pin.append(icon.cloneNode(true));
     const marker=L.marker([report.lat,report.lon],{
-     icon:L.divIcon({className:'planning-report-marker',html:pin,iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-18]}),
+     icon:L.divIcon({className:'planning-report-marker',html:reportIcon(report.kind),iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-18]}),
      title:translate(LABELS[report.kind])
     }).bindPopup(()=>{
      const label=document.createElement('span');
@@ -322,5 +326,113 @@ function preview(selected,map,bounds){
  session.timer=setInterval(tick,1000);
  if(!document.hidden)refreshPreview();
 }
-root.LapanReports={update,stop,preview,stopPreview,onRoute:selected=>selected===route?items:null};
+const browseDialog=$('browseReportsDialog'),browseList=$('browseReportsList'),browseStatus=$('browseReportsStatus');
+const browseMore=$('browseReportsMore');
+let browseRequest=null,browsePin=null,browseExpiry=0;
+browseDialog.querySelector('button').onclick=()=>browseDialog.close();
+browseDialog.addEventListener('close',()=>{
+ if(browseDialog.open)return;
+ browseRequest?.abort();
+ browseRequest=null;
+ browseMore.disabled=false;
+ browseList.replaceChildren();
+});
+function clearBrowsePin(){
+ clearTimeout(browseExpiry);
+ browsePin?.remove();
+ browsePin=null;
+}
+function stopBrowsing(){
+ browseRequest?.abort();
+ browseRequest=null;
+ if(browseDialog.open)browseDialog.close();
+ clearBrowsePin();
+}
+function showBrowsePin(map,report,deadline){
+ if(deadline<=Date.now())return;
+ clearBrowsePin();
+ browseDialog.close();
+ const label=document.createElement('span');
+ label.textContent=translate(LABELS[report.kind]);
+ const point=[report.lat,report.lon],L=root.L;
+ map.setView(point,Math.max(15,map.getZoom()),{animate:false});
+ browsePin=L.marker(point,{
+  icon:L.divIcon({className:'planning-report-marker',html:reportIcon(report.kind),iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-18]}),
+  title:label.textContent
+ }).bindPopup(label).addTo(map);
+ browsePin.openPopup();
+ map.getContainer().scrollIntoView({block:'nearest'});
+ browseExpiry=setTimeout(clearBrowsePin,deadline-Date.now());
+}
+function browse(map){
+ if(browseDialog.open||document.body.classList.contains('guiding'))return;
+ clearBrowsePin();
+ browseRequest?.abort();
+ browseRequest=null;
+ browseList.replaceChildren();
+ browseMore.hidden=true;
+ browseDialog.showModal();
+ return loadReportPage(map);
+}
+async function loadReportPage(map,before){
+ if(browseRequest||!browseDialog.open)return;
+ browseMore.disabled=true;
+ browseStatus.textContent=translate('Checking road reports…');
+ const controller=new AbortController(),at=Date.now();
+ browseRequest=controller;
+ const timeout=setTimeout(()=>controller.abort(),10000);
+ try{
+  const params=new URLSearchParams({scope:'all'});
+  if(before)params.set('before',before);
+  const result=await call('/api/reports?'+params,{signal:controller.signal});
+  if(browseRequest!==controller||!browseDialog.open)return;
+  if(result.status!==200||!Array.isArray(result.body?.reports))throw new Error('Reports unavailable');
+  const now=Date.now();
+  const live=result.body.reports.filter(r=>KINDS.includes(r.kind)&&Number.isFinite(r.lat)&&Number.isFinite(r.lon)&&at+r.remainingSeconds*1000>now);
+  const next=result.body.next;
+  browseMore.hidden=!next;
+  browseMore.onclick=next?()=>loadReportPage(map,next):null;
+  browseStatus.textContent=live.length?'':translate(browseList.children.length?'No more active reports.':'No active reports.');
+  let firstButton;
+  const formatTime=new Intl.DateTimeFormat(root.LapanI18n?.lang()==='ms'?'ms-MY':'en-MY',{
+   timeZone:'Asia/Kuala_Lumpur',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+  });
+  for(const report of live){
+   const row=document.createElement('tr'),kind=document.createElement('td'),reported=document.createElement('td'),location=document.createElement('td');
+   const button=document.createElement('button'),time=document.createElement('time');
+   const lat=report.lat.toFixed(3),lon=report.lon.toFixed(3);
+   const timestamp=report.reportedAt*1000;
+   kind.textContent=translate(LABELS[report.kind]);
+   if(Number.isFinite(timestamp)){
+    time.dateTime=new Date(timestamp).toISOString();
+    time.textContent=formatTime.format(timestamp);
+    reported.append(time);
+   }else reported.textContent='—';
+   button.type='button';
+   button.textContent=lat+', '+lon;
+   button.title=translate('Show on map');
+   button.setAttribute('aria-label',button.title+' · '+kind.textContent+' · '+button.textContent);
+   button.onclick=()=>{
+    const deadline=at+report.remainingSeconds*1000;
+    if(deadline>Date.now())showBrowsePin(map,{...report,lat:Number(lat),lon:Number(lon)},deadline);
+    else{
+     row.remove();
+     browseStatus.textContent=translate(browseList.children.length?'Report expired':'No active reports.');
+     (browseList.querySelector('button')||browseDialog.querySelector('button')).focus();
+    }
+   };
+   location.append(button);
+   row.append(kind,reported,location);
+   browseList.append(row);
+   firstButton??=button;
+  }
+  if(before)(firstButton||browseDialog.querySelector('button')).focus();
+ }catch{
+  if(browseRequest===controller&&browseDialog.open)browseStatus.textContent=translate('Reports are not available right now.');
+ }finally{
+  clearTimeout(timeout);
+  if(browseRequest===controller){browseRequest=null;browseMore.disabled=false}
+ }
+}
+root.LapanReports={update,stop,preview,stopPreview,browse,stopBrowsing,onRoute:selected=>selected===route?items:null};
 })(typeof window==='object'?window:globalThis);

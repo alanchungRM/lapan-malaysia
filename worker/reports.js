@@ -31,6 +31,20 @@ export async function communityReports(request,env){
    await sweepCommunityReports(env,now,true);
    return json({ok:true});
   }
+  if(request.method==='GET'&&url.pathname==='/api/reports'&&url.searchParams.get('scope')==='all'){
+   const before=url.searchParams.get('before');
+   const cursor=before?.match(/^(\d{1,12})\.([0-9a-f]{24})$/);
+   if(before!==null&&!cursor)return json({error:'Invalid report page.'},400);
+   const pageSize=50;
+   await sweepCommunityReports(env,now);
+   const {results}=await db.prepare('SELECT id,kind,lat,lon,created_at,expires_at FROM community_reports WHERE expires_at>? AND (created_at,id)<(?,?) ORDER BY created_at DESC,id DESC LIMIT ?')
+    .bind(now,cursor?Number(cursor[1]):now+1,cursor?.[2]||'',pageSize+1).all();
+   const page=results.slice(0,pageSize),last=page.at(-1);
+   return json({
+    reports:page.map(r=>({kind:r.kind,lat:Number(r.lat.toFixed(3)),lon:Number(r.lon.toFixed(3)),reportedAt:r.created_at,remainingSeconds:r.expires_at-now})),
+    next:results.length>pageSize?last.created_at+'.'+last.id:null
+   });
+  }
   if(request.method==='GET'&&url.pathname==='/api/reports'){
    const lat=Number(url.searchParams.get('lat')),lon=Number(url.searchParams.get('lon')),radius=Math.min(20000,Math.max(200,Number(url.searchParams.get('r'))||3000));
    const box=url.searchParams.get('bbox');
@@ -50,7 +64,7 @@ export async function communityReports(request,env){
    await sweepCommunityReports(env,now,box===null);
    const rows=await db.prepare('SELECT id,kind,lat,lon,created_at,expires_at,confirms,denies FROM community_reports WHERE expires_at>? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ?').bind(now,...bounds,limit).all();
    return json({reports:(rows.results||[]).map(r=>({
-    id:r.id,kind:r.kind,lat:r.lat,lon:r.lon,ageSeconds:now-r.created_at,
+    id:r.id,kind:r.kind,lat:r.lat,lon:r.lon,ageSeconds:now-r.created_at,reportedAt:r.created_at,
     remainingSeconds:r.expires_at-now,confirms:r.confirms,denies:r.denies
    }))});
   }

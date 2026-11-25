@@ -20,7 +20,7 @@ assert.equal((await get('?lat=3&lon=101',{})).status,503);assert.equal((await co
 const ownerKey='a'.repeat(32),otherKey='b'.repeat(32);
 let r=await post('/api/reports',{kind:'crash',...KL},{'x-lapan-report-key':ownerKey});assert.equal(r.status,201);let j=await r.json();assert.match(j.id,/^[0-9a-f]{24}$/);assert.equal(j.merged,false);ids.push(j.id);
 r=await get('?lat=3.14&lon=101.69&r=2000');j=await r.json();assert.equal(r.headers.get('Cache-Control'),'no-store');assert.equal(j.reports.length,1);
-assert.deepEqual(Object.keys(j.reports[0]).sort(),['ageSeconds','confirms','denies','id','kind','lat','lon','remainingSeconds']);assert.equal(j.reports[0].remainingSeconds,28800);assert.equal(j.reports[0].kind,'crash');assert.equal(j.reports[0].ageSeconds,0);
+assert.deepEqual(Object.keys(j.reports[0]).sort(),['ageSeconds','confirms','denies','id','kind','lat','lon','remainingSeconds','reportedAt']);assert.equal(j.reports[0].reportedAt,clock/1000);assert.equal(j.reports[0].remainingSeconds,28800);assert.equal(j.reports[0].kind,'crash');assert.equal(j.reports[0].ageSeconds,0);
 // Privacy: the table has no column that could hold who sent it, and the row holds only the report.
 const cols=db.raw.prepare('PRAGMA table_info(community_reports)').all().map(c=>c.name);assert.deepEqual(cols,['id','kind','lat','lon','created_at','expires_at','confirms','denies']);
 assert.ok(!JSON.stringify(db.raw.prepare('SELECT * FROM community_reports').all()).match(/198\.51\.100/),'no network address stored');
@@ -50,6 +50,30 @@ assert.equal(preview.reports.length,2);
 assert.deepEqual(new Set(preview.reports.map(r=>r.kind)),new Set(['crash','stopped']));
 for(const bbox of ['3,101,2,102','3,,4,102','3,101,4,102,103','1,98,4,102','3,101,foo,102']){
  assert.equal((await get('?bbox='+bbox)).status,400);
+}
+
+// The public nationwide list includes distant reports, omits expired entries and pages same-second submissions.
+{
+ const nationwide=d1(),t=Math.floor(clock/1000);
+ const readPage=query=>get(query,{DB:nationwide});
+ const insert=nationwide.raw.prepare('INSERT INTO community_reports (id,kind,lat,lon,created_at,expires_at) VALUES (?,?,?,?,?,?)');
+ for(let i=1;i<=51;i++)insert.run(i.toString(16).padStart(24,'0'),'object',5.98765,116.12345+i/1000,t,t+3600);
+ insert.run('f'.repeat(24),'flood',6,116,t-10,t);
+ insert.run('e'.repeat(24),'crash',3.139,101.687,t-1,t+3600);
+ const first=await (await readPage('?scope=all')).json();
+ assert.equal(first.reports.length,50);
+ assert.equal(first.reports[0].lat,5.988);
+ assert.equal(first.reports[0].lon,116.174);
+ assert.ok(first.next);
+ assert.deepEqual(Object.keys(first.reports[0]).sort(),['kind','lat','lon','remainingSeconds','reportedAt']);
+ const rest=await (await readPage('?scope=all&before='+first.next)).json();
+ assert.equal(rest.next,null);
+ const all=[...first.reports,...rest.reports];
+ assert.equal(new Set(all.filter(r=>r.lat===5.988).map(r=>r.lon)).size,51);
+ assert.ok(all.some(r=>r.lat===3.139));
+ assert.ok(!all.some(r=>r.lat===6));
+ assert.equal((await readPage('?scope=all&before=invalid')).status,400);
+ nationwide.raw.close();
 }
 
 // Validation. Free text and extra fields are refused, so nothing personal or abusive can be stored.
