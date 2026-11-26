@@ -2,6 +2,33 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
+## [1.0.47] — 2026-11-26
+
+RV campsite finder and more reliable navigation
+
+### Added
+
+- Report wrong direction during navigation. Review the latest or previous maneuver, its map pin and routing provider before sending the report privately to Lapan or sharing it yourself.
+- Find RV campsites near your current location. In Car mode, turn on Recreational Vehicle (RV) in More options to show Find RV campsite and RV stops in Quick Stops. The setting is off by default. Filter for Day Rest or Overnight Stay, then choose a campsite as your destination.
+- Save campsite coordinates, phone numbers and available access notes on your device for offline use. You can remove saved campsites individually or clear the list. Maps and route planning require an internet connection.
+- Choose a Satellite view for the planning map under More options → Screen & navigation → Planning map view.
+
+### Improved
+
+- The route planner has collapsible Route preference and Quick Stops sections. Add Lapan to your phone is now below More options. Clear your starting point independently, and see Home and Work icons at saved destinations.
+- Adaptive is the default skin and 3D is the default navigation view for new users. Lapan keeps your saved choices. The GTA Sunset planner now has a palm-and-sunset backdrop.
+- Weather cards show conditions, temperatures and warnings more clearly below the ETA. Lapan in Numbers groups navigation figures for mobile reading and shows recent daily visits newest first.
+- Place search matches more names and shows a cancellable loading dialog. Petrol, Shopping and R&R Quick Stops can use stored listings when live search is unavailable.
+- Nearby road report confirmations show a 15-second countdown and close automatically. The speed display has more room for three digits, and Less Chatty is the default voice guidance mode.
+
+### Fixed
+
+- Navigation controls stay aligned and easier to tap after rotating the phone. In landscape, the Then preview stays on the turn card and the navigation pointer follows the angle of the route.
+- The route progress bar preserves the distance already travelled when the route is recalculated.
+- Spoken guidance follows EN/BM changes during an active drive.
+
+[GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/b611be95a24d3f23f5bebd8a1c3eff988363b423)
+
 ## [1.0.46] — 2026-11-23
 
 Lighter 2D navigation and a 3D view option
@@ -9,11 +36,10 @@ Lighter 2D navigation and a 3D view option
 ### Added
 
 - An optional striped route progress bar shows your remaining distance, traffic conditions where available, and community reports along the route. It appears on the left in portrait and on the right in landscape. Enable Show route progress bar in More options → Screen & navigation. It is off by default, and Lapan remembers your choice.
-
-- Added Today navigation to Lapan in Numbers. It counts navigation sessions that started today in Malaysia time after receiving a usable GPS fix.
-
 - Choose 2D or 3D before starting a drive in More options → Screen & navigation → Navigation view. You can also switch in the driving controls. Lapan remembers your choice for future drives.
 - Lapan in Numbers now shows total navigation engagement, today’s estimated distance, estimated total distance, and estimated distance per engaged trip. Lapan Malaysia estimates distance on your device without collecting or storing precise GPS locations for these figures. Trips taken while your browser is opted out of visitor statistics are excluded.
+- Added Today navigation to Lapan in Numbers. It counts navigation sessions that started today in Malaysia time after receiving a usable GPS fix.
+- Open Road reports above Recent locations to browse active community reports across Malaysia. Each report shows its type, Malaysia time and an approximate location you can tap to open on the map.
 
 ### Improved
 

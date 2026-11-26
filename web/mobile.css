@@ -309,7 +309,7 @@ body.guiding .maplibregl-marker.saved-destination-pin{pointer-events:none}
 @media(max-height:480px) and (orientation:landscape){
  #reportAsk{left:auto;right:90px;width:min(38vw,340px);bottom:12px}
 }
-#reportDialog{padding:0 0 18px;border:1px solid #526779;border-radius:24px 24px 16px 16px;background:#172738;color:#f4f9f8;width:min(440px,calc(100vw - 24px));max-height:88dvh;overflow:auto;box-shadow:0 12px 60px #0007;margin:auto auto max(12px,env(safe-area-inset-bottom))}#reportDialog::backdrop{background:#07131dcc;backdrop-filter:blur(3px)}
+:is(#reportDialog,#wrongDirectionDialog){padding:0 0 18px;border:1px solid #526779;border-radius:24px 24px 16px 16px;background:#172738;color:#f4f9f8;width:min(440px,calc(100vw - 24px));max-height:88dvh;overflow:auto;box-shadow:0 12px 60px #0007;margin:auto auto max(12px,env(safe-area-inset-bottom))}:is(#reportDialog,#wrongDirectionDialog)::backdrop{background:#07131dcc;backdrop-filter:blur(3px)}
 .report-body{padding:4px 18px 0;display:grid;gap:12px}.report-body p{margin:0;font-size:13px;color:#cfdedb}#reportStatus{min-height:20px;font-weight:700;color:#f4f9f8}
 .report-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.report-kind{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:88px;padding:10px;border:1px solid #475d6e;border-radius:16px;background:#243546;color:#f5faf9;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}.report-kind svg{color:var(--report-accent)}
 .report-kind:focus-visible,#navReport:focus-visible,#reportAsk button:focus-visible{outline:3px solid #daf67a;outline-offset:2px}
@@ -575,3 +575,8 @@ body.guiding :is(#planningMapTools,#satelliteCredit){display:none}
 .rv-preference{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;cursor:pointer}
 .rv-preference[hidden]{display:none}
 .rv-preference input{width:16px;height:16px;margin:0;accent-color:var(--brand,#96e9b7)}
+
+#reportWrongDirection{grid-column:1/-1}
+#wrongDirectionDialog .report-body{padding-bottom:4px}
+#wrongDirectionStep,#wrongDirectionPreview{width:100%;min-height:44px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#172738);color:var(--ink);font:inherit}
+#wrongDirectionPreview{resize:vertical}

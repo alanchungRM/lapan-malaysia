@@ -21,11 +21,45 @@ export async function sweepCommunityReports(env,now=Math.floor(Date.now()/1000),
 async function addCommunityVote(db,id,receipt,vote,now){
  await db.prepare('INSERT OR IGNORE INTO community_report_votes (report_id,receipt,vote,created_at) SELECT id,?,?,? FROM community_reports WHERE id=? AND expires_at>? AND confirms+denies<100').bind(receipt,vote,now,id,now).run();
 }
+const directionReportRetention=7*86400;
+const directionReportProviders=new Set(['TomTom','Valhalla','OSRM','HERE','Unknown']);
+async function ensureDirectionReports(db){
+ await db.prepare('CREATE TABLE IF NOT EXISTS direction_reports (id INTEGER PRIMARY KEY, reported_at INTEGER NOT NULL, lat REAL NOT NULL, lon REAL NOT NULL, provider TEXT NOT NULL, instruction TEXT NOT NULL)').run();
+}
+async function receiveDirectionReport(request,db,now,json){
+ if(request.method!=='POST')return json({error:'Method not allowed'},405);
+ if(request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Same-origin requests only'},403);
+ if(Number(request.headers.get('content-length'))>4096)return json({error:'Request too large'},413);
+ if(!request.body)return json({error:'Invalid direction report'},400);
+ const reader=request.body.getReader(),decoder=new TextDecoder();
+ let size=0,raw='';
+ for(;;){
+  const {value,done}=await reader.read();
+  if(done)break;
+  size+=value.byteLength;
+  if(size>4096){await reader.cancel();return json({error:'Request too large'},413)}
+  raw+=decoder.decode(value,{stream:true});
+ }
+ let body;
+ try{body=JSON.parse(raw+decoder.decode())}catch{return json({error:'Invalid direction report'},400)}
+ if(!body||typeof body!=='object'||Object.keys(body).some(key=>!['lat','lon','provider','instruction'].includes(key))||
+  !reportPoint(body.lat,body.lon)||!directionReportProviders.has(body.provider)||
+  typeof body.instruction!=='string'||!body.instruction.trim()||body.instruction.length>500)
+  return json({error:'Invalid direction report'},400);
+ await ensureDirectionReports(db);
+ const [,result]=await db.batch([
+  db.prepare('DELETE FROM direction_reports WHERE reported_at<?').bind(now-directionReportRetention),
+  db.prepare('INSERT INTO direction_reports (reported_at,lat,lon,provider,instruction) SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM direction_reports WHERE reported_at>=?)<500 RETURNING id')
+   .bind(now,Number(body.lat.toFixed(6)),Number(body.lon.toFixed(6)),body.provider,body.instruction.trim(),now-86400)
+ ]);
+ return result.results?.length?json({ok:true},201):json({error:'Direction reports are busy. Try again later.'},429);
+}
 export async function communityReports(request,env){
  const json=(d,status=200)=>Response.json(d,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
  if(!env?.DB)return json({error:'Community reports are not available yet.'},503);
  const {DB:db}=env,url=new URL(request.url),now=Math.floor(Date.now()/1000);
  try{
+  if(url.pathname==='/api/reports/direction')return await receiveDirectionReport(request,db,now,json);
   if(url.pathname==='/api/reports/cleanup'){
    if(request.method!=='GET')return json({error:'Method not allowed'},405);
    await sweepCommunityReports(env,now,true);

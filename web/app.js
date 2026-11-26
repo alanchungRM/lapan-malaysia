@@ -109,8 +109,95 @@ cleanupNavigation(()=>window.LapanETA?.suspend?.());
 function renderNextTurnPreview(step){
  for(const id of ['navThen','landscapeNavThen'])window.LapanDirections?.renderThen?.($(id),step);
 }
-function showNav(title,message,step,followingStep){$('exitArrival').classList.toggle('hidden',title!=='You have arrived');const continueButton=$('continueRvTrip');continueButton.hidden=!rvStop||continueButton.disabled;const progress=$('navigationProgress');if(progress&&title==='Finding your location…'){progress.textContent='Finding GPS…';progress.hidden=false}if(progress&&(title==='Location unavailable'||title==='You have arrived'))progress.hidden=true;if(!navView){navView=true;window.requestAnimationFrame?.(()=>map.invalidateSize());}setNavText($('navDestination'),activeDestination()?.[0]||'Your destination');$('navRvTarget').hidden=!rvStop;setNavText($('navRvStopName'),rvStop?.[0]||'');setNavText($('navRvFinalName'),rvStop?chosen.destination[0]:'');$('landscapeRvTarget').hidden=!rvStop;setNavText($('landscapeRvFinal'),rvStop?chosen.destination[0]:'');{const trip=window.LapanETA?.text(routes[selected])||(routes[selected]?duration(routes[selected].duration)+' · '+(routes[selected].distance/1000).toFixed(1)+' km planned':'Route guidance');if(window.LapanDriveUI)window.LapanDriveUI.paintTrip($('navTrip'),trip);else setNavText($('navTrip'),trip)}$('navpanel').dataset.mode=title==='GPS guidance active'?'active':'status';$('navpanel').classList.remove('hidden');if(!document.body.classList.contains('guiding')){document.body.classList.add('guiding');updatePlanningBasemap?.(true)}setNavText(navTitle,title);if(step&&window.LapanDirections?.render)window.LapanDirections.render($('nextturn'),step,message);else setNavText($('nextturn'),message);renderNextTurnPreview(followingStep)}
-function endGuidance(){const progress=$('navigationProgress');if(progress)progress.hidden=true;
+const directionReportDialog=$('wrongDirectionDialog');
+let latestDirection=null,previousDirection=null;
+function rememberDirection(step,message,route){
+ const point=step?.maneuver?.location;
+ const [lon,lat]=Array.isArray(point)?point:[];
+ if(!Number.isFinite(lat)||!Number.isFinite(lon)||['depart','arrive'].includes(step.maneuver.type))return;
+ if(latestDirection?.point!==point)previousDirection=latestDirection;
+ latestDirection={point,lat,lon,provider:route?.provider||'Unknown',message};
+}
+
+const directionReportStep=$('wrongDirectionStep'),directionReportPreview=$('wrongDirectionPreview');
+const directionReportStatus=$('wrongDirectionStatus'),shareDirectionReport=$('shareWrongDirection');
+let directionReportSnapshot, directionReportSending=false;
+const sendDirectionReport=$('sendWrongDirection');
+function renderDirectionReport(){
+ const report=directionReportSnapshot?.[directionReportStep.value];
+ const t=text=>window.LapanI18n?.t?.(text)||text;
+ directionReportStatus.textContent=report?'':t('No navigation instruction is available yet.');
+ shareDirectionReport.disabled=!report;
+ sendDirectionReport.disabled=!report||directionReportSending;
+ directionReportPreview.value='';
+ if(!report)return;
+ const {lat,lon,provider,message}=report;
+ const pin=lat.toFixed(6)+','+lon.toFixed(6);
+ directionReportPreview.value=[
+  'Lapan Malaysia — '+t('Report wrong direction'),
+  t('Routing provider')+': '+provider,
+  t('Instruction')+': '+message,
+  'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(pin)
+ ].join('\n');
+}
+directionReportStep.onchange=renderDirectionReport;
+$('reportWrongDirection').onclick=()=>{
+ directionReportSnapshot={latest:latestDirection,previous:previousDirection};
+ directionReportStep.value='latest';
+ directionReportStep.options[1].disabled=!previousDirection;
+ renderDirectionReport();
+ $('reportDialog').close();
+ directionReportDialog.showModal();
+};
+$('closeWrongDirection').onclick=()=>directionReportDialog.close();
+directionReportDialog.addEventListener('close',()=>{
+ directionReportSnapshot=null;
+ directionReportPreview.value='';
+ if(document.body.classList.contains('guiding'))$('navReport').focus();
+});
+sendDirectionReport.onclick=async()=>{
+ const snapshot=directionReportSnapshot;
+ const report=snapshot?.[directionReportStep.value];
+ if(!report||directionReportSending)return;
+ directionReportSending=true;
+ directionReportStep.disabled=true;
+ sendDirectionReport.disabled=true;
+ const {lat,lon,provider,message}=report;
+ try{
+  const response=await fetch('/api/reports/direction',{
+   method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({lat,lon,provider,instruction:message.slice(0,500)})
+  });
+  if(!response.ok)throw Error();
+  if(directionReportSnapshot===snapshot){
+   snapshot[directionReportStep.value]=null;
+   setNavText(directionReportStatus,'Direction report sent to Lapan.');
+  }
+ }catch{
+  if(directionReportSnapshot===snapshot)setNavText(directionReportStatus,'Could not send right now. Try again or use Share direction report.');
+ }finally{
+  directionReportSending=false;
+  directionReportStep.disabled=false;
+  sendDirectionReport.disabled=!directionReportSnapshot?.[directionReportStep.value];
+ }
+};
+shareDirectionReport.onclick=async()=>{
+ const text=directionReportPreview.value;
+ if(!text)return;
+ if(navigator.share){
+  try{await navigator.share({text});return}catch(error){if(error.name==='AbortError')return}
+ }
+ try{
+  await navigator.clipboard.writeText(text);
+  setNavText(directionReportStatus,'Report copied. Paste it into your feedback message.');
+ }catch{
+  directionReportPreview.focus();
+  directionReportPreview.select();
+  setNavText(directionReportStatus,'Copy the selected report to share it.');
+ }
+};
+function showNav(title,message,step,followingStep){if(title==='GPS guidance active')rememberDirection(step,message,routes[selected]);$('exitArrival').classList.toggle('hidden',title!=='You have arrived');const continueButton=$('continueRvTrip');continueButton.hidden=!rvStop||continueButton.disabled;const progress=$('navigationProgress');if(progress&&title==='Finding your location…'){progress.textContent='Finding GPS…';progress.hidden=false}if(progress&&(title==='Location unavailable'||title==='You have arrived'))progress.hidden=true;if(!navView){navView=true;window.requestAnimationFrame?.(()=>map.invalidateSize());}setNavText($('navDestination'),activeDestination()?.[0]||'Your destination');$('navRvTarget').hidden=!rvStop;setNavText($('navRvStopName'),rvStop?.[0]||'');setNavText($('navRvFinalName'),rvStop?chosen.destination[0]:'');$('landscapeRvTarget').hidden=!rvStop;setNavText($('landscapeRvFinal'),rvStop?chosen.destination[0]:'');{const trip=window.LapanETA?.text(routes[selected])||(routes[selected]?duration(routes[selected].duration)+' · '+(routes[selected].distance/1000).toFixed(1)+' km planned':'Route guidance');if(window.LapanDriveUI)window.LapanDriveUI.paintTrip($('navTrip'),trip);else setNavText($('navTrip'),trip)}$('navpanel').dataset.mode=title==='GPS guidance active'?'active':'status';$('navpanel').classList.remove('hidden');if(!document.body.classList.contains('guiding')){document.body.classList.add('guiding');updatePlanningBasemap?.(true)}setNavText(navTitle,title);if(step&&window.LapanDirections?.render)window.LapanDirections.render($('nextturn'),step,message);else setNavText($('nextturn'),message);renderNextTurnPreview(followingStep)}
+function endGuidance(){directionReportSnapshot=latestDirection=previousDirection=null;if(directionReportDialog.open)directionReportDialog.close();const progress=$('navigationProgress');if(progress)progress.hidden=true;
 // Invalidate callbacks and dismiss the driving UI before touching browser APIs.
 window.LapanAnalytics?.endEngagement?.();navResume=null;navBackground=false;navSession++;navView=false;spoken=-1;lastFix=0;navProgress=0;offRouteSince=0;lastGPS=null;
 clearTimeout(rerouteRetry);rerouteRetry=null;rerouteBusy=false;rerouteLast=0;rerouteMisses=0;rerouteFailures=0;

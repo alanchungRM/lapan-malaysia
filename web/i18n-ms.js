@@ -708,3 +708,25 @@ window.LapanI18n.add({
  "RV campsite selected. Tap Find my route.":"Tapak RV dipilih. Tekan Cari laluan saya.",
  "Choose a stop type.":"Pilih jenis hentian."
 });
+
+window.LapanI18n.add({
+ "Report wrong direction":"Lapor arah salah",
+ "Review direction report":"Semak laporan arah",
+ "Instruction to report":"Arahan untuk dilaporkan",
+ "Latest instruction":"Arahan terkini",
+ "Previous instruction":"Arahan sebelumnya",
+ "Direction report preview":"Pratonton laporan arah",
+ "Share direction report":"Kongsi laporan arah",
+ "No navigation instruction is available yet.":"Arahan navigasi belum tersedia.",
+ "Routing provider":"Penyedia laluan",
+ "Instruction":"Arahan",
+ "Report copied. Paste it into your feedback message.":"Laporan disalin. Tampal dalam mesej maklum balas anda.",
+ "Copy the selected report to share it.":"Salin laporan yang dipilih untuk dikongsi."
+});
+
+window.LapanI18n.add({
+ "Review the maneuver pin and guidance details before sending. Send only when safely parked.":"Semak pin dan butiran arahan sebelum menghantar. Hantar selepas berhenti di tempat selamat.",
+ "Send privately to Lapan":"Hantar secara peribadi",
+ "Direction report sent to Lapan.":"Laporan arah dihantar kepada Lapan.",
+ "Could not send right now. Try again or use Share direction report.":"Tidak dapat menghantar sekarang. Cuba lagi atau pilih Kongsi laporan arah."
+});
