@@ -128,6 +128,7 @@ const mark=()=>{for(const b of document.querySelectorAll('[data-lang]'))b.setAtt
 // A language choice is only applied once its dictionary is in. If Malay cannot load (offline), the page stays English and the toggle shows it.
 async function go(next,persist=true){
  const revision=++choiceRevision;
+ if(next!==i18n.lang())root.LapanVoice?.prepareLanguageSwitch?.(next);
  if(next==='ms'){await loadDictionary();if(revision!==choiceRevision)return;if(!dictionaryLoaded){i18n.set('en',{persist:false});mark();html.classList.remove('i18n-wait');return}}
  i18n.set(next,{persist});watch();mark();html.classList.remove('i18n-wait');
 }

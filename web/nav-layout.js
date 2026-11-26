@@ -2,10 +2,23 @@
  const root=document.documentElement,footer=document.getElementById('navBar'),turn=document.getElementById('navpanel');
  const rail=document.getElementById('routeRail'),distance=rail.querySelector('.rail-distance');
  const controls=document.getElementById('driveControls');
- const overlays=[controls,turn,rail].map(node=>({node,home:node.parentNode,next:node.nextSibling}));
+ const hud=document.getElementById('driveHud');
+ const topLayer=typeof hud?.showPopover==='function'&&typeof hud.hidePopover==='function';
+ const actions=['reportAsk','awakeWarning'].map(id=>document.getElementById(id));
+ const overlays=[controls,turn,footer,rail,...actions].filter(Boolean).map(node=>({node,home:node.parentNode,next:node.nextSibling}));
  const tray=document.getElementById('driveMore');
  const landscape=matchMedia('(orientation: landscape)');
  let queued=false;
+
+ window.LapanNavLayout={cameraOffset(mapBox){
+  if(!landscape.matches||!document.body.classList.contains('guiding'))return null;
+  const left=Math.max(footer.getBoundingClientRect().right,turn.getBoundingClientRect().right,mapBox.left);
+  const railBox=rail.getBoundingClientRect(),controlsBox=controls.getBoundingClientRect();
+  const right=Math.min(mapBox.right,controlsBox.width?controlsBox.left-8:mapBox.right-16,
+   railBox.width&&!rail.hasAttribute('data-no-room')?railBox.left-8:mapBox.right);
+  if(right<=left)return null;
+  return [(left+right)/2-mapBox.left-mapBox.width/2,mapBox.height*.14];
+ }};
 
  function setSize(name,value){
   const px=Math.ceil(value)+'px';
@@ -53,12 +66,21 @@
  window.addEventListener('resize',settle);
  window.visualViewport?.addEventListener('resize',schedule);
  window.visualViewport?.addEventListener('scroll',schedule);
- // Keep taps in the driving HUD outside the map's compositor layer during rotation.
+ // A manual popover makes the native touch targets independent of the map's compositor.
+ let guidingBefore=false, hudOpen=false;
  const guidance=new MutationObserver(()=>{
   const guiding=document.body.classList.contains('guiding');
-  for(const {node,home,next} of overlays){
-   const parent=guiding?document.body:home;
-   if(node.parentNode!==parent)parent.insertBefore(node,!guiding&&next?.parentNode===home?next:null);
+  if(guiding!==guidingBefore){
+   guidingBefore=guiding;
+   if(guiding&&topLayer){
+    hud.setAttribute('popover','manual');
+    try{hud.showPopover();hudOpen=true}catch{hud.removeAttribute('popover')}
+   }
+   for(const {node,home,next} of guiding?overlays:overlays.slice().reverse()){
+    const parent=guiding?(hudOpen&&node!==rail?hud:actions.includes(node)?home:document.body):home;
+    if(node.parentNode!==parent)parent.insertBefore(node,!guiding&&next?.parentNode===home?next:null);
+   }
+   if(!guiding&&hudOpen){hud.hidePopover();hudOpen=false}
   }
   schedule();
  });

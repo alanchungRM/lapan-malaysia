@@ -45,6 +45,10 @@ assert.match(css,/#navMore\{--icon:var\(--i-chev-left\)\}[^\n]*#navMore\{--icon:
 for(const [what,re,max] of [['turn distance',/#nextturn \.turn-dist\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,40],['turn road text',/#nextturn\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,24],['arrival time',/#navTrip \.eta-time b\{font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,38],['alert text',/#cameraWarning,[^{]*\{[^}]*font-size:clamp\(\d+px,[\d.]+vw,(\d+)px\)/,18]]){const m=css.match(re);assert.ok(m,what);assert.ok(Number(m[1])<=max,what+' ceiling '+m[1]+' > '+max)}
 assert.match(css,/#cameraWarning::before[^{]*\{[^}]*mask:var\(--i-warn\)/,'alerts carry a warning-sign symbol');
 assert.match(css,/#navBar #stop\{background:var\(--bad-fill\)/);assert.match(css,/max-width:340px/,'narrow phones get a tighter trip bar');
+// Landscape keeps the upcoming manoeuvre on the turn card without forcing an empty row.
+const landscapeRules=css.slice(css.indexOf('@media (orientation:landscape){\n html body.guiding :is(#navpanel,#navBar)'));
+assert.match(landscapeRules,/#navpanel #navThen:not\(\[hidden\]\)\{[^}]*font-size:13px/);
+assert.doesNotMatch(landscapeRules,/#navThen[^{]*\{[^}]*display:none/);
 // The tray is closed by default and cannot be stuck open or hidden behind the trip bar.
 const base=fs.readFileSync('web/mobile.css','utf8');assert.match(base,/body\.guiding:not\(\.drive-more\) #driveMore[^{]*\{display:none!important\}/);assert.match(base,/body\.guiding #driveControls\{overflow:visible!important\}/);
 

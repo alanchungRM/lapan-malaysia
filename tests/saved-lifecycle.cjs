@@ -42,7 +42,7 @@ function setup({blocked=false,seed={}}={}){const nodes=new Map(),chips={},edits=
  const app=fs.readFileSync('web/app.js','utf8');
  const positionCode=app.slice(app.indexOf('function positionFinishFlag('),app.indexOf('function instruction('));
  const endpoint={setIcon(icon){this.icon=icon},setLatLng(point){this.point=Array.from(point)}};
- const ctx={markers:[null,endpoint],L:{divIcon:icon=>icon},window:{LapanSaved:saved},
+ const ctx={rvStop:null,markers:[null,endpoint],L:{divIcon:icon=>icon},window:{LapanSaved:saved},
   chosen:{destination:['Home via search',3.1,101.5]},
   route:{geometry:{coordinates:[[101,3],[101.5001,3.1001]]}}};
  vm.runInNewContext(positionCode+';positionFinishFlag(route)',ctx);

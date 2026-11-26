@@ -1,0 +1,206 @@
+[
+  {
+    "id": "rv/sungai-lui",
+    "name": "D’Sungai Lui Campsite",
+    "lat": 3.1636105,
+    "lon": 101.8882915,
+    "address": "Hulu Langat, Selangor",
+    "uses": [
+      "day"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers",
+      "Plug points"
+    ],
+    "phone": "+601128557691",
+    "sourceUrl": "https://malaysiacamping.com/listing/d-sungai-lui-campsite/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/seafarer",
+    "name": "Seafarer Restaurant & Campground",
+    "lat": 2.219423,
+    "lon": 102.184906,
+    "address": "Tanjung Kling, Melaka",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers",
+      "Power hookups"
+    ],
+    "phone": "+6063152693",
+    "sourceUrl": "https://malaysiacamping.com/listing/seafarer-restaurant-campground-melaka/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/payung-getaway",
+    "name": "Payung Getaway Campsite & RV Park",
+    "lat": 4.1211927,
+    "lon": 103.3878527,
+    "address": "Cherating, Pahang",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers",
+      "Power hookups"
+    ],
+    "phone": "+601123802900",
+    "sourceUrl": "https://malaysiacamping.com/listing/payung-getaway-campsite-rv-park/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/dungun",
+    "name": "D’nest Dungun Escapade Resort",
+    "lat": 4.7782615,
+    "lon": 103.3939506,
+    "address": "Dungun, Terengganu",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers",
+      "Plug points"
+    ],
+    "phone": "+60199316130",
+    "sourceUrl": "https://malaysiacamping.com/listing/dnest-dungun-escapade-resort/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/black-stone",
+    "name": "Black Stone Camper Park",
+    "lat": 3.8919518,
+    "lon": 103.3662596,
+    "address": "Kuantan, Pahang",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [],
+    "phone": "+60123183814",
+    "sourceUrl": "https://malaysiacamping.com/listing/black-stone-camper-park/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/pine-valley",
+    "name": "Pine Valley Villa & Camper Site",
+    "lat": 4.4764325,
+    "lon": 101.3773696,
+    "address": "Tanah Rata, Pahang",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers"
+    ],
+    "phone": "+60147063682",
+    "sourceUrl": "https://malaysiacamping.com/listing/pine-valley-villa-camper-site-tanah-rata/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/aziz-drimba",
+    "name": "Aziz D’Rimba Chalet & Campsite",
+    "lat": 4.4300498,
+    "lon": 101.1777627,
+    "address": "Gopeng, Perak",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets"
+    ],
+    "phone": "+601159736747",
+    "sourceUrl": "https://malaysiacamping.com/listing/aziz-drimba-chalet-campsite/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/teluk-batik",
+    "name": "Teluk Batik Camper Site",
+    "lat": 4.186395,
+    "lon": 100.608889,
+    "address": "Lumut, Perak",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets",
+      "Power hookups"
+    ],
+    "phone": "+601131842551",
+    "sourceUrl": "https://www.gomanjung.com/wp-content/uploads/2022/07/Manjung-Tourism-product_compressed.pdf",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/uda-sedim",
+    "name": "Uda Sedim Camp & Recreational Site",
+    "lat": 5.4064645,
+    "lon": 100.773986,
+    "address": "Karangan, Kedah",
+    "uses": [
+      "day"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers",
+      "Plug points"
+    ],
+    "phone": "+60175638947",
+    "sourceUrl": "https://malaysiacamping.com/listing/uda-sedim-camp-recreational-site/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/logok",
+    "name": "Logok Campsite and Farm",
+    "lat": 2.0343983,
+    "lon": 104.0663713,
+    "address": "Kota Tinggi, Johor",
+    "uses": [
+      "day"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers"
+    ],
+    "phone": "+60137234070",
+    "sourceUrl": "https://malaysiacamping.com/listing/logok-campsite-and-farm/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/sumiran",
+    "name": "Sumiran Eco Park & Resort",
+    "lat": 1.4810325,
+    "lon": 110.2800963,
+    "address": "Kuching, Sarawak",
+    "uses": [
+      "day",
+      "overnight"
+    ],
+    "facilities": [],
+    "phone": "+60143422290",
+    "sourceUrl": "https://www.sumiranecocamp.biz.my/bookcampingspot/",
+    "reviewedOn": "2026-11-25"
+  },
+  {
+    "id": "rv/greenstone",
+    "name": "GreenStone Campsite",
+    "lat": 4.7610518,
+    "lon": 100.8352932,
+    "address": "Perak",
+    "uses": [
+      "overnight"
+    ],
+    "facilities": [
+      "Toilets",
+      "Showers",
+      "Plug points"
+    ],
+    "phone": "+60197557595",
+    "sourceUrl": "https://malaysiacamping.com/listing/greenstone-campsite/",
+    "reviewedOn": "2026-11-25"
+  }
+]

@@ -51,3 +51,8 @@ Owner approved the road-report countdown, themed place picker, clear starting po
 - Recover additional TomTom options near reported road dividers when the primary search returns a single route. The additional candidates pass the same local restriction and closure checks.
 - Keep primary TomTom route searches available when only an optional alternative request is rate-limited.
 - Retry eligible TomTom searches near a divider before falling back when the initial search finds no usable route.
+
+- Add opt-in RV campsite search and Quick Stops for Car mode. Show nearby campsites from the current GPS fix and allow saving their details to the device for offline access.
+- Make Quick Stops collapsible and match its chevron to the active theme.
+- Keep navigation controls responsive after rotation, keep the Then preview visible in landscape, and align the navigation pointer to the projected route.
+- Switch spoken directions when the app language changes during active navigation.

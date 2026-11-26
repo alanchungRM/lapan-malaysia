@@ -148,8 +148,6 @@ body.guiding #driveControls .speed-chip small{font-size:11px;line-height:1.25;fo
 .search-panel .map-place-actions button{min-height:36px;font-size:11px;background:transparent;border-color:#3a4d5e;color:#8fe0b4}
 .privacy-line{font-size:11px;line-height:1.4;color:#9bb0bd;margin:8px 2px 0;text-align:center}
 .search-panel .quick-stops,.search-panel .recent-settings{border:0;background:transparent;padding:0;margin:12px 0 0}
-.search-panel .quick-stops summary{pointer-events:none;cursor:default;min-height:28px!important;padding:0!important;font-size:11px!important;text-transform:uppercase;letter-spacing:.8px;color:#9bb0bd}
-.search-panel .quick-stops summary::after{display:none}
 /* Keep every saved location reachable in the compact scroll area. */
 #recentList{max-height:210px;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch}
 #recentHint{font-size:10px;margin:4px 0}
@@ -164,7 +162,6 @@ body.guiding .menu-launch{display:none}
 #status:empty{display:none}
 .search-panel .stop-categories{display:flex;gap:8px;margin-top:6px;padding:0}
 .search-panel .stop-categories button{flex:1;flex-direction:row;gap:6px;min-height:44px;padding:6px 8px;font-size:13px}
-.search-panel .quick-stops summary>span{display:none}
 /* Nothing to show on a first visit, so the recents block stays out of the way. */
 .search-panel .recent-settings:has(#recentCount:empty){display:none}
 .more-options details>summary{display:flex;align-items:center;min-height:44px}
@@ -180,7 +177,7 @@ body.guiding .menu-launch{display:none}
 
 
 /* Recent locations keeps native keyboard/touch expand and collapse. */
-.search-panel .recent-settings summary{pointer-events:auto;cursor:pointer;min-height:44px!important;padding:8px 0!important;font-size:12px!important}.search-panel .recent-settings summary::after{display:block}
+.search-panel :is(.recent-settings,.quick-stops)>summary{pointer-events:auto;cursor:pointer;min-height:44px!important;padding:8px 0!important;font-size:12px!important}.search-panel :is(.recent-settings,.quick-stops)>summary::after{display:block}
 
 /* Driving screen: voice, recentre and one More button stay up front. */
 #navMore{width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:white;font-size:22px;line-height:1;font-weight:700}
@@ -188,11 +185,11 @@ body.guiding .menu-launch{display:none}
 body.guiding:not(.drive-more) #driveMode,body.guiding:not(.drive-more) #navRepeat,body.guiding:not(.drive-more) #navAwake,body.guiding:not(.drive-more) #openStops{display:none!important}
 
 /* Recent disclosure reflects its own state, independently of the parent planner. */
-.search-panel details.recent-settings>summary{display:flex;align-items:center;list-style:none;pointer-events:auto;cursor:pointer}
-.search-panel details.recent-settings>summary::-webkit-details-marker{display:none}
-.search-panel details.recent-settings>summary::after{display:block;content:'⌄';color:#96e9b7;font-size:22px;pointer-events:none}
-.search-panel details.recent-settings[open]>summary::after{content:'⌃'}
-.search-panel details.recent-settings:not([open])>:not(summary){display:none!important}
+.search-panel details:is(.recent-settings,.quick-stops)>summary{display:flex;align-items:center;list-style:none;pointer-events:auto;cursor:pointer}
+.search-panel details:is(.recent-settings,.quick-stops)>summary::-webkit-details-marker{display:none}
+.search-panel details:is(.recent-settings,.quick-stops)>summary::after{display:block;content:'⌄';color:#96e9b7;font-size:22px;pointer-events:none}
+.search-panel details:is(.recent-settings,.quick-stops)[open]>summary::after{content:'⌃'}
+.search-panel details:is(.recent-settings,.quick-stops):not([open])>:not(summary){display:none!important}
 
 /* Language switch independent of the optional UI2 theme. */
 .lang-switch{display:inline-flex;border:1px solid #496457;border-radius:12px;overflow:hidden;margin-right:8px}.lang-switch button{min-width:44px;min-height:44px;border:0;background:transparent;color:#b8f2ce;font-size:13px;font-weight:800;cursor:pointer}.lang-switch button[aria-pressed="true"]{background:#16a856;color:#04210f}body.guiding .lang-switch{display:none}#navLang{width:46px;min-height:44px;border:1px solid #607385;border-radius:13px;background:#162b3bed;color:#b8f2ce;font-size:13px;font-weight:800}body.guiding:not(.drive-more) #navLang{display:none!important}#driveControls #navLang{order:-2}
@@ -537,3 +534,44 @@ body.guiding .leaflet-route-weather-pane{display:none}
 body.guiding :is(#planningMapTools,#satelliteCredit){display:none}
 
 .navigation-view-setting{display:block;margin-top:8px}
+
+#stopsDialog .rv-stop-filters{grid-template-columns:repeat(3,minmax(0,1fr));padding-block:0 8px}
+#stopsDialog .rv-stop-filters button{min-height:44px}
+#stopsDialog .stop-result a{color:inherit;text-decoration:underline}
+#stopsDialog .rv-result{display:grid;align-items:start;justify-content:stretch}
+#stopsDialog .rv-result-actions{display:flex;flex-wrap:wrap;gap:6px}
+#stopsDialog .rv-result-actions button{white-space:normal}
+#stopsDialog .saved-campsite-coordinates{user-select:all;font-variant-numeric:tabular-nums}
+:is(#clearSavedCampsites,#savedCampsitesHelp)[hidden]{display:none}
+#stopsDialog :is(#viewSavedCampsites,#clearSavedCampsites){margin-inline:18px}
+
+.rv-stop-marker{
+ display:grid;place-items:center;border-radius:50% 50% 50% 7px;
+ background:var(--brand,#175b48);color:var(--on-brand,#fff);
+ border:2px solid var(--surface,#fff);box-shadow:0 2px 7px #0006;
+}
+.rv-destination-button{
+ width:100%;min-height:48px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+ align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--brand,#175b48);
+ border-radius:14px;background:var(--surface-2,#223143);color:var(--ink,#fff);text-align:left;
+}
+.rv-destination-button[hidden]{display:none}
+.rv-destination-button:focus-visible{outline:2px solid var(--brand,var(--lime));outline-offset:2px}
+.rv-destination-button svg,.rv-cta-arrow{color:var(--brand,var(--lime))}
+.rv-cta-arrow{font-size:24px}
+#rvTripSummary{
+ margin:10px 0;
+ border:1px solid var(--line);border-inline-start:3px solid var(--brand,var(--lime));
+ background:var(--surface-2,#223143);border-radius:12px;padding:4px 12px;
+}
+#rvTripSummary p{margin:8px 0;overflow-wrap:anywhere}
+#rvTripSummary p>span{display:block;font-size:12px;color:var(--ink-2,var(--muted))}
+
+.stop-categories button[data-stop="rv"][hidden]{display:none}
+
+
+#quickStopCategories[hidden]{display:none}
+#findRvDestination{margin:4px 0}
+.rv-preference{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;cursor:pointer}
+.rv-preference[hidden]{display:none}
+.rv-preference input{width:16px;height:16px;margin:0;accent-color:var(--brand,#96e9b7)}

@@ -238,7 +238,7 @@ html[data-ui="2"][data-theme="day"] .route-preference input{
 }
 html[data-ui="2"] :is(.saved-icon,.history-link,.menu-footer .facebook-link),
 html[data-ui="2"] .driving-disclaimer>summary::after,
-html[data-ui="2"] .search-panel details.recent-settings>summary::after{
+html[data-ui="2"] .search-panel details:is(.recent-settings,.quick-stops)>summary::after{
   color:var(--brand)!important;
 }
 html[data-ui="2"] :is(.route-preference legend,.more-options>summary span){
