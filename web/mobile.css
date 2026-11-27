@@ -442,7 +442,9 @@ body.guiding #uiAppearance{display:none}
 }
 
 /* Official 150 × 40 artwork. Classic uses the dark badge; the new look follows Day/Night. */
-.community-links .makakami-badge{display:flex;align-items:center;width:150px;min-height:44px;margin-top:8px}
+.community-badges{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:4px}
+.community-badges .makakami-badge{display:flex;align-items:center;width:150px;min-height:44px}
+.hot-fm-badge{display:block;width:104px;height:40px;object-fit:cover;border-radius:8px}
 .makakami-badge img{display:block;width:150px;height:40px;flex:none}
 .makakami-badge .makakami-day{display:none}
 html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-day{display:block}
