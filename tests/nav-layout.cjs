@@ -20,12 +20,10 @@ const controls={parentNode:mapWrap,nextSibling:{},getBoundingClientRect:()=>({le
 controls.nextSibling.parentNode=mapWrap;
 for(const node of [turn,rail]){node.parentNode=mapWrap;node.nextSibling={parentNode:mapWrap}}
 const tray={getBoundingClientRect:()=>({width:0,height:0})};
-let popover=false, popoverOpenCount=0;
+let hudMounts=0;
 const hud={
- setAttribute(name,value){assert.equal(name,'popover');assert.equal(value,'manual')},
- showPopover(){popover=true;popoverOpenCount++},
- hidePopover(){popover=false},
- insertBefore(node,before){assert.equal(before,null);node.parentNode=this},
+ showPopover(){assert.fail('the HUD must not enter the browser top layer')},
+ insertBefore(node,before){assert.equal(before,null);node.parentNode=this;hudMounts++},
 };
 const elements={driveHud:hud,driveMore:tray,navBar:footer,navpanel:turn,routeRail:rail,driveControls:controls};
 const events={};
@@ -45,7 +43,6 @@ guiding=true;
 guidance();
 measure();
 assert.equal(controls.parentNode,hud,'driving controls are outside the map layer');
-assert.equal(popover,true);
 assert.equal(footer.parentNode,hud);
 assert.equal(styles.get('--rail-card-top'),'252px');
 assert.equal(styles.get('--rail-card-bottom'),'138px');
@@ -77,8 +74,8 @@ measure();
 assert.equal(styles.get('--rail-card-top'),'230px','also clear a wide landscape turn card');
 assert.equal(turn.parentNode,hud);assert.equal(rail.parentNode,body);
 assert.equal(controls.parentNode,hud,'rotation keeps the same control nodes in the viewport');
-tray.getBoundingClientRect=()=>({left:700,right:840,width:140,height:100});
-guidance();measure();
+const clickMore=()=>{tray.getBoundingClientRect=()=>({left:700,right:840,width:140,height:100});guidance();measure()};
+clickMore();
 assert.equal(attrs.has('data-no-room'),true,'an overlapping open tray keeps its tap area clear');
 orientation.matches=false;root.clientHeight=820;
 rail.getBoundingClientRect=()=>({left:12,right:69,width:57});
@@ -87,13 +84,17 @@ footer.getBoundingClientRect=()=>({left:12,right:399,top:702,width:387,height:10
 events.orientationchange();measure();
 assert.equal(styles.get('--rail-card-top'),'252px');
 assert.equal(attrs.has('data-no-room'),false);
-assert.equal(popoverOpenCount,1,'the top layer remains mounted across both rotations');
+assert.equal(hudMounts,3,'the same controls stay mounted across both rotations and the landscape action');
+assert.equal(controls.parentNode,hud);
+assert.equal(footer.parentNode,hud);
 guiding=false;
 guidance();
 measure();
-assert.equal(popover,false);
 assert.equal(footer.parentNode,body);
 assert.equal(controls.parentNode,mapWrap,'planning recenter returns to the map');
 console.log('PASS: route bar spacing in portrait, landscape and after a card resizes');
+const css=readFileSync('web/drive-ui.css','utf8');
+assert.match(css,/#driveHud\{display:contents\}/,'the HUD does not add a viewport hit surface');
+assert.doesNotMatch(css,/#driveHud:popover-open/);
 const page=readFileSync('web/index.html','utf8');
 assert.match(page,/id="driveHud"[\s\S]*src="nav-layout\.js"/,'the HUD exists when the layout script runs');

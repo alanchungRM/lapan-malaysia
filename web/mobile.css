@@ -173,7 +173,9 @@ body.guiding .menu-launch{display:none}
 .driving-disclaimer>summary::after{content:'⌄';margin-left:auto;color:#96e9b7}
 .driving-disclaimer[open]>summary::after{content:'⌃'}
 .driving-disclaimer p{margin:0 0 12px;font-size:13px;line-height:1.5}
-.menu-footer .facebook-link{color:#96e9b7}
+.community-links{margin-top:12px}
+body.guiding .community-links{display:none}
+.community-links .facebook-link{width:fit-content;color:#96e9b7}
 
 
 /* Recent locations keeps native keyboard/touch expand and collapse. */
@@ -440,7 +442,7 @@ body.guiding #uiAppearance{display:none}
 }
 
 /* Official 150 × 40 artwork. Classic uses the dark badge; the new look follows Day/Night. */
-.menu-footer .makakami-badge{display:flex;align-items:center;width:150px;min-height:44px;margin-top:8px}
+.community-links .makakami-badge{display:flex;align-items:center;width:150px;min-height:44px;margin-top:8px}
 .makakami-badge img{display:block;width:150px;height:40px;flex:none}
 .makakami-badge .makakami-day{display:none}
 html[data-ui="2"][data-theme="day"] .makakami-badge .makakami-day{display:block}

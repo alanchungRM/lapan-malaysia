@@ -275,11 +275,7 @@ html body.guiding :is(#navBar,#driveControls,#navpanel) button > svg{pointer-eve
  body.guiding.details-open #landscapeNavDetails{display:block}
 }
 
-#driveHud:popover-open{
- position:fixed;inset:0;width:auto;height:auto;max-width:none;max-height:none;
- margin:0;padding:0;border:0;background:transparent;color:inherit;overflow:visible;
- pointer-events:none;
-}
-#driveHud::backdrop{background:transparent;pointer-events:none}
-#driveHud :is(#navBar,#reportAsk,#awakeWarning){pointer-events:auto}
+/* Organize the fixed controls without giving the HUD a full-screen hit surface. */
+#driveHud{display:contents}
+html body.guiding #driveHud #awakeWarning:not([hidden]){position:fixed}
 body.guiding.details-open #driveHud #navpanel{visibility:hidden}
