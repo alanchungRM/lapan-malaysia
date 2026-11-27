@@ -56,3 +56,5 @@ Owner approved the road-report countdown, themed place picker, clear starting po
 - Make Quick Stops collapsible and match its chevron to the active theme.
 - Keep navigation controls responsive after rotation, keep the Then preview visible in landscape, and align the navigation pointer to the projected route.
 - Switch spoken directions when the app language changes during active navigation.
+
+- Keep navigation buttons tappable during screen rotation and bound how long the maps wait for viewport changes to settle.

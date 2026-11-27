@@ -293,43 +293,50 @@ $('basicRoute').onclick=()=>{allowBasicRoute=true;$('plan').onclick()};
 $('replan').onclick=()=>{if(!userMarker)return;const p=userMarker.getLatLng();rerouteFrom([p.lat,p.lng])};
 
 document.querySelector('.mapwrap').append($('navpanel'));
-// Phone rotation produces several transient sizes. Resize only after the map settles.
-let mapResizeTimer,lastMapSize='';
+// Coalesce transient viewport sizes without waiting indefinitely for resize events to stop.
+let mapResizeTimer,mapResizeDeadline,lastMapSize='';
 let restoreMapGestures=null;
 function handleDriveRotation(){
- if(document.body.classList.contains('guiding')&&!restoreMapGestures){
-  document.body.classList.add('drive-rotating');
-  map.stop();
-  const handlers=[map.dragging,map.touchZoom].filter(handler=>handler?.enabled());
-  handlers.forEach(handler=>handler.disable());
-  const resumeDriveGestures=window.LapanDrive?.suspendGestures?.();
-  restoreMapGestures=()=>{
-   handlers.forEach(handler=>handler.enable());
-   resumeDriveGestures?.();
-   document.body.classList.remove('drive-rotating');
-   restoreMapGestures=null;
-  };
- }
  scheduleMapResize();
+ if(!document.body.classList.contains('guiding')||restoreMapGestures)return;
+ const handlers=[map.dragging,map.touchZoom].filter(handler=>handler?.enabled());
+ const disabled=[];
+ let resumeDriveGestures;
+ restoreMapGestures=()=>{
+  restoreMapGestures=null;
+  try{disabled.forEach(handler=>handler.enable())}
+  finally{resumeDriveGestures?.()}
+ };
+ map.stop();
+ for(const handler of handlers){
+  handler.disable();
+  disabled.push(handler);
+ }
+ resumeDriveGestures=window.LapanDrive?.suspendGestures?.();
+}
+function resizeMaps(){
+ clearTimeout(mapResizeTimer);
+ clearTimeout(mapResizeDeadline);
+ mapResizeDeadline=null;
+ try{
+  const box=document.querySelector('.mapwrap');
+  const width=box.clientWidth,height=box.clientHeight;
+  if(!width||!height)return;
+  const size=width+'x'+height;
+  if(size===lastMapSize&&!restoreMapGestures)return;
+  map.invalidateSize({animate:false,pan:false,debounceMoveend:true});
+  if(window.LapanDrive?.isReady())window.LapanDrive.resize();
+  else if(document.body.classList.contains('guiding')&&lastGPS){
+   const {latitude,longitude}=lastGPS.p.coords;
+   followLeaflet([latitude,longitude],false);
+  }
+  lastMapSize=size;
+ }finally{restoreMapGestures?.()}
 }
 function scheduleMapResize(){
  clearTimeout(mapResizeTimer);
- mapResizeTimer=setTimeout(()=>{
-  const box=document.querySelector('.mapwrap');
-  const width=box.clientWidth,height=box.clientHeight;
-  if(!width||!height){restoreMapGestures?.();return}
-  const size=width+'x'+height;
-  if(size===lastMapSize&&!restoreMapGestures)return;
-  lastMapSize=size;
-  try{
-   map.invalidateSize({animate:false,pan:false,debounceMoveend:true});
-   if(window.LapanDrive?.isReady())window.LapanDrive.resize();
-   else if(document.body.classList.contains('guiding')&&lastGPS){
-    const {latitude,longitude}=lastGPS.p.coords;
-    followLeaflet([latitude,longitude],false);
-   }
-  }finally{restoreMapGestures?.()}
- },120);
+ mapResizeTimer=setTimeout(resizeMaps,120);
+ if(mapResizeDeadline==null)mapResizeDeadline=setTimeout(resizeMaps,280);
 }
 if(typeof ResizeObserver==='function')new ResizeObserver(scheduleMapResize).observe(document.querySelector('.mapwrap'));
 window.addEventListener('resize',scheduleMapResize);

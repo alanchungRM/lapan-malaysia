@@ -269,8 +269,6 @@ body.guiding #browseReports{display:none}
 }
 
 html body.guiding :is(#navBar,#driveControls,#navpanel) button > svg{pointer-events:none}
-body.guiding.drive-rotating .mapwrap,
-body.guiding.drive-rotating .mapwrap *{pointer-events:none!important}
 #landscapeNavDetails{display:none}
 @media (orientation:landscape){
  body.guiding #navpanel #navRvTarget{display:none!important}
