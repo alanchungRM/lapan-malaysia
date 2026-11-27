@@ -16,8 +16,8 @@ const reports=[
 T.setCommunity(basic,placeOnRoute(reports,basic));
 const colored=T.features(basic,now).features;
 assert.deepEqual(colored.map(f=>f.properties),[
- {color:'#ff8c00',severity:'traffic-heavy',community:true},
- {color:'#be123c',severity:'traffic-standstill',community:true}
+ {color:'#ff8c00',severity:'traffic-heavy',community:true,routeSegment:0,routeFraction:1,centerIndex:1},
+ {color:'#be123c',severity:'traffic-standstill',community:true,routeSegment:0,routeFraction:1,centerIndex:1}
 ],'community traffic works with basic routing, rejects nearby off-route and other reports, and paints standstill last');
 const path=colored[0].geometry.coordinates;
 assert.ok(path[0][0]>101.004&&path[0][0]<101.005);

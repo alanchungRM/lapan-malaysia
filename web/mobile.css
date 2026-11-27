@@ -576,7 +576,11 @@ body.guiding :is(#planningMapTools,#satelliteCredit){display:none}
 .rv-preference[hidden]{display:none}
 .rv-preference input{width:16px;height:16px;margin:0;accent-color:var(--brand,#96e9b7)}
 
-#reportWrongDirection{grid-column:1/-1}
+#reportWrongDirection{--report-accent:#9ee3c3;--report-icon-surface:#163c36;flex-direction:row;gap:10px;min-height:56px}
 #wrongDirectionDialog .report-body{padding-bottom:4px}
 #wrongDirectionStep,#wrongDirectionPreview{width:100%;min-height:44px;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#172738);color:var(--ink);font:inherit}
 #wrongDirectionPreview{resize:vertical}
+.map-pin-coordinates{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.map-pin-coordinates input{flex:1 1 155px;min-width:0;min-height:44px;font-variant-numeric:tabular-nums}
+.map-pin-coordinates button{min-height:44px;margin-inline-start:auto}
+body.guiding.route-ahead-visible .planning-route{visibility:hidden}

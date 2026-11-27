@@ -151,6 +151,11 @@ for(const [button,id,message] of [
 }
 async function resolveAll(){if(resolveBusy)return false;resolveBusy=true;cancelSearch();box.style.display='none';try{for(const id of ['origin','destination']){
  if(get(id))continue;const q=$(id).value.trim();if(!q){if(id==='origin')continue;status('Enter a destination or choose it on the map.');$(id).focus();return false}
+ const pasted=id==='destination'?root.LapanMapLinks?.parse(q):null;
+ if(pasted?.point&&!pasted.provider&&valid(...pasted.point)){
+  choose(id,[q,...pasted.point]);
+  continue;
+ }
  const rev=sequence,exact=unique([...(root.LapanPlaces?.exact(q)||[]),...local(q,id).filter(p=>normal(p[0])===normal(q))]);let items,extra=false;
  if(exact.length===1)items=exact;else{status('Finding '+(id==='origin'?'starting point':'destination')+' for “'+q+'”…');controller=new AbortController();try{const result=await search(q,local(q,id),controller.signal,true,reference(id));items=result.items;extra=result.extra}catch(e){if(rev!==sequence)return false;inline(local(q,id),id,e.message+' Retry or choose on map.');status('Could not search this '+(id==='origin'?'starting point':'destination')+'. '+e.message);return false}}
  if(rev!==sequence||$(id).value.trim()!==q)return false;
@@ -159,13 +164,39 @@ async function resolveAll(){if(resolveBusy)return false;resolveBusy=true;cancelS
  }return true}finally{resolveBusy=false}}
 const mapDialog=$('pickMapDialog');let mapEpoch=0,originalPlace=null,savedPicker=null;
 function cancelMapGPS(){mapEpoch++;$('pickMapGPS').disabled=false}
-function updatePoint(lat,lon){point=valid(lat,lon)?[lat,lon]:null;$('confirmMapPoint').disabled=!point;$('mapPointHint').textContent=point?'Selected '+lat.toFixed(5)+', '+lon.toFixed(5)+'. Check the entrance and road access.':'Choose a point within Malaysia.';if(point)pin.setLatLng(point)}
+const coordinatesField=$('mapPinCoordinates'),copyCoordinates=$('copyMapPinCoordinates');
+function updatePoint(lat,lon){
+ point=valid(lat,lon)?[lat,lon]:null;
+ $('confirmMapPoint').disabled=!point;
+ if(coordinatesField){
+  coordinatesField.disabled=!point;
+  coordinatesField.value=point?point.map(value=>value.toFixed(6)).join(', '):'';
+ }
+ if(copyCoordinates)copyCoordinates.disabled=!point;
+ $('mapPointHint').textContent=point?'':'Choose a point within Malaysia.';
+ if(point)pin.setLatLng(point);
+}
+if(copyCoordinates&&coordinatesField)copyCoordinates.onclick=async()=>{
+ if(!point||!mapDialog.open)return;
+ const selected=point,hint=$('mapPointHint');
+ try{
+  await root.navigator.clipboard.writeText(coordinatesField.value);
+  if(mapDialog.open&&point===selected)hint.textContent='Coordinates copied.';
+  return;
+ }catch{/* Try copying the selected field, then leave it selected for manual copy. */}
+ if(!mapDialog.open||point!==selected)return;
+ coordinatesField.focus();
+ coordinatesField.select();
+ let copied=false;
+ try{copied=document.execCommand?.('copy')===true}catch{}
+ hint.textContent=copied?'Coordinates copied.':'Copy the selected coordinates.';
+};
 function placePin(lat,lon,zoom=16){mapView.stop?.();mapView.setView([lat,lon],zoom,{animate:false});updatePoint(lat,lon)}
 function openMap(id,options=null){savedPicker=options;target=id;cancelSearch();cancelMapGPS();const epoch=mapEpoch;box.style.display='none';$('pickMapTitle').textContent=options?.title||('Choose '+(id==='origin'?'starting point':'destination')+' on map');mapDialog.showModal();if(!mapView){mapView=L.map('pickMap',{zoomControl:true,attributionControl:false}).setView([3.14,101.69],12);const baseMap=L.maplibreGL({style:window.LapanMapAppearance?.url()||'https://tiles.openfreemap.org/styles/liberty',interactive:false,attribution:'© OpenMapTiles · © OpenStreetMap contributors'}).addTo(mapView);if(baseMap?.getMaplibreMap)window.LapanMapAppearance?.bind(baseMap.getMaplibreMap());if(L.control){const credits=L.control({position:'bottomright'});credits.onAdd=()=>{const el=document.createElement('div');el.className='picker-map-credits';el.innerHTML='<details><summary aria-label="Map attribution" title="Map attribution">ⓘ</summary><div><a href="https://openfreemap.org/" target="_blank" rel="noopener">OpenFreeMap</a> © <a href="https://openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a> · Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a></div></details>';L.DomEvent.disableClickPropagation(el);L.DomEvent.disableScrollPropagation(el);return el};credits.addTo(mapView);} pin=L.marker([3.14,101.69],{draggable:true}).addTo(mapView);mapView.on('click',e=>{cancelMapGPS();updatePoint(e.latlng.lat,e.latlng.lng)});pin.on('dragstart',cancelMapGPS);pin.on('dragend',()=>{cancelMapGPS();const p=pin.getLatLng();updatePoint(p.lat,p.lng)})}
 originalPlace=(options?options.place:get(id))?.slice()||null;const p=originalPlace||get('origin')||get('destination'),center=p?[p[1],p[2]]:[3.14,101.69];
 // Use the stored coordinates, never an intermediate center during a map animation.
 placePin(center[0],center[1],p?16:11);
-root.requestAnimationFrame(()=>{if(!mapDialog.open||epoch!==mapEpoch)return;mapView.invalidateSize({pan:false});placePin(center[0],center[1],p?16:11)});
+root.requestAnimationFrame(()=>{if(!mapDialog.open||epoch!==mapEpoch)return;mapView.invalidateSize({pan:false})});
 }
 mapDialog.addEventListener('close',()=>{if(!mapDialog.open){cancelMapGPS();const picker=savedPicker;savedPicker=null;picker?.onCancel?.()}});
 $('pickMapGPS').onclick=()=>{const geo=root.navigator?.geolocation;if(root.isSecureContext===false||!geo){$('mapPointHint').textContent='GPS is unavailable. Open Lapan with HTTPS in Safari or Chrome, or choose a point on the map.';return}const epoch=++mapEpoch,field=target;$('pickMapGPS').disabled=true;$('mapPointHint').textContent='Finding your current location… Allow location access when prompted.';

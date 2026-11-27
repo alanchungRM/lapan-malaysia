@@ -14,8 +14,10 @@ function syncTheme(){
   delete target.dataset.ui;
   delete target.dataset.theme;
  }
+ if(root.dataset.skin==='sunset')target.dataset.skin='sunset';
+ else delete target.dataset.skin;
 }
-new MutationObserver(syncTheme).observe(root,{attributes:true,attributeFilter:['data-ui','data-theme']});
+new MutationObserver(syncTheme).observe(root,{attributes:true,attributeFilter:['data-ui','data-theme','data-skin']});
 frame.addEventListener('load',()=>{try{const doc=frame.contentDocument;if(!doc)return;if(doc.getElementById('map')){close();frame.removeAttribute('src');return}syncTheme();doc.addEventListener('click',e=>{const link=e.target.closest('a');if(link&&new URL(link.href,location.href).pathname==='/'){e.preventDefault();e.stopImmediatePropagation();close()}},true)}catch{}});
 document.querySelectorAll('a[href="/statistics"]').forEach(link=>link.addEventListener('click',e=>{if(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();if(!frame.getAttribute('src'))frame.src='/statistics';if(!panel.open)panel.showModal()}));
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data==='lapan-close-statistics')close()});panel.addEventListener('close',()=>window.dispatchEvent(new Event('resize')))

@@ -22,14 +22,19 @@ function reportGeometry(coords,report){
   }
   return points;
  }
- return {type:'LineString',coordinates:[...walk(segment,-1).reverse(),center,...walk(segment+1,1)]};
+ const before=walk(segment,-1).reverse();
+ return {centerIndex:before.length,geometry:{type:'LineString',coordinates:[...before,center,...walk(segment+1,1)]}};
 }
 function setCommunity(route,reports){
  if(!route?.geometry?.coordinates?.length)return;
  const coords=route.geometry.coordinates;
  const features=reports.filter(r=>Object.hasOwn(reportColors,r.kind)&&Number.isInteger(r.segment)&&coords[r.segment+1])
   .sort((a,b)=>(a.kind==='traffic-standstill')-(b.kind==='traffic-standstill'))
-  .map(r=>({type:'Feature',properties:{color:reportColors[r.kind],severity:r.kind,community:true},geometry:reportGeometry(coords,r)}));
+   .map(r=>{
+   const {geometry,centerIndex}=reportGeometry(coords,r);
+   return {type:'Feature',properties:{color:reportColors[r.kind],severity:r.kind,community:true,
+    routeSegment:r.segment,routeFraction:r.fraction,centerIndex},geometry};
+  });
  if(!features.length&&!communityByRoute.has(route))return;
  if(features.length)communityByRoute.set(route,features);
  else communityByRoute.delete(route);

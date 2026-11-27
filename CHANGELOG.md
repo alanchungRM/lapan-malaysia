@@ -2,7 +2,7 @@
 
 Public feature updates and fixes. Dates use Malaysia time.
 
-## [1.0.47] — 2026-11-26
+## [1.0.47] — 2026-11-27
 
 RV campsite finder and more reliable navigation
 
@@ -12,6 +12,8 @@ RV campsite finder and more reliable navigation
 - Find RV campsites near your current location. In Car mode, turn on Recreational Vehicle (RV) in More options to show Find RV campsite and RV stops in Quick Stops. The setting is off by default. Filter for Day Rest or Overnight Stay, then choose a campsite as your destination.
 - Save campsite coordinates, phone numbers and available access notes on your device for offline use. You can remove saved campsites individually or clear the list. Maps and route planning require an internet connection.
 - Choose a Satellite view for the planning map under More options → Screen & navigation → Planning map view.
+- View and copy a map pin’s coordinates from the map picker. Paste them into the destination field to plan a route.
+- Find the official MakaKami listing in More options. The badge follows your theme.
 
 ### Improved
 
@@ -20,12 +22,18 @@ RV campsite finder and more reliable navigation
 - Weather cards show conditions, temperatures and warnings more clearly below the ETA. Lapan in Numbers groups navigation figures for mobile reading and shows recent daily visits newest first.
 - Place search matches more names and shows a cancellable loading dialog. Petrol, Shopping and R&R Quick Stops can use stored listings when live search is unavailable.
 - Nearby road report confirmations show a 15-second countdown and close automatically. The speed display has more room for three digits, and Less Chatty is the default voice guidance mode.
+- During navigation, the route line disappears behind your vehicle while the route and traffic colours ahead stay visible.
+- Place search includes more named places across Malaysia from OpenStreetMap and more reviewed local listings.
+- Lapan in Numbers follows the GTA Sunset skin in the map dialog and in a separate tab.
+- The Report wrong direction button now matches the other road report tiles.
 
 ### Fixed
 
 - Navigation controls stay aligned and easier to tap after rotating the phone. In landscape, the Then preview stays on the turn card and the navigation pointer follows the angle of the route.
 - The route progress bar preserves the distance already travelled when the route is recalculated.
 - Spoken guidance follows EN/BM changes during an active drive.
+- After a detour, the map clears the passed route line once GPS confirms you’ve rejoined farther ahead.
+- Navigation buttons stay responsive after switching between portrait and landscape, and repeated resize events no longer delay the map refresh indefinitely.
 
 [GitHub change 1](https://github.com/alanchungRM/lapan-malaysia/commit/b611be95a24d3f23f5bebd8a1c3eff988363b423)
 

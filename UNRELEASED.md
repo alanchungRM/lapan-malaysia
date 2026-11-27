@@ -16,8 +16,6 @@ Nationwide POI coverage and the 878,679-listing total were incorporated into the
 
 - Document contributor-owned POI hosting and keep deployment-specific account and origin settings out of public source.
 
-- Add the official MakaKami listing badge below Facebook in More options, following Day and Night with the dark badge for Classic.
-
 - Add the official Lapan Malaysia Facebook link above the version and release history.
 
 - Preserve production homepage and changelog indexability with canonical URLs, crawlable robots and sitemap, and SEO regression checks.
@@ -25,9 +23,6 @@ Nationwide POI coverage and the 878,679-listing total were incorporated into the
 - Match additional-place selection and close controls to the active skin.
 - Improve three-digit speedometer spacing and allow clearing the starting point independently.
 - Use English Kokoro Heart by default while preserving saved voice choices, and improve routing restriction and U-turn guidance.
-
-
-
 
 - Staging: record upstream Valhalla failures without route details.
 
@@ -43,7 +38,6 @@ The following items are recorded in GitHub CHANGELOG.md under v1.0.38, but are n
 
 - Historical promotion baseline before Valhalla became the fallback. Retain provider controls and the motorcycle fallback restriction.
 
-
 ## Next public release scope
 
 Owner approved the road-report countdown, themed place picker, clear starting point, speedometer spacing and default English voice notes. Omit routing fixes and search-indexing maintenance from the next public release announcement. Nationwide POI search and external storage are now promoted to production; actual deployment-specific configuration remains private. Do not increase the visible version or publish new release entries until authorized.
@@ -57,4 +51,4 @@ Owner approved the road-report countdown, themed place picker, clear starting po
 - Keep navigation controls responsive after rotation, keep the Then preview visible in landscape, and align the navigation pointer to the projected route.
 - Switch spoken directions when the app language changes during active navigation.
 
-- Keep navigation buttons tappable during screen rotation and bound how long the maps wait for viewport changes to settle.
+- Update the Persiaran Delima / Persiaran Bayu Impian 2 junction for the new traffic signal and northbound turn-only restriction.

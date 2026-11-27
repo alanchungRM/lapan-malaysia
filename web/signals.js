@@ -8,5 +8,7 @@ function drawGL(){if(!gl)return;const visible=view(gl),ids=new Set(visible.map(x
 function refresh(){drawLeaf();drawGL()}
 root.LapanSignals={attachLeaflet(map){leaf=map;map.on('moveend zoomend',drawLeaf);drawLeaf()},attachGL(map){if(gl!==map){clear(gmarks,m=>m.remove());gl=map;map.on('moveend',drawGL)}drawGL()},refresh};
 $('showSignals').checked=enabled;$('showSignals').onchange=()=>{enabled=$('showSignals').checked;try{localStorage.setItem('lapan-signals',enabled?'on':'off')}catch{}refresh()};
-fetch('/signals.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{points=d.points;loaded=true;$('signalInfo').textContent='Mapped locations only · zoom in to see icons. No live red/green status. Data: '+(d.dataThrough||'date unavailable').slice(0,10)+'. Coverage may be incomplete.';refresh()}).catch(()=>{$('signalInfo').textContent='Traffic-light locations could not load. Refresh to retry.'});
+// Field-reported signal at the Persiaran Delima / Persiaran Bayu Impian 2 junction.
+const localSignals=[[101.45087,2.974734]];
+fetch('/signals.json').then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{points=[...d.points,...localSignals.filter(([lng,lat])=>!d.points.some(([x,y])=>Math.hypot(x-lng,y-lat)<.00016))];loaded=true;$('signalInfo').textContent='Mapped locations only · zoom in to see icons. No live red/green status. Data: '+(d.dataThrough||'date unavailable').slice(0,10)+'. Coverage may be incomplete.';refresh()}).catch(()=>{$('signalInfo').textContent='Traffic-light locations could not load. Refresh to retry.'});
 })(window);

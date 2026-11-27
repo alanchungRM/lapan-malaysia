@@ -98,7 +98,7 @@ function applyBayuCrossover(route){
   summary:{...route.summary,lengthInMeters:route.summary.lengthInMeters+distanceDelta,
    travelTimeInSeconds:route.summary.travelTimeInSeconds+timeDelta,trafficDelayInSeconds:null}};
 }
-function normalizeLiveRoute(route,checkedAt){const summary=route.summary,points=(route.legs||[]).flatMap(l=>(l.points||[]).map(p=>[p.longitude,p.latitude])),instructions=route.guidance?.instructions;if(!summary||!Number.isFinite(summary.travelTimeInSeconds)||summary.travelTimeInSeconds<=0||!Number.isFinite(summary.lengthInMeters)||summary.lengthInMeters<=0||points.length<2||points.length>100000||!points.every(routePoint)||!Array.isArray(instructions)||instructions.length<2)throw Error('Incomplete route');if((route.sections||[]).some(s=>s.simpleCategory==='ROAD_CLOSURE'))throw Error('Closed route');if(globalThis.LapanRoadRestrictions.blocked(points))throw Error('Reported restricted junction');
+function normalizeLiveRoute(route,checkedAt){const summary=route.summary,points=(route.legs||[]).flatMap(l=>(l.points||[]).map(p=>[p.longitude,p.latitude])),instructions=route.guidance?.instructions;if(!summary||!Number.isFinite(summary.travelTimeInSeconds)||summary.travelTimeInSeconds<=0||!Number.isFinite(summary.lengthInMeters)||summary.lengthInMeters<=0||points.length<2||points.length>100000||!points.every(routePoint)||!Array.isArray(instructions)||instructions.length<2)throw Error('Incomplete route');if((route.sections||[]).some(s=>s.simpleCategory==='ROAD_CLOSURE'))throw Error('Closed route');if(globalThis.LapanRoadRestrictions.blocksStraight(points))throw Error('Reported northbound straight restriction');if(globalThis.LapanRoadRestrictions.blocked(points))throw Error('Reported restricted junction');
 const duration=summary.travelTimeInSeconds,distance=summary.lengthInMeters;let lastIndex=-1,lastOffset=-1,lastTime=-1;const records=instructions.map(i=>{if(!Number.isInteger(i.pointIndex)||i.pointIndex<0||i.pointIndex>=points.length||i.pointIndex<lastIndex||!Number.isFinite(i.routeOffsetInMeters)||i.routeOffsetInMeters<lastOffset||i.routeOffsetInMeters>distance+10||!Number.isFinite(i.travelTimeInSeconds)||i.travelTimeInSeconds<lastTime||i.travelTimeInSeconds>duration+10||!routePoint([i.point?.longitude,i.point?.latitude]))throw Error('Invalid guidance');lastIndex=i.pointIndex;lastOffset=i.routeOffsetInMeters;lastTime=i.travelTimeInSeconds;return i});if(records[0].maneuver!=='DEPART'||!/^ARRIVE/.test(records.at(-1).maneuver)||records[0].routeOffsetInMeters>10||Math.abs(records.at(-1).routeOffsetInMeters-distance)>30)throw Error('Missing endpoints');
 const steps=records.map((i,n)=>{const next=records[n+1],point=[i.point.longitude,i.point.latitude],code=i.maneuver||'',type=code==='DEPART'?'depart':/^ARRIVE/.test(code)?'arrive':/EXIT/.test(code)?'off ramp':/ROUNDABOUT/.test(code)?'roundabout':/ENTER_MOTORWAY|ENTER_FREEWAY|ENTER_HIGHWAY/.test(code)?'on ramp':/KEEP|BEAR/.test(code)?'fork':code==='STRAIGHT'?'continue':'turn',modifier=/LEFT/.test(code)?'left':/RIGHT/.test(code)?'right':code==='MAKE_UTURN'?'uturn':'straight';let coordinates=next?[point,...points.slice(i.pointIndex+1,next.pointIndex+1),[next.point.longitude,next.point.latitude]]:[point];coordinates=coordinates.filter((p,j,a)=>!j||p[0]!==a[j-1][0]||p[1]!==a[j-1][1]);return {name:routeText(i.street),ref:Array.isArray(i.roadNumbers)?i.roadNumbers.map(routeText).filter(Boolean).join(';'):'',exits:routeText(i.exitNumber),destinations:routeText(i.signpostText),instruction:routeText(i.message),distance:next?Math.max(0,next.routeOffsetInMeters-i.routeOffsetInMeters):0,duration:next?Math.max(0,next.travelTimeInSeconds-i.travelTimeInSeconds):0,geometry:{type:'LineString',coordinates},maneuver:{location:point,type,modifier,...(Number.isInteger(i.roundaboutExitNumber)?{exit:i.roundaboutExitNumber}:{})}}});
 const tollSections=(route.sections||[]).filter(s=>s.sectionType==='TOLL'&&Number.isInteger(s.startPointIndex)&&Number.isInteger(s.endPointIndex)&&s.startPointIndex>=0&&s.endPointIndex<points.length&&s.startPointIndex<s.endPointIndex).map(s=>({startPointIndex:s.startPointIndex,endPointIndex:s.endPointIndex}));
@@ -114,8 +114,8 @@ const work=(async()=>{
   if(body.avoidTolls)url.searchParams.append('avoid','tollRoads');
   const avoidAreas=globalThis.LapanRoadRestrictions.avoidAreas(),hasAreas=avoidAreas.rectangles.length>0;
   const signal=AbortSignal.timeout(body.avoidTolls?12000:18000);
-  async function fetchRoutes(withAreas,routeURL=url,requestSignal=signal){
-   const options=withAreas?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avoidAreas})}:{method:'GET'};
+  async function fetchRoutes(withAreas,routeURL=url,requestSignal=signal,areas=avoidAreas){
+   const options=withAreas?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avoidAreas:areas})}:{method:'GET'};
    await globalThis.LapanTomTomUsage?.record(env,body.purpose||'planning');
    return fetch(routeURL.toString(),{...options,signal:requestSignal});
   }
@@ -132,7 +132,7 @@ const work=(async()=>{
   }
   async function routeCandidates(response){
    const raw=await response.json(),checkedAt=new Date().toISOString(),routes=[];
-   let blocked=false;
+   let blocked=false,straightBlocked=false;
    for(const route of (raw.routes||[]).slice(0,6)){
     if(body.avoidTolls&&route.sections?.some(s=>s.sectionType==='TOLL'))continue;
     try{
@@ -145,9 +145,10 @@ const work=(async()=>{
      }
      normalized.vehicle=body.vehicle||'car';
      routes.push({normalized,route:normalized.bayuCrossover?corrected:route});
-    }catch(error){if(error.message==='Reported restricted junction')blocked=true}
+    }catch(error){if(error.message==='Reported restricted junction')blocked=true;
+     if(error.message==='Reported northbound straight restriction')straightBlocked=blocked=true}
    }
-   return {routes,checkedAt,blocked};
+   return {routes,checkedAt,blocked,straightBlocked};
   }
   // Check every candidate against Lapan's restrictions. Send avoidance areas only
   // when the standard toll-avoidance request cannot produce a legal candidate.
@@ -174,6 +175,7 @@ const work=(async()=>{
      const additional=await routeCandidates(extra);
      candidates.checkedAt??=additional.checkedAt;
      candidates.blocked||=additional.blocked;
+     candidates.straightBlocked||=additional.straightBlocked;
      for(const candidate of additional.routes){
       const coordinates=JSON.stringify(candidate.normalized.geometry.coordinates);
       if(candidates.routes.some(({normalized})=>JSON.stringify(normalized.geometry.coordinates)===coordinates))continue;
@@ -184,6 +186,15 @@ const work=(async()=>{
      alternateRoutePauseUntil=Date.now()+tomTomRetrySeconds(extra)*1000;
     }
    }catch{/* An extra search failure leaves the checked primary route available. */}
+  }
+  if(!candidates.routes.length&&candidates.straightBlocked){
+   try{
+    const detour=await fetchRoutes(true,url,AbortSignal.timeout(5000),globalThis.LapanRoadRestrictions.avoidAreas(true));
+    if(detour.ok){
+     const checked=await routeCandidates(detour);
+     if(checked.routes.length)candidates=checked;
+    }
+   }catch{/* Keep the restriction response if the detour request fails. */}
   }
   if(!candidates.routes.length){
    if(!response.ok&&!candidates.blocked)return upstreamError(response);

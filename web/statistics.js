@@ -1,4 +1,31 @@
-(()=>{if(window.parent!==window){document.documentElement.classList.add('embedded-statistics');document.querySelectorAll('a[href="/"]').forEach(a=>a.onclick=e=>{e.preventDefault();window.parent.postMessage('lapan-close-statistics',location.origin)})}const $=id=>document.getElementById(id),fmt=new Intl.NumberFormat('en-MY');let pending=false,last=null;
+(()=>{
+const root=document.documentElement;
+if(window.parent!==window){
+ root.classList.add('embedded-statistics');
+ document.querySelectorAll('a[href="/"]').forEach(a=>a.onclick=e=>{
+  e.preventDefault();
+  window.parent.postMessage('lapan-close-statistics',location.origin);
+ });
+}else{
+ const meta=document.querySelector('meta[name="theme-color"]'),defaultColor=meta?.content;
+ function syncSkin(){
+  let look;
+  try{look=localStorage.getItem('lapan-ui')}catch{}
+  if(look==='sunset'){
+   root.dataset.ui='2';
+   root.dataset.theme='night';
+   root.dataset.skin='sunset';
+  }else{
+   delete root.dataset.ui;
+   delete root.dataset.theme;
+   delete root.dataset.skin;
+  }
+  if(meta)meta.content=look==='sunset'?'#25152C':defaultColor;
+ }
+ syncSkin();
+ window.addEventListener('storage',event=>{if(event.key==='lapan-ui'||event.key===null)syncSkin()});
+}
+const $=id=>document.getElementById(id),fmt=new Intl.NumberFormat('en-MY');let pending=false,last=null;
 const totalKmFormat=new Intl.NumberFormat('en-MY',{maximumFractionDigits:1});
 const averageKmFormat=new Intl.NumberFormat('en-MY',{minimumFractionDigits:1,maximumFractionDigits:1});
 function renderNavigationTotals(data){
